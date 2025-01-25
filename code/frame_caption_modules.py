@@ -1,5 +1,5 @@
 """
-frame_caption.py
+frame_caption_modules.py
 
 함수 목록:
 1. load_model
@@ -25,7 +25,7 @@ from torchvision import transforms as T
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
 from unsloth_vision_utils import Custom_UnslothVisionDataCollator
-from utils import get_video_id_and_timestamp, load_config
+from utils import get_video_id_and_timestamp
 
 # GPU 설정
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -384,21 +384,38 @@ def generate_caption_UsingDataset(
         )
 
 
-def frame_caption(config_path):
-    # 설정 로드
-    config = load_config(config_path)
-    device = config["general"]["device"]
-    frames_folder = config["data"]["frames_folder"]
-    output_folder = config["data"]["output_folder"]
-    datasets_folder = config["data"]["datasets_folders"]
-    datasets_name = config["data"]["datasets_name"]
-    model_name = config["model"]["model_name"]
-    caption_prompt = config["generation"]["prompt"]
-    max_new_tokens = config["generation"]["max_new_tokens"]
-    batch_size = config["generation"]["batch_size"]
-    use_datasets = config["generation"]["use_datasets"]
-    frame_output_filename = config["data"]["frame_output_filename"]
+def frame_caption(
+    device,
+    frames_folder,
+    output_folder,
+    datasets_folder,
+    datasets_name,
+    model_name,
+    caption_prompt,
+    max_new_tokens,
+    batch_size,
+    use_datasets,
+    frame_output_filename,
+):
+    """
+    프레임 폴더 또는 데이터셋으로부터 캡션을 생성하고 Json 파일로 저장하는 함수
 
+    Args:
+        device (str): 디바이스 이름
+        frames_folder (str): 프레임 이미지 폴더 경로
+        output_folder (str): 결과 저장 폴더 경로
+        datasets_folder (str): 데이터셋 폴더 경로
+        datasets_name (str): 데이터셋 이름
+        model_name (str): 모델 이름
+        caption_prompt (str): 캡션 생성 프롬프트
+        max_new_tokens (int): 최대 토큰 길이
+        batch_size (int): 배치 크기
+        use_datasets (bool): 데이터셋 사용 여부
+        frame_output_filename (str): 결과 파일 이름
+
+    Returns:
+        None
+    """
     model, tokenizer = load_model(model_name, device)
     translator = Translator()
 
@@ -454,4 +471,17 @@ def frame_caption(config_path):
 
 
 if __name__ == "__main__":
-    frame_caption("fcs_config.yaml")
+    # frame_caption 함수 테스트
+    frame_caption(
+        device="cuda",
+        frames_folder="../frames",
+        output_folder="../output",
+        datasets_folder="../datasets",
+        datasets_name="my_test_dataset",
+        model_name="unsloth/Qwen2-VL-7B-Instruct-bnb-4bit",
+        caption_prompt="<image>\nProvide a detailed description of the actions taking place in this image.",
+        max_new_tokens=128,
+        batch_size=6,
+        use_datasets=True,
+        frame_output_filename="frame_captions_test.json",
+    )

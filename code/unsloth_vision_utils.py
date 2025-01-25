@@ -1,3 +1,12 @@
+"""
+unsltoh_vision_utils.py
+
+Unsloth Zoo 코드 가져와서 조금만 수정한 파일입니다.
+굳이, 안 읽어보셔도 됩니다.
+마지막의 Custom_UnslothVisionDataCollator 클래스만 조금 수정하였고 해당 클래스만 사용합니다.
+"""
+
+
 # Unsloth Zoo - Utilities for Unsloth
 # Copyright 2023-present Daniel Han-Chen & the Unsloth team. All rights reserved.
 #
