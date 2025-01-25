@@ -23,6 +23,9 @@ def load_config(config_path):
     YAML 설정 파일을 로드하는 함수
     Args:
         config_path (str): 설정 파일 경로 (ex. "../config/config.yaml")
+
+    Returns:
+        config (dict): 로드된 설정 파일
     """
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
@@ -37,6 +40,9 @@ def extract_frames_from_single_video(video_file_path, frames_output_folder, fram
         video_file_path (str): 비디오 파일 경로. (ex. "../video/5qlG1ODkRWw.mp4")
         frames_output_folder (str): 추출된 프레임을 저장할 디렉토리 경로. (ex. "../frames")
         frame_rate (float): 초당 저장할 프레임 수.
+
+    Returns:
+        None
     """
     if not os.path.exists(frames_output_folder):
         os.makedirs(frames_output_folder)
@@ -79,6 +85,9 @@ def extract_frames_from_folder(video_folder, frames_output_folder, frame_rate):
         video_folder (str): 비디오 파일들이 있는 폴더 경로. (ex. "../video")
         frames_output_folder (str): 추출된 프레임을 저장할 디렉토리 경로. (ex. "../frames")
         frame_rate (float): 초당 저장할 프레임 수.
+
+    Returns:
+        None
     """
     video_files = [f for f in os.listdir(video_folder) if f.endswith(".mp4")]
     print(f"총 {len(video_files)}개의 비디오 파일을 발견했습니다.")
@@ -105,6 +114,10 @@ def get_video_id_and_timestamp(file_name):
 
     Args:
         file_name (str): 파일 이름 (ex. "5qlG1ODkRWw_0.000.jpg")
+
+    Returns:
+        video_id (str): 비디오 ID
+        timestamp (float): 타임스탬프
     """
     try:
         file_base = os.path.splitext(file_name)[0]
@@ -126,6 +139,9 @@ def create_and_save_dataset(
         frames_directory (str): 프레임 이미지 파일들이 있는 폴더 경로 (ex. "../frames")
         output_dataset_directory (str): 생성된 데이터셋을 저장할 디렉토리 경로 (ex. "../datasets")
         output_dataset_name (str): 생성된 데이터셋 파일 이름 (ex. "my_dataset")
+
+    Returns:
+        None
     """
     image_file_paths = sorted(
         [

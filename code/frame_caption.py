@@ -1,3 +1,19 @@
+"""
+frame_caption.py
+
+함수 목록:
+1. load_model
+2. translate_caption
+3. dynamic_preprocess
+4. generate_caption_ForGeneralModel
+5. generate_caption_ForUnslothModel
+6. generate_caption
+7. generate_caption_UsingDataset_ForGeneralModel
+8. generate_caption_UsingDataset_ForUnslothModel
+9. generate_caption_UsingDataset
+10. frame_caption - 메인 함수. config 설정에 따라 프레임별 캡션 생성
+"""
+
 import json
 import os
 
@@ -22,6 +38,9 @@ def load_model(model_name, device):
     Args:
         model_name (str): 모델 이름
         device (str): 디바이스 이름
+
+    Returns:
+        torch.nn.Module, transformers.PreTrainedTokenizer: 모델, 토크나이저
     """
     print("*" * 50)
     print(f"Loading model: {model_name}")
@@ -62,6 +81,9 @@ def translate_caption(caption, translator, target_lang="ko"):
         caption (str): 번역할 캡션
         translator (googletrans.Translator): 번역기 객체
         target_lang (str): 번역할 언어 코드 (default: "ko")
+
+    Returns:
+        str: 번역된 캡션
     """
     try:
         return translator.translate(caption, dest=target_lang).text
@@ -78,6 +100,9 @@ def dynamic_preprocess(image, image_size=448, use_thumbnail=False):
         image (PIL.Image): 전처리할 이미지
         image_size (int): 이미지 크기 (default: 448)
         use_thumbnail (bool): 썸네일 사용 여부 (default: False)
+
+    Returns:
+        torch.Tensor: 전처리된 이미지
     """
     IMAGENET_MEAN = (0.485, 0.456, 0.406)
     IMAGENET_STD = (0.229, 0.224, 0.225)
@@ -110,6 +135,9 @@ def generate_caption_ForGeneralModel(
         translator (googletrans.Translator): 번역기
         device (str): 디바이스
         max_new_tokens (int): 최대 토큰 길이
+
+    Returns:
+        str, str: 영어 캡션, 한국어 캡션
     """
     pixel_values = dynamic_preprocess(image, image_size=448).to(device)
     generation_config = {
@@ -137,6 +165,9 @@ def generate_caption_ForUnslothModel(
         translator (googletrans.Translator): 번역기
         device (str): 디바이스
         max_new_tokens (int): 최대 토큰 길이
+
+    Returns:
+        str, str: 영어 캡션, 한국어 캡션
     """
     messages = [
         {
@@ -175,6 +206,9 @@ def generate_caption(
         translator (googletrans.Translator): 번역기
         device (str): 디바이스
         max_new_tokens (int): 최대 토큰 길이
+
+    Returns:
+        str, str: 영어 캡션, 한국어 캡션
     """
     if "unsloth" in model.__class__.__name__.lower():
         return generate_caption_ForUnslothModel(
@@ -262,6 +296,9 @@ def generate_caption_UsingDataset_ForUnslothModel(
         translator (googletrans.Translator): 번역기
         batch_size (int): 배치 크기
         max_new_tokens (int): 최대 토큰 길이
+
+    Returns:
+        List[dict]: 캡션 결과 리스트
     """
     instruction = prompt.replace("<image>\n", "")
 
@@ -333,6 +370,9 @@ def generate_caption_UsingDataset(
         translator (googletrans.Translator): 번역기
         batch_size (int): 배치 크기
         max_new_tokens (int): 최대 토큰
+
+    Returns:
+        List[dict]: 캡션 결과 리스트
     """
     if "unsloth" in model.__class__.__name__.lower():
         return generate_caption_UsingDataset_ForUnslothModel(
@@ -344,19 +384,20 @@ def generate_caption_UsingDataset(
         )
 
 
-def main(config_path):
+def frame_caption(config_path):
     # 설정 로드
     config = load_config(config_path)
     device = config["general"]["device"]
-    frames_folder = config["general"]["frames_folder"]
-    output_folder = config["general"]["output_folder"]
-    datasets_folder = config["general"]["datasets_folders"]
-    datasets_name = config["general"]["datasets_name"]
-    use_datasets = config["general"]["use_datasets"]
-    caption_prompt = config["caption"]["prompt"]
+    frames_folder = config["data"]["frames_folder"]
+    output_folder = config["data"]["output_folder"]
+    datasets_folder = config["data"]["datasets_folders"]
+    datasets_name = config["data"]["datasets_name"]
     model_name = config["model"]["model_name"]
+    caption_prompt = config["generation"]["prompt"]
     max_new_tokens = config["generation"]["max_new_tokens"]
     batch_size = config["generation"]["batch_size"]
+    use_datasets = config["generation"]["use_datasets"]
+    frame_output_filename = config["data"]["frame_output_filename"]
 
     model, tokenizer = load_model(model_name, device)
     translator = Translator()
@@ -404,7 +445,7 @@ def main(config_path):
                 }
             )
 
-    output_path = os.path.join(output_folder, "frame_output.json")
+    output_path = os.path.join(output_folder, frame_output_filename)
     os.makedirs(output_folder, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=4)
@@ -413,4 +454,4 @@ def main(config_path):
 
 
 if __name__ == "__main__":
-    main("fcs_config.yaml")
+    frame_caption("fcs_config.yaml")
