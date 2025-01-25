@@ -141,7 +141,10 @@ def generate_caption_ForUnslothModel(
     messages = [
         {
             "role": "user",
-            "content": [{"type": "image"}, {"type": "text", "text": prompt}],
+            "content": [
+                {"type": "image"},
+                {"type": "text", "text": prompt.replace("<image>\n", "")},
+            ],
         }
     ]
     input_text = tokenizer.apply_chat_template(messages, add_generation_prompt=True)
@@ -183,19 +186,112 @@ def generate_caption(
         )
 
 
-def generate_caption_UsingDataset(
-    model, tokenizer, dataset, prompt, translator, batch_size, max_new_tokens
+def generate_caption_UsingDataset_ForGeneralModel(
+    model, tokenizer, dataset, prompt, translator, batch_size, max_new_tokens, device
 ):
     """
-    Huggingface Dataset을 사용해 전체 데이터셋에 대한 캡션 생성
+    Huggingface Dataset을 사용해 General 모델로 전체 데이터셋에 대한 캡션 생성
+
+    Args:
+        model (torch.nn.Module): 모델
+        tokenizer (transformers.PreTrainedTokenizer): 토크나이저
+        dataset (Dataset): Huggingface Dataset
+        prompt (str): 프롬프트
+        translator (googletrans.Translator): 번역기
+        batch_size (int): 배치 크기
+        max_new_tokens (int): 최대 토큰 길이
+        device (str): 디바이스
+
+    Returns:
+        List[dict]: 캡션 결과 리스트
     """
-    collator = Custom_UnslothVisionDataCollator(model, tokenizer)
     results = []
 
     for start_idx in tqdm(
         range(0, len(dataset), batch_size), desc="Generating captions in batches"
     ):
         batch = dataset[start_idx : start_idx + batch_size]
+        images = [
+            dynamic_preprocess(sample["image"], image_size=448).to(device)
+            for sample in batch
+        ]
+        pixel_values = torch.stack(images).to(device)
+
+        generation_config = {
+            "max_length": max_new_tokens,
+            "pad_token_id": tokenizer.eos_token_id,
+        }
+
+        captions = []
+        for pixel_value in pixel_values:
+            caption = model.chat(
+                tokenizer,
+                pixel_value.unsqueeze(0),
+                prompt,
+                generation_config=generation_config,
+            )
+            captions.append(caption)
+
+        captions_ko = [translate_caption(caption, translator) for caption in captions]
+
+        for i, sample in enumerate(batch):
+            results.append(
+                {
+                    "video_id": sample["video_id"],
+                    "timestamp": sample["timestamp"],
+                    "frame_image_path": sample["frame_image_path"],
+                    "caption": captions[i],
+                    "caption_ko": captions_ko[i],
+                }
+            )
+
+    return results
+
+
+def generate_caption_UsingDataset_ForUnslothModel(
+    model, tokenizer, dataset, prompt, translator, batch_size, max_new_tokens
+):
+    """
+    Huggingface Dataset을 사용해 Unsloth 모델로 전체 데이터셋에 대한 캡션 생성
+
+    Args:
+        model (torch.nn.Module): 모델
+        tokenizer (transformers.PreTrainedTokenizer): 토크나이저
+        dataset (Dataset): Huggingface Dataset
+        prompt (str): 프롬프트
+        translator (googletrans.Translator): 번역기
+        batch_size (int): 배치 크기
+        max_new_tokens (int): 최대 토큰 길이
+    """
+    instruction = prompt.replace("<image>\n", "")
+
+    def convert_to_conversation(sample):
+        conversation = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": instruction},
+                    {"type": "image", "image": sample["image"]},
+                ],
+            }
+        ]
+        return {
+            "video_id": sample["video_id"],
+            "timestamp": sample["timestamp"],
+            "frame_image_path": sample["frame_image_path"],
+            "messages": conversation,
+        }
+
+    converted_dataset = [convert_to_conversation(sample) for sample in dataset]
+
+    collator = Custom_UnslothVisionDataCollator(model, tokenizer)
+    results = []
+
+    for start_idx in tqdm(
+        range(0, len(converted_dataset), batch_size),
+        desc="Generating captions in batches",
+    ):
+        batch = converted_dataset[start_idx : start_idx + batch_size]
         inputs = collator(batch)
         inputs = {key: val.to("cuda") for key, val in inputs.items()}
         outputs = model.generate(
@@ -221,6 +317,31 @@ def generate_caption_UsingDataset(
             )
 
     return results
+
+
+def generate_caption_UsingDataset(
+    model, tokenizer, dataset, prompt, translator, batch_size, max_new_tokens
+):
+    """
+    Huggingface Dataset을 사용해 전체 데이터셋에 대한 캡션 생성 - 일반 모델과 UnSloth 모델 통일
+
+    Args:
+        model (torch.nn.Module): 모델
+        tokenizer (transformers.PreTrainedTokenizer): 토크나이저
+        dataset (Dataset): Huggingface Dataset
+        prompt (str): 프롬프트
+        translator (googletrans.Translator): 번역기
+        batch_size (int): 배치 크기
+        max_new_tokens (int): 최대 토큰
+    """
+    if "unsloth" in model.__class__.__name__.lower():
+        return generate_caption_UsingDataset_ForUnslothModel(
+            model, tokenizer, dataset, prompt, translator, batch_size, max_new_tokens
+        )
+    else:
+        return generate_caption_UsingDataset_ForGeneralModel(
+            model, tokenizer, dataset, prompt, translator, batch_size, max_new_tokens
+        )
 
 
 def main(config_path):
