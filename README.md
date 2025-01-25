@@ -26,6 +26,7 @@ python evalCaption_pipeline.py # evalCaption.yaml 적절히 모델, prompt 수�
 cd Evalcaption
 streamlit run app.py --server.address 0.0.0.0 --server.port 1111 # 서버포트는 해당 서버에 맞는걸로
 ```
+또는, http://10.28.224.27:30846/ 에서 접속 가능
 
 ## 22개 Retireval 테스트 동영상에 대한 Frame Caption 생성방법
 ```bash
