@@ -110,3 +110,15 @@ ENV/
 .vscode/
 .idea/
 __MACOSX/
+
+# extra files
+unsloth_compiled_cache/
+.ruff_cache/
+frames/
+video/
+datasets/
+full_scenes/
+audio/
+*.mp4
+*.jpg
+*.json
