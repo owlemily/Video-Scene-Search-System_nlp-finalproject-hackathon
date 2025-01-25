@@ -9,12 +9,12 @@ data:
   frame_output_filename: "frame_output_test_dataset_79_v1.json"  # 프레임 캡션 결과 파일 이름
 
 model:
-  model_name: "unsloth/Qwen2-VL-7B-Instruct-bnb-4bit" # "OpenGVLab/InternVL2_5-4B", "unsloth/Qwen2-VL-7B-Instruct-bnb-4bit"
+  model_name: "OpenGVLab/InternVL2_5-4B" # "OpenGVLab/InternVL2_5-4B", "unsloth/Qwen2-VL-7B-Instruct-bnb-4bit"
 
 generation:
   prompt: "<image>\nDescribe this image in detail."  # 캡셔닝 모델 프롬프트
   max_new_tokens: 128  # 생성할 최대 토큰 수
-  batch_size: 6  # 배치 크기
+  batch_size: 1  # 배치 크기
   use_datasets: True  # 데이터셋 사용 여부
 
 extract_frames:

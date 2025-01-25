@@ -13,7 +13,7 @@ from code.utils import create_and_save_dataset, extract_frames_from_folder, load
 
 if __name__ == "__main__":
     # config 파일 로드
-    config = load_config("../config/fcs_config.yaml")
+    config = load_config("./config/fcs_config.yaml")
 
     video_folder = config["extract_frames"]["video_folder"]
     frame_rate = config["extract_frames"]["frame_rate"]

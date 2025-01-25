@@ -246,7 +246,7 @@ def generate_caption_UsingDataset_ForGeneralModel(
     for start_idx in tqdm(
         range(0, len(dataset), batch_size), desc="Generating captions in batches"
     ):
-        batch = dataset[start_idx : start_idx + batch_size]
+        batch = dataset.select(range(start_idx, min(start_idx + batch_size, len(dataset))))
         images = [
             dynamic_preprocess(sample["image"], image_size=448).to(device)
             for sample in batch
@@ -262,7 +262,7 @@ def generate_caption_UsingDataset_ForGeneralModel(
         for pixel_value in pixel_values:
             caption = model.chat(
                 tokenizer,
-                pixel_value.unsqueeze(0),
+                pixel_value,
                 prompt,
                 generation_config=generation_config,
             )
