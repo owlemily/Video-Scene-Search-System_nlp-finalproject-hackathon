@@ -1,0 +1,22 @@
+general:
+  device: "cuda"  # 사용할 디바이스: "cuda" (GPU) 또는 "cpu"
+
+data:
+  frames_folder: "./test_dataset_79"  # 프레임 이미지 저장 경로
+  output_folder: "./output"  # 분석 결과 및 출력 파일 저장 경로
+  datasets_folder: "./datasets"  # 데이터셋 저장 경로
+  datasets_name: "my_test_dataset"  # 데이터셋 이름
+  frame_output_filename: "frame_output_v25.json"  # 프레임 캡션 결과 파일 이름
+
+model:
+  model_name: "unsloth/Qwen2-VL-7B-Instruct-bnb-4bit" # "OpenGVLab/InternVL2_5-4B", "unsloth/Qwen2-VL-7B-Instruct-bnb-4bit"
+
+generation:
+  prompt: "<image>\nProvide a detailed description of the actions taking place in this image."  # 캡셔닝 모델 프롬프트
+  max_new_tokens: 128  # 생성할 최대 토큰 수
+  batch_size: 6  # 배치 크기
+  use_datasets: True  # 데이터셋 사용 여부
+
+extract_frames:
+  video_folder: "./video"  # 원본 비디오 파일 저장 경로 (code 기준 상위 디렉토리)
+  frame_rate: 4  # 초당 추출할 프레임 수 (FPS)

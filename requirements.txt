@@ -10,3 +10,4 @@ opencv-python-headless
 Pillow
 googletrans==3.1.0a0
 tqdm
+streamlit
