@@ -115,6 +115,7 @@ __MACOSX/
 unsloth_compiled_cache/
 .ruff_cache/
 frames/
+test_dataset_79/
 video/
 datasets/
 full_scenes/

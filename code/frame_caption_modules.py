@@ -24,8 +24,9 @@ from PIL import Image
 from torchvision import transforms as T
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
-from unsloth_vision_utils import Custom_UnslothVisionDataCollator
-from utils import get_video_id_and_timestamp
+
+from .unsloth_vision_utils import Custom_UnslothVisionDataCollator
+from .utils import get_video_id_and_timestamp
 
 # GPU 설정
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -47,7 +48,7 @@ def load_model(model_name, device):
     print("*" * 50)
 
     # 일반 모델 로드
-    if "unsloth" not in model_name:
+    if "unsloth" not in model_name.lower():
         try:
             tokenizer = AutoTokenizer.from_pretrained(
                 model_name, trust_remote_code=True
@@ -193,7 +194,7 @@ def generate_caption_ForUnslothModel(
 
 
 def generate_caption(
-    model, tokenizer, image, prompt, translator, device, max_new_tokens
+    model, tokenizer, image, prompt, translator, device, max_new_tokens, model_name
 ):
     """
     입력 받은 사진에 대한 캡션 생성 - 일반 모델과 UnSloth 모델 통일
@@ -206,11 +207,12 @@ def generate_caption(
         translator (googletrans.Translator): 번역기
         device (str): 디바이스
         max_new_tokens (int): 최대 토큰 길이
+        model_name (str): 모델 이름
 
     Returns:
         str, str: 영어 캡션, 한국어 캡션
     """
-    if "unsloth" in model.__class__.__name__.lower():
+    if "unsloth" in model_name.lower():
         return generate_caption_ForUnslothModel(
             model, tokenizer, image, prompt, translator, device, max_new_tokens
         )
@@ -357,7 +359,15 @@ def generate_caption_UsingDataset_ForUnslothModel(
 
 
 def generate_caption_UsingDataset(
-    model, tokenizer, dataset, prompt, translator, batch_size, max_new_tokens
+    model,
+    tokenizer,
+    dataset,
+    prompt,
+    translator,
+    batch_size,
+    max_new_tokens,
+    device,
+    model_name,
 ):
     """
     Huggingface Dataset을 사용해 전체 데이터셋에 대한 캡션 생성 - 일반 모델과 UnSloth 모델 통일
@@ -370,17 +380,26 @@ def generate_caption_UsingDataset(
         translator (googletrans.Translator): 번역기
         batch_size (int): 배치 크기
         max_new_tokens (int): 최대 토큰
+        device (str): 디바이스
+        model_name (str): 모델 이름
 
     Returns:
         List[dict]: 캡션 결과 리스트
     """
-    if "unsloth" in model.__class__.__name__.lower():
+    if "unsloth" in model_name.lower():
         return generate_caption_UsingDataset_ForUnslothModel(
             model, tokenizer, dataset, prompt, translator, batch_size, max_new_tokens
         )
     else:
         return generate_caption_UsingDataset_ForGeneralModel(
-            model, tokenizer, dataset, prompt, translator, batch_size, max_new_tokens
+            model,
+            tokenizer,
+            dataset,
+            prompt,
+            translator,
+            batch_size,
+            max_new_tokens,
+            device,
         )
 
 
@@ -430,6 +449,8 @@ def frame_caption(
             translator,
             batch_size,
             max_new_tokens,
+            device,
+            model_name,
         )
     else:
         frame_files = sorted(
@@ -449,6 +470,7 @@ def frame_caption(
                 translator,
                 device,
                 max_new_tokens,
+                model_name,
             )
 
             video_id, timestamp = get_video_id_and_timestamp(frame_file)

@@ -13,6 +13,10 @@ if "checks" not in st.session_state:
     st.session_state.checks = {}
 if "file_name" not in st.session_state:
     st.session_state.file_name = "evaluation_results.json"
+if "model_name" not in st.session_state:
+    st.session_state.model_name = "unsloth/Qwen2-VL-7B-Instruct-bnb-4bit"
+if "prompt" not in st.session_state:
+    st.session_state.prompt = "Describe this image in detail."
 
 
 def load_json(file):
@@ -20,7 +24,12 @@ def load_json(file):
 
 
 def save_results(checks, total_scores, file_name):
-    output_data = {"checks": checks, "total_scores": total_scores}
+    output_data = {
+        "checks": checks,
+        "total_scores": total_scores,
+        "model_name": st.session_state.model_name,
+        "prompt": st.session_state.prompt,
+    }
     output_folder = "./output"
     file_path = os.path.join(output_folder, file_name)
     if not os.path.exists(output_folder):
@@ -78,8 +87,9 @@ if "uploaded_json_file" in st.session_state:
 
     # Show image
     with img_col:
-        if os.path.exists(current_item["frame_image_path"]):
-            image = Image.open(current_item["frame_image_path"])
+        img_path = os.path.join("../", current_item["frame_image_path"])
+        if os.path.exists(img_path):
+            image = Image.open(img_path)
             width, height = image.size
             new_size = (int(width * 0.9), int(height * 0.9))
             image = image.resize(new_size)
@@ -149,6 +159,12 @@ if "uploaded_json_file" in st.session_state:
         st.markdown("### Save Results")
         st.session_state.file_name = st.text_input(
             "Enter file name to save results", value=st.session_state.file_name
+        )
+        st.session_state.model_name = st.text_input(
+            "모델명을 적어주세요", value=st.session_state.model_name
+        )
+        st.session_state.prompt = st.text_area(
+            "사용한 Prompt를 적어주세요", value=st.session_state.prompt
         )
 
         # Save button
