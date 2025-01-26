@@ -117,18 +117,18 @@ def transcribe_and_save_scene_information_into_json(
 
     timestamp_dict = read_timestamps_from_txt(timestamp_txt)
 
-    results = []
+    results = {}
 
     for video_id, timestamps in tqdm(timestamp_dict.items()):
+        results[video_id] = []
         for i, (start, end) in enumerate(timestamps):
             mono_audio_path = os.path.join(
                 mono_audio_folder, f"{video_id}_{start:.3f}_{end:.3f}_{i + 1:03d}.wav"
             )
             audio_text = transcribe_audio(mono_audio_path, whisper_model)
             audio_text = reduce_repeated_characters(audio_text)
-            results.append(
+            results[video_id].append(
                 {
-                    "video_id": video_id,
                     "clip_id": i + 1,
                     "start": round(start, 3),
                     "end": round(end, 3),
