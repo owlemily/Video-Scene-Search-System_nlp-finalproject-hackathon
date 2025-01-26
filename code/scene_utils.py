@@ -1,10 +1,7 @@
-import json
 import os
-import re
 
 import cv2
-import whisper
-from modules.audio_processing import transcribe_audio
+from moviepy.video.io.VideoFileClip import VideoFileClip
 from scenedetect import SceneManager, open_video
 from scenedetect.detectors import ContentDetector
 
@@ -118,11 +115,48 @@ def read_timestamps_from_txt(timestamp_txt_path):
     return timestamps_dict
 
 
+def save_video_scenes_by_timestamps(video_path, timestamps, output_scene_folder):
+    """
+    리스트 형태의 타임스탬프를 읽어와서 1개의 비디오에서 Scene(.mp4)를 추출하여 저장하는 함수
+
+    Args:
+        video_path (str): 비디오 파일 경로. (ex. "../video/5qlG1ODkRWw.mp4")
+        timestamps (list): Scene 타임스탬프 리스트. (ex. [(0.0, 10.0), (15.0, 20.0), ...])
+        output_scene_folder (str): Scene을 저장할 폴더 경로. (ex. "../scenes")
+
+    Returns:
+        None
+    """
+    os.makedirs(output_scene_folder, exist_ok=True)
+
+    video_id = os.path.splitext(os.path.basename(video_path))[0]
+
+    video = VideoFileClip(video_path)
+
+    for i, (start, end) in enumerate(timestamps):
+        clip = video.subclip(start, end)
+        output_scene_path = os.path.join(
+            output_scene_folder, f"{video_id}_{start:.3f}_{end:.3f}_{i + 1:03d}.mp4"
+        )
+        clip.write_videofile(output_scene_path, codec="libx264", audio_codec="aac")
+        print(f"Scene {i + 1} saved: {output_scene_path}")
+    video.close()
+
+
 def save_all_video_scenes_by_timestamps(
     video_folder, output_scene_folder, timestamp_txt_path
 ):
-    os.makedirs(output_scene_folder, exist_ok=True)
+    """
+    타임스탬프 txt를 읽어와서 비디오 폴더 내의 모든 비디오에 대해 Scene(.mp4)를 추출하여 저장하는 함수
 
+    Args:
+        video_folder (str): 비디오 파일들이 있는 폴더 경로. (ex. "../video")
+        output_scene_folder (str): Scene을 저장할 폴더 경로. (ex. "../scenes")
+        timestamp_txt_path (str): Scene 타임스탬프가 저장된 txt 파일 경로.
+
+    Returns:
+        None
+    """
     timestamp_dict = read_timestamps_from_txt(timestamp_txt_path)
 
     for video_id, timestamps in timestamp_dict.items():
@@ -131,73 +165,16 @@ def save_all_video_scenes_by_timestamps(
             print(f"Video file {video_path} not found. Skipping...")
             continue
 
-        for start, end in timestamps:
-            output_scene_path = os.path.join(
-                output_scene_folder, f"{video_id}_{start:.3f}_{end:.3f}.mp4"
-            )
-
-            try:
-                cap = cv2.VideoCapture(video_path)
-                fps = cap.get(cv2.CAP_PROP_FPS)
-                width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                out = cv2.VideoWriter(output_scene_path, fourcc, fps, (width, height))
-
-                start_frame = int(start * fps)
-                end_frame = int(end * fps)
-
-                cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-
-                for _ in range(start_frame, end_frame):
-                    ret, frame = cap.read()
-                    if not ret:
-                        break
-                    out.write(frame)
-
-                cap.release()
-                out.release()
-                print(f"Saved clip: {output_scene_path}")
-
-            except Exception as e:
-                print(f"Error processing clip {output_scene_path}: {e}")
+        save_video_scenes_by_timestamps(video_path, timestamps, output_scene_folder)
 
 
-def reduce_repeated_characters(text, max_repeats=5):
-    # 정규식을 사용하여 반복되는 문자를 최대 max_repeats로 줄임
-    return re.sub(r"(.)\1{" + str(max_repeats) + r",}", r"\1" * max_repeats, text)
+if __name__ == "__main__":
+    video_folder = "../video"
+    output_txt_path = "../timestamps.txt"
+    output_scene_folder = "../scenes"
 
-
-def process_video(video_path, output_json_path, timestamp_txt):
-    # Load Whisper model
-    whisper_model = whisper.load_model("large-v3")
-
-    # Extract scene timestamps
-
-    timestamps = read_timestamps_from_txt(timestamp_txt)
-
-    video_id = os.path.splitext(os.path.basename(video_path))[0]
-
-    # Prepare results
-    results = []
-    clip_id = 1  # Initialize clip ID
-
-    for start, end in timestamps[video_id]:
-        print(f"Processing scene from {start:.2f}s to {end:.2f}s...")
-        text = transcribe_audio(video_path, start, end, whisper_model)
-        text = reduce_repeated_characters(text)
-        results.append(
-            {
-                "clip": clip_id,
-                "start": round(start, 3),
-                "end": round(end, 3),
-                "text": text,
-            }
-        )
-        clip_id += 1  # Increment clip ID
-
-    # Save results to JSON file
-    with open(output_json_path, "w", encoding="utf-8") as json_file:
-        json.dump(results, json_file, ensure_ascii=False, indent=2)
-
-    print(f"Results saved to {output_json_path}")
+    # 타임스탬프 추출 후 Scene 폴더에 Scene(.mp4) 저장
+    save_timestamps_to_txt(video_folder, output_txt_path)
+    save_all_video_scenes_by_timestamps(
+        video_folder, output_scene_folder, output_txt_path
+    )
