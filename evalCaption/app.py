@@ -12,11 +12,15 @@ if "current_index" not in st.session_state:
 if "checks" not in st.session_state:
     st.session_state.checks = {}
 if "file_name" not in st.session_state:
-    st.session_state.file_name = "evaluation_results.json"
+    st.session_state.file_name = "evaluation_results"
 if "model_name" not in st.session_state:
     st.session_state.model_name = "unsloth/Qwen2-VL-7B-Instruct-bnb-4bit"
 if "prompt" not in st.session_state:
     st.session_state.prompt = "Describe this image in detail."
+if "evaluator_name" not in st.session_state:
+    st.session_state.evaluator_name = ""
+if "version_number" not in st.session_state:
+    st.session_state.version_number = "1"
 
 
 def load_json(file):
@@ -29,13 +33,19 @@ def save_results(checks, total_scores, file_name):
         "total_scores": total_scores,
         "model_name": st.session_state.model_name,
         "prompt": st.session_state.prompt,
+        "evaluator_name": st.session_state.evaluator_name,
+        "version_number": st.session_state.version_number,
     }
     output_folder = "./output"
     file_path = os.path.join(output_folder, file_name)
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
+    if os.path.exists(file_path):
+        st.error(f"File already exists: {file_path}")
+        return False
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(output_data, f, indent=4, ensure_ascii=False)
+    return True
 
 
 # File upload
@@ -157,14 +167,24 @@ if "uploaded_json_file" in st.session_state:
     # Show Save Results section only if progress is 100%
     if progress == 100:
         st.markdown("### Save Results")
+        st.text(
+            "결과파일은 파일명_v버전번호_평가자이름.json 형식으로 자동으로 저장됩니다."
+        )
         st.session_state.file_name = st.text_input(
-            "Enter file name to save results", value=st.session_state.file_name
+            "평가결과를 저장할 파일명을 적어주세요 (.json은 빼고 적어주세요)",
+            value=st.session_state.file_name,
         )
         st.session_state.model_name = st.text_input(
             "모델명을 적어주세요", value=st.session_state.model_name
         )
         st.session_state.prompt = st.text_area(
             "사용한 Prompt를 적어주세요", value=st.session_state.prompt
+        )
+        st.session_state.evaluator_name = st.text_input(
+            "평가자 이름을 적어주세요", value=st.session_state.evaluator_name
+        )
+        st.session_state.version_number = st.text_input(
+            "버전 번호를 적어주세요", value=st.session_state.version_number
         )
 
         # Save button
@@ -173,7 +193,11 @@ if "uploaded_json_file" in st.session_state:
                 key: sum(item[key] for item in st.session_state.checks.values())
                 for key in keys
             }
-            save_results(
-                st.session_state.checks, total_scores, st.session_state.file_name
+            full_file_name = f"{st.session_state.file_name}_v{st.session_state.version_number}_{st.session_state.evaluator_name}.json"
+            success = save_results(
+                st.session_state.checks, total_scores, full_file_name
             )
-            st.success(f"Results saved to {st.session_state.file_name}!")
+            if success:
+                st.success(f"Results saved to {st.session_state.file_name}!")
+            else:
+                st.error("Failed to save results. File already exists.")
