@@ -1,11 +1,10 @@
 """
-frame_caption_pipeline.py
+evalCaption_pipeline.py
 
 코드 구조:
 1. config 파일 로드
-2. 비디오 폴더로부터 프레임 추출하여 frames 폴더에 저장
-3. frames 폴더들의 이미지들로 데이터셋 생성 후 저장 (datasets 폴더에 저장)
-4. 데이터셋으로부터 프레임 캡션 생성 후 Json 파일로 저장
+2. frames 폴더들의 이미지들로 데이터셋 생성 후 저장 (datasets 폴더에 저장)
+3. 데이터셋으로부터 프레임 캡션 생성 후 Json 파일로 저장
 """
 
 from code.frame_caption_modules import frame_caption
