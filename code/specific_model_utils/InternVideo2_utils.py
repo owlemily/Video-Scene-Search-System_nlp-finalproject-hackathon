@@ -1,3 +1,12 @@
+"""
+InternVideo2_utils.py
+
+InternVideo2 모델을 사용하는데 필요한 함수들을 적어두었습니다.
+굳이, 안 읽어보셔도 됩니다.
+
+바깥 코드에서는 load_video 함수만 사용합니다.
+"""
+
 import decord
 import numpy as np
 from decord import VideoReader, cpu

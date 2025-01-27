@@ -1,3 +1,14 @@
+"""
+scene_caption_modules.py
+
+함수 목록:
+1. initialize_model
+2. scene_caption_InternVideo2
+
+추후 구현 예정:
+3. scene_caption
+"""
+
 import json
 import os
 
@@ -5,12 +16,12 @@ import decord
 import torch
 import yaml
 from googletrans import Translator
-from InternVideo2_utils import load_video
 from scene_utils import (
     read_timestamps_from_txt,
     save_all_video_scenes_by_timestamps,
     save_timestamps_to_txt,
 )
+from specific_model_utils.InternVideo2_utils import load_video
 from transformers import AutoModel, AutoTokenizer
 
 decord.bridge.set_bridge("torch")
@@ -89,7 +100,7 @@ def scene_caption_InternVideo2(
                     "video_id": video_id,
                     "start_time": start,
                     "end_time": end,
-                    "clip_id": f"{video_id}_{i + 1}",
+                    "clip_id": f"{video_id}_{start}_{end}_{i + 1:03d}",
                     "caption": response,
                     "caption_ko": translated_description,
                 }

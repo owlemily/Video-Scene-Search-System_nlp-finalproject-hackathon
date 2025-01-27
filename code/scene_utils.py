@@ -1,3 +1,14 @@
+"""
+scene_utils.py
+
+함수 목록:
+1. get_filled_scene_timestamps
+2. save_timestamps_to_txt
+3. read_timestamps_from_txt
+4. save_video_scenes_by_timestamps
+5. save_all_video_scenes_by_timestamps
+"""
+
 import os
 
 import cv2

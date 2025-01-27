@@ -1,3 +1,14 @@
+"""
+audio_utils.py
+
+함수 목록:
+1. reduce_repeated_characters
+2. convert_to_mono
+3. save_all_mono_audio_from_scene_folder
+4. transcribe_audio
+5. transcribe_and_save_scene_information_into_json
+"""
+
 import json
 import os
 import re
