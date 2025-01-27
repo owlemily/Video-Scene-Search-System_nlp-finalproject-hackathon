@@ -3,10 +3,9 @@ scene_caption_modules.py
 
 함수 목록:
 1. initialize_model
-2. scene_caption_InternVideo2
-
-추후 구현 예정:
-3. scene_caption
+2. single_scene_caption_InternVideo2
+3. single_scene_caption
+4. scene_caption - 메인 함수
 """
 
 import json
@@ -42,7 +41,7 @@ def initialize_model(model_path="OpenGVLab/InternVideo2-Chat-8B"):
     return model, tokenizer
 
 
-def scene_caption_InternVideo2(
+def single_scene_caption_InternVideo2(
     model_path,
     scene_path,
     prompt,
@@ -120,6 +119,101 @@ def scene_caption_InternVideo2(
         "caption_ko": translated_description,
     }
     return result
+
+
+def single_scene_caption(
+    model_path,
+    scene_path,
+    prompt,
+    translator,
+    generation_config,
+    use_audio_for_prompt,
+    scene_info_json_file_path=None,
+):
+    """
+    1개의 scene에 대한 캡션을 생성하는 함수 - 모델 통일
+
+    Args:
+        model_path (str): 모델 경로
+        scene_path (str): scene 경로
+        prompt (dict): prompt 정보
+        translator (googletrans.Translator): 번역기
+        generation_config (dict): 생성 설정
+        use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
+        scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
+
+        만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 None이면, whisper 모델을 사용하여 오디오 스크립트 추출
+        만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 있으면, 해당 경로에서 오디오 스크립트 추출
+
+    Returns:
+        result (dict): 캡션 결과
+    """
+    if model_path == "OpenGVLab/InternVideo2-Chat-8B":
+        return single_scene_caption_InternVideo2(
+            model_path,
+            scene_path,
+            prompt,
+            translator,
+            generation_config,
+            use_audio_for_prompt,
+            scene_info_json_file_path,
+        )
+
+
+def scene_caption(
+    model_path,
+    scene_folder,
+    prompt,
+    translator,
+    generation_config,
+    use_audio_for_prompt,
+    scene_info_json_file_path,
+    output_scene_caption_json_path,
+):
+    """
+    scene_folder 내의 모든 scene에 대한 캡션을 생성하는 함수
+
+    Args:
+        model_path (str): 모델 경로
+        scene_folder (str): scene 폴더 경로
+        prompt (dict): prompt 정보
+        translator (googletrans.Translator): 번역기
+        generation_config (dict): 생성 설정
+        use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
+        scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
+        output_scene_caption_json_path (str): 캡션 결과를 저장할 json 파일 경로
+
+        만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 None이면, whisper 모델을 사용하여 오디오 스크립트 추출
+        만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 있으면, 해당 경로에서 오디오 스크립트 추출
+
+    Returns:
+        None
+    """
+    final_json_data = []
+
+    # scene_names를 video_id, start 순으로 정렬
+    scene_names = os.listdir(scene_folder)
+    scene_names.sort(key=lambda x: (x.split("_")[0], float(x.split("_")[1])))
+
+    for scene_name in scene_names:
+        scene_path = os.path.join(scene_folder, scene_name)
+        result = single_scene_caption(
+            model_path,
+            scene_path,
+            prompt,
+            translator,
+            generation_config,
+            use_audio_for_prompt,
+            scene_info_json_file_path,
+        )
+        final_json_data.append(result)
+
+    with open(output_scene_caption_json_path, "w", encoding="utf-8") as json_file:
+        json.dump(
+            output_scene_caption_json_path, json_file, ensure_ascii=False, indent=4
+        )
+
+    print(f"All outputs have been saved to {output_scene_caption_json_path}.")
 
 
 if __name__ == "__main__":
