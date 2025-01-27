@@ -32,7 +32,7 @@ class CLIPRetrieval:
 
         # Set file/directory paths
         self.frame_folder = self.config["frame_folder"]
-        self.output_file = self.config["output_file"]
+        self.embedding_file = self.config["output_file"]
         self.image_extensions = tuple(self.config["image_extensions"])
 
         # Internal attributes
@@ -40,7 +40,7 @@ class CLIPRetrieval:
         self.image_embeddings = None
 
         # Ensure the output directory exists
-        output_dir = os.path.dirname(self.output_file)
+        output_dir = os.path.dirname(self.embedding_file)
         if output_dir and not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
@@ -82,7 +82,7 @@ class CLIPRetrieval:
 
     def extract_and_save_image_embeddings(self) -> None:
         """
-        Extracts features for each image using CLIP and saves them to output_file.
+        Extracts features for each image using CLIP and saves them to embedding_file.
         """
         self.collect_image_filenames()
         image_embeddings = []
@@ -104,16 +104,16 @@ class CLIPRetrieval:
         self.image_embeddings = torch.cat(image_embeddings, dim=0)
         torch.save(
             {"filenames": self.image_filenames, "features": self.image_embeddings},
-            self.output_file,
+            self.embedding_file,
         )
-        print(f"Image features saved to: {self.output_file}")
+        print(f"Image features saved to: {self.embedding_file}")
 
     def load_image_embeddings(self) -> None:
         """
         Loads precomputed image features from the output file.
         """
         data = torch.load(
-            self.output_file
+            self.embedding_file
         )  # Removed weights_only=True (not a valid arg)
         self.image_filenames = data["filenames"]
         self.image_embeddings = data["features"]
