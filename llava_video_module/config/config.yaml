@@ -1,0 +1,22 @@
+video_dir: "/data/ephemeral/home/sujin/llava_video/test_video"
+output_folder: "scene_script"
+clip_output_directory: "/data/ephemeral/home/sujin/llava_video/full_clips" # clips 저장 
+model_path: "lmms-lab/LLaVA-Video-7B-Qwen2" #lmms-lab/LLaVA-Video-7B-Qwen2
+model_name: "llava_qwen"
+timestamp_file: "/data/ephemeral/home/sujin/llava_video/video_timestamps.txt"
+##################################################
+#Configure the model -> videochatflash_model_utils.py
+
+#Evaluation configuration
+max_num_frames: 96 
+fps: 1
+generation_config:
+  do_sample: false
+  temperature: 0
+  max_new_tokens: 256
+
+prompt:
+  clip_prompt_template: "Please explain the video in detail, focusing on motion and action"
+
+#최종 결과 저장 파일이름 설정
+final_output: "clip_output_v18.json"
