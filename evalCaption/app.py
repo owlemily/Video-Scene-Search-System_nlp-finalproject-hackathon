@@ -63,13 +63,7 @@ if "uploaded_json_file" not in st.session_state:
                     "frame_path": item["frame_image_path"],
                     "caption": item["caption"],
                     "caption_ko": item["caption_ko"],
-                    "object_description": 0,
-                    "object_features": 0,
-                    "object_layout": 0,
-                    "background_description": 0,
-                    "necessary_information": 0,
-                    "no_hallucination": 0,
-                    "detailed_caption": 0,
+                    "has_problem": 0,
                     "remarks": "",
                     "completed": 0,
                 }
@@ -118,24 +112,12 @@ if "uploaded_json_file" in st.session_state:
     current_checks = st.session_state.checks[current_index]
 
     questions = [
-        "장면에 있는 모든 객체를 빠짐없이 표현했는가? (사람, 사물 등)",
-        "객체의 특징을 빠짐없이 잘 설명하고 있는가? (색깔, 모양, 상태, ex 갈색머리의 여자)",
-        "이미지 내 객체 배치(방향, 공간적 정보)가 정확한가?",
-        "배경에 대한 설명이 있는가?",
-        "필요없는 정보가 과도하게 포함되어 있는걸 막았는가?",
-        "환각 현상이 발생하는 것을 막았는가?",
-        "전반적으로 캡션이 자세한가?",
+        "문제가 있는가?",
         "평가 완료",
     ]
 
     keys = [
-        "object_description",
-        "object_features",
-        "object_layout",
-        "background_description",
-        "necessary_information",
-        "no_hallucination",
-        "detailed_caption",
+        "has_problem",
         "completed",
     ]
 
