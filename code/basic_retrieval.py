@@ -41,7 +41,7 @@ class BGERetrieval:
         self.embedding_file = self.config["output_file"]
 
         # Ensure the output directory exists
-        output_dir = os.path.dirname(self.output_file)
+        output_dir = os.path.dirname(self.embedding_file)
         if output_dir and not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
@@ -197,3 +197,4 @@ if __name__ == "__main__":
             # f" Desc={res['frame_description']},"
             f" Score={res['score']:.4f}"
         )
+    print("text_results", text_results)

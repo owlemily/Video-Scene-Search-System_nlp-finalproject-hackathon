@@ -170,3 +170,4 @@ if __name__ == "__main__":
         print(
             f"Rank {res['rank']}: Image={res['image_filename']}, Score={res['score']:.4f}"
         )
+    print("image_results", image_results)
