@@ -11,3 +11,12 @@ code
 5. frame_caption_modules.py
 6. scene_caption_modules.py
 """
+
+__all__ = [
+    "utils",
+    "frame_utils",
+    "scene_utils",
+    "audio_utils",
+    "frame_caption_modules",
+    "scene_caption_modules",
+]
