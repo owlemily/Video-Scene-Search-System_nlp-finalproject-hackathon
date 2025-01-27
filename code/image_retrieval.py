@@ -89,7 +89,7 @@ class CLIPRetrieval:
 
         for image_path in self.image_filenames:
             try:
-                image = Image.open(image_path).convert("RGB")
+                image = Image.open(image_path)  # .convert("RGB")
                 image_input = self.preprocess(image).unsqueeze(0).to(self.device)
 
                 with torch.no_grad():
@@ -112,9 +112,7 @@ class CLIPRetrieval:
         """
         Loads precomputed image features from the output file.
         """
-        data = torch.load(
-            self.embedding_file
-        )  # Removed weights_only=True (not a valid arg)
+        data = torch.load(self.embedding_file, weights_only=True)
         self.image_filenames = data["filenames"]
         self.image_embeddings = data["features"]
 
