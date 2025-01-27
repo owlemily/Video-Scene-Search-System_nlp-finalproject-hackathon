@@ -155,14 +155,14 @@ def transcribe_and_save_scene_information_into_json(
 
 if __name__ == "__main__":
     # # save_all_mono_audio_from_scene_folder 함수 테스트
-    # save_all_mono_audio_from_scene_folder("../scenes", "../audio_mono")
+    # save_all_mono_audio_from_scene_folder("../scenes", "../mono_audio")
 
     # # transcribe_audio 함수 테스트
-    # mono_audio_path = "../audio_mono/5qlG1ODkRWw_1.084_3.921_001.wav"
+    # mono_audio_path = "../mono_audio/5qlG1ODkRWw_1.084_3.921_001.wav"
     # whisper_model = whisper.load_model("large-v3")
     # print(transcribe_audio(mono_audio_path, whisper_model))
 
     # transcribe_and_save_scene_information_into_json 함수 테스트
     transcribe_and_save_scene_information_into_json(
-        "../audio_mono", "../scene_info.json", "../timestamps.txt"
+        "../mono_audio", "../scene_info.json", "../timestamps.txt"
     )

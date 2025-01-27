@@ -45,7 +45,6 @@ def single_scene_caption_InternVideo2(
     model_path,
     scene_path,
     prompt,
-    translator,
     generation_config,
     use_audio_for_prompt,
     scene_info_json_file_path=None,  # 오디오 스크립트 정보 포함
@@ -57,7 +56,6 @@ def single_scene_caption_InternVideo2(
         model_path (str): 모델 경로
         scene_path (str): scene 경로
         prompt (dict): prompt 정보
-        translator (googletrans.Translator): 번역기
         generation_config (dict): 생성 설정
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
@@ -125,7 +123,6 @@ def single_scene_caption(
     model_path,
     scene_path,
     prompt,
-    translator,
     generation_config,
     use_audio_for_prompt,
     scene_info_json_file_path=None,
@@ -137,7 +134,6 @@ def single_scene_caption(
         model_path (str): 모델 경로
         scene_path (str): scene 경로
         prompt (dict): prompt 정보
-        translator (googletrans.Translator): 번역기
         generation_config (dict): 생성 설정
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
@@ -153,7 +149,6 @@ def single_scene_caption(
             model_path,
             scene_path,
             prompt,
-            translator,
             generation_config,
             use_audio_for_prompt,
             scene_info_json_file_path,
@@ -164,7 +159,6 @@ def scene_caption(
     model_path,
     scene_folder,
     prompt,
-    translator,
     generation_config,
     use_audio_for_prompt,
     scene_info_json_file_path,
@@ -177,7 +171,6 @@ def scene_caption(
         model_path (str): 모델 경로
         scene_folder (str): scene 폴더 경로
         prompt (dict): prompt 정보
-        translator (googletrans.Translator): 번역기
         generation_config (dict): 생성 설정
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
@@ -201,7 +194,6 @@ def scene_caption(
             model_path,
             scene_path,
             prompt,
-            translator,
             generation_config,
             use_audio_for_prompt,
             scene_info_json_file_path,
