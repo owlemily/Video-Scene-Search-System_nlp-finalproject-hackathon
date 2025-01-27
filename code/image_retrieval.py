@@ -115,6 +115,7 @@ class CLIPRetrieval:
         data = torch.load(self.embedding_file, weights_only=True)
         self.image_filenames = data["filenames"]
         self.image_embeddings = data["features"]
+        print(f"Embeddings loaded from {self.embedding_file}")
 
     def retrieve(self, query: str, top_k: int = 10) -> list:
         """

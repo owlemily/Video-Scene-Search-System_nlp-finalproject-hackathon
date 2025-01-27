@@ -124,7 +124,7 @@ if __name__ == "__main__":
     image_retriever = CLIPRetrieval(config_path=clip_config_path)
 
     # 사용자 쿼리(텍스트)
-    user_query = "Reindeer"  # 예시
+    user_query = "monkey hitting man"
 
     # BGE 결과 (top_k=5)
     bge_results = text_retriever.retrieve(user_query, top_k=5)
@@ -135,13 +135,13 @@ if __name__ == "__main__":
     # --- Rank Fusion ---
     # 예시: BGE 쪽에 좀 더 가중치(0.7)를 주고, CLIP 쪽에는 0.3 부여
     fused_top_k = fuse_results(
-        bge_results, clip_results, w_bge=0.3, w_clip=0.7, top_k=10
+        bge_results, clip_results, w_bge=0.3, w_clip=0.7, top_k=5
     )
 
     print("\n=== Rank Fusion Results ===")
     for i, item in enumerate(fused_top_k, start=1):
         print(
-            f"Rank {i}: filename={item['filename']}, "
+            f"Rank {i}: filename= {item['filename']}, "
             f"FinalScore={item['final_score']:.4f}, "
             f"BGE={item['bge_score']:.4f}, CLIP={item['clip_score']:.4f}"
         )
