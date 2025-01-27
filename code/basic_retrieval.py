@@ -1,4 +1,5 @@
 import json
+import os
 
 import torch
 import yaml
@@ -31,13 +32,20 @@ class BGERetrieval:
 
         # Load text data from JSON
         self.frame_json_file = self.config["frame_json_file"]
-        self.frame_descriptions = self.load_json(self.frame_json_file)
+        self.frame_info = self.load_json(self.frame_json_file)
 
         # Preprocess (collect captions)
-        self.frame_texts = [desc["caption"] for desc in self.frame_descriptions]
+        self.frame_texts = [desc["caption"] for desc in self.frame_info]
 
-        # Encode and store embeddings
-        self.frame_vectors = self.encode_texts(self.frame_texts)
+        # Set embedding file path
+        self.embedding_file = self.config["output_file"]
+
+        # Load or encode embeddings
+        if os.path.exists(self.embedding_file):
+            self.load_embeddings(self.embedding_file)
+        else:
+            self.frame_vectors = self.encode_texts(self.frame_texts)
+            self.save_embeddings(self.embedding_file)
 
     def load_config(self, config_path: str) -> dict:
         """
@@ -87,6 +95,29 @@ class BGERetrieval:
             embeddings = embeddings / embeddings.norm(dim=-1, keepdim=True)
         return embeddings
 
+    def save_embeddings(self, file_path: str) -> None:
+        """
+        Saves embeddings and descriptions to a file.
+
+        :param file_path: Path to save the embeddings.
+        """
+        torch.save(
+            {"frame_info": self.frame_info, "features": self.frame_vectors},
+            file_path,
+        )
+        print(f"Embeddings saved to {file_path}")
+
+    def load_embeddings(self, file_path: str) -> None:
+        """
+        Loads embeddings and descriptions from a file.
+
+        :param file_path: Path to load the embeddings from.
+        """
+        data = torch.load(file_path)
+        self.frame_info = data["frame_info"]
+        self.frame_vectors = data["features"]
+        print(f"Embeddings loaded from {file_path}")
+
     def compute_similarity(
         self, query_vector: torch.Tensor, features: torch.Tensor
     ) -> torch.Tensor:
@@ -122,7 +153,7 @@ class BGERetrieval:
         # Compile results
         results = []
         for rank, idx in enumerate(top_indices, 1):
-            frame_info = self.frame_descriptions[idx]
+            frame_info = self.frame_info[idx]
             results.append(
                 {
                     "rank": rank,
@@ -141,11 +172,17 @@ class BGERetrieval:
 # ================================
 if __name__ == "__main__":
     # Example for text retrieval
+
+    # Initialize the retriever with the configuration
     text_config_path = "config/basic_config.yaml"
     text_retriever = BGERetrieval(config_path=text_config_path)
-    text_query = "Reindeer looking at a fallen person in the winter forest"
-    text_results = text_retriever.retrieve(text_query, top_k=5)
 
+    text_query = "Reindeer"  # Example query
+    text_results = text_retriever.retrieve(
+        text_query, top_k=5
+    )  # Retrieve top-5 similar frames
+
+    # Print the retrieval results
     print("=== BGERetrieval Results ===")
     for res in text_results:
         print(
