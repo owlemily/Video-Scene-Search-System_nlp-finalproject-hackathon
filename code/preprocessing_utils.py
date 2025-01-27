@@ -60,26 +60,52 @@ def get_total_duration(directory, file_extension=".mp4"):
 
 
 def extract_scene_timestamps(video_path, threshold=30.0, min_scene_len=2):
-    """Extract scene timestamps from a video."""
+    """
+    Extract scene timestamps from a video, ensuring timestamps start at 0 seconds
+    and end at the total duration of the video.
+    """
     video = open_video(video_path)
     scene_manager = SceneManager()
     scene_manager.add_detector(ContentDetector(threshold=threshold))
 
+    # Detect scenes in the video
     scene_manager.detect_scenes(video)
     scene_list = scene_manager.get_scene_list()
     timestamps = []
 
+    # Extract valid scenes
     for scene in scene_list:
         start = scene[0].get_seconds()
         end = scene[1].get_seconds()
         if end - start >= min_scene_len:
             timestamps.append((start, end))
 
+    # Get total video duration
+    cap = cv2.VideoCapture(video_path)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    frame_count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    total_duration = frame_count / fps if fps > 0 else 0.0
+    cap.release()
+
+    # Ensure timestamps start at 0 seconds
+    if not timestamps or timestamps[0][0] > 0.0:
+        if timestamps:
+            timestamps.insert(0, (0.0, timestamps[0][0]))
+        else:
+            timestamps.append((0.0, total_duration))
+
+    # Ensure timestamps end at the total duration
+    if timestamps[-1][1] < total_duration:
+        timestamps.append((timestamps[-1][1], total_duration))
+
     return timestamps
 
 
 def save_timestamps_to_txt(input_dir, output_txt, threshold=30.0, min_scene_len=2):
-    """Save scene timestamps for videos in a directory to a text file."""
+    """
+    Save scene timestamps for all videos in a directory to a text file,
+    ensuring no gaps in timestamps and covering the entire video duration.
+    """
     with open(output_txt, "w") as txt_file:
         for video_name in os.listdir(input_dir):
             if not video_name.endswith(".mp4"):
@@ -89,12 +115,26 @@ def save_timestamps_to_txt(input_dir, output_txt, threshold=30.0, min_scene_len=
             video_id = os.path.splitext(video_name)[0]
 
             try:
+                # Extract timestamps
                 timestamps = extract_scene_timestamps(
                     video_path, threshold, min_scene_len
                 )
 
+                # Merge consecutive timestamps to fill gaps
+                merged_timestamps = []
+                previous_end = 0.0
+
                 for start, end in timestamps:
+                    if start > previous_end:
+                        # Add a gap as a new timestamp
+                        merged_timestamps.append((previous_end, start))
+                    merged_timestamps.append((start, end))
+                    previous_end = end
+
+                # Write all timestamps to the text file
+                for start, end in merged_timestamps:
                     txt_file.write(f"{video_id}\t{start:.3f}\t{end:.3f}\n")
+
             except Exception as e:
                 print(f"[ERROR] Error processing {video_name}: {e}")
 
