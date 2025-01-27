@@ -45,11 +45,10 @@ class CLIPRetrieval:
             os.makedirs(output_dir)
 
         # Load precomputed image features or extract them
-        if not os.path.exists(self.output_file):
-            self.extract_image_embeddings()
-
-        # Load precomputed features
-        self.load_image_embeddings()
+        if os.path.exists(self.embedding_file):
+            self.load_image_embeddings()
+        else:
+            self.extract_and_save_image_embeddings()
 
     def load_config(self, config_path: str) -> dict:
         """
@@ -81,7 +80,7 @@ class CLIPRetrieval:
             if fname.endswith(self.image_extensions)
         ]
 
-    def extract_image_embeddings(self) -> None:
+    def extract_and_save_image_embeddings(self) -> None:
         """
         Extracts features for each image using CLIP and saves them to output_file.
         """

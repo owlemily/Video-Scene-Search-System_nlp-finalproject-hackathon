@@ -40,6 +40,11 @@ class BGERetrieval:
         # Set embedding file path
         self.embedding_file = self.config["output_file"]
 
+        # Ensure the output directory exists
+        output_dir = os.path.dirname(self.output_file)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
         # Load or encode embeddings
         if os.path.exists(self.embedding_file):
             self.load_embeddings(self.embedding_file)
