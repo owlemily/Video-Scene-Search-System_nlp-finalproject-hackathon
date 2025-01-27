@@ -1,0 +1,7 @@
+model_name: "ViT-B/32"
+frame_folder: "test_dataset_79"
+output_file: "output/frame_vectors.pt"
+image_extensions:
+  - ".jpg"
+  - ".png"
+  - ".jpeg"

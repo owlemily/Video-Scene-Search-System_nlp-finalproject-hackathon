@@ -110,3 +110,6 @@ ENV/
 .vscode/
 .idea/
 __MACOSX/
+
+# data
+test_dataset_79/
