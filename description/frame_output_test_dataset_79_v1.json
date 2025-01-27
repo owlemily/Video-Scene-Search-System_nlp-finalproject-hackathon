@@ -1,0 +1,555 @@
+[
+    {
+        "video_id": "-ncFDuKdgNE",
+        "timestamp": "10.75",
+        "frame_image_path": "./test_dataset_79/-ncFDuKdgNE_10.750.jpg",
+        "caption": "The image depicts a scene from a movie. Two men are in the water, with one man wearing a white hat and a white shirt, appearing to be in distress. The other man, dressed in a dark suit and hat, is holding a green can and seems to be assisting the first man. They are near a large net or sail, suggesting they might be near a fishing boat or dock. The background shows a rocky shoreline. The image has a watermark from \"MOVIECLIPS.COM\" in the bottom left corner.",
+        "caption_ko": "공개된 이미지에는 영화의 한 장면이 담겨 있다. 두 남자가 물 속에 있는데, 한 남자는 흰색 모자와 흰색 셔츠를 입고 조난에 빠진 모습입니다. 검은 양복과 모자를 입은 다른 남자는 녹색 캔을 들고 첫 번째 남자를 돕고 있는 것 같다. 그들은 큰 그물이나 돛 근처에 있어 어선이나 부두 근처에 있을 수 있음을 시사합니다. 배경에는 바위가 많은 해안선이 표시됩니다. 이미지의 왼쪽 하단에는 \"MOVIECLIPS.COM\"의 워터마크가 있습니다."
+    },
+    {
+        "video_id": "5qlG1ODkRWw",
+        "timestamp": "115.75",
+        "frame_image_path": "./test_dataset_79/5qlG1ODkRWw_115.750.jpg",
+        "caption": "The image depicts a scene from an animated movie. It features two characters: a person with short, light-colored hair wearing a purple sweater, and a small, white, animated creature with a large orange beak and black eyes. The creature appears to be a bird or a similar animal. They are standing close to each other in a cozy, dimly lit room with a fireplace in the background, where logs are burning. The atmosphere is warm and intimate, suggesting a moment of conversation or interaction between the two characters.",
+        "caption_ko": "공개된 이미지에는 애니메이션 영화의 한 장면이 담겨 있다. 보라색 스웨터를 입은 짧고 밝은 색의 머리를 가진 사람과 커다란 주황색 부리와 검은 눈을 가진 작고 흰색의 애니메이션 생물의 두 캐릭터가 등장합니다. 그 생물은 새나 비슷한 동물인 것 같습니다. 그들은 통나무가 타고 있는 벽난로를 배경으로 한 아늑하고 희미한 조명의 방에 서로 가까이 서 있습니다. 분위기는 따뜻하고 친밀하며, 두 캐릭터 사이의 대화나 상호작용의 순간을 암시합니다."
+    },
+    {
+        "video_id": "5qlG1ODkRWw",
+        "timestamp": "16.5",
+        "frame_image_path": "./test_dataset_79/5qlG1ODkRWw_16.500.jpg",
+        "caption": "The image depicts a character from an animated film, standing in a snowy environment. The character is wearing a green and black dress with a decorative pattern on the bodice. The dress has a fitted bodice and a flowing skirt. The character has short, curly hair and is wearing a necklace. The background is a snowy landscape with a blue hue, suggesting a cold, wintry setting. The character's arms are outstretched, and they appear to be in a moment of surprise or contemplation.",
+        "caption_ko": "이미지는 눈 덮인 환경에 서있는 애니메이션 영화의 캐릭터를 묘사합니다. 캐릭터는 몸통에 장식적인 패턴을 가진 녹색과 검은 색 드레스를 입고 있습니다. 드레스에는 몸통과 흐르는 치마가 있습니다. 캐릭터는 짧고 곱슬 머리를 가지고 있으며 목걸이를 착용하고 있습니다. 배경은 파란색 색조의 눈 덮인 풍경으로 추위의 겨울 설정을 시사합니다. 캐릭터의 팔이 뻗어 있으며, 놀라움이나 묵상의 순간에있는 것처럼 보입니다."
+    },
+    {
+        "video_id": "5qlG1ODkRWw",
+        "timestamp": "18.5",
+        "frame_image_path": "./test_dataset_79/5qlG1ODkRWw_18.500.jpg",
+        "caption": "The image depicts a snowy night scene in a forest. A woman in a long, flowing dress is walking towards a cozy cabin. The cabin is illuminated from within, with warm light spilling out through the windows. Smoke rises from the chimney, adding to the cozy atmosphere. The surrounding trees are covered in snow, creating a serene and picturesque winter landscape. The overall mood is peaceful and inviting.",
+        "caption_ko": "이미지는 숲에서 눈 덮인 야간 장면을 묘사합니다. 길고 흐르는 드레스를 입은 여성이 아늑한 오두막쪽으로 걷고 있습니다. 객실은 내부에서 비추고, 창문을 통해 따뜻한 빛이 쏟아져 나옵니다. 연기는 굴뚝에서 상승하여 아늑한 분위기를 더합니다. 주변 나무는 눈으로 덮여있어 고요하고 그림 같은 겨울 풍경을 만듭니다. 전반적인 분위기는 평화 롭고 매력적입니다."
+    },
+    {
+        "video_id": "5qlG1ODkRWw",
+        "timestamp": "33.25",
+        "frame_image_path": "./test_dataset_79/5qlG1ODkRWw_33.250.jpg",
+        "caption": "The image depicts a group of people in a snowy, mountainous landscape during sunset or sunrise. The sky is a vibrant mix of purple and pink hues, creating a dramatic backdrop. The individuals are dressed in winter clothing, including jackets and hats, and are engaged in an activity involving large ice blocks. They appear to be using tools to carve or shape the ice, possibly for a performance or artistic purpose. The scene has a dynamic and energetic feel, with the figures positioned in various poses, suggesting movement and action. The overall atmosphere is one of creativity and collaboration in a cold, natural setting.",
+        "caption_ko": "이 이미지는 일몰이나 일출 동안 눈 덮인 산악 풍경에 있는 한 무리의 사람들을 묘사합니다. 하늘은 보라색과 분홍색 색조가 생동감 있게 혼합되어 극적인 배경을 만들어냅니다. 사람들은 재킷과 모자 등 겨울옷을 입고 커다란 얼음 덩어리를 이용한 활동에 참여하고 있습니다. 그들은 아마도 공연이나 예술적인 목적으로 얼음을 깎거나 모양을 만드는 도구를 사용하는 것으로 보입니다. 장면은 역동적이고 에너지 넘치는 느낌을 주며, 인물들이 다양한 포즈로 배치되어 움직임과 액션을 암시합니다. 전체적인 분위기는 차갑고 자연스러운 환경에서 창의성과 협업이 어우러지는 분위기입니다."
+    },
+    {
+        "video_id": "5qlG1ODkRWw",
+        "timestamp": "36.0",
+        "frame_image_path": "./test_dataset_79/5qlG1ODkRWw_36.000.jpg",
+        "caption": "The image depicts a snowy landscape with a moose standing on the left side. The moose is facing a person lying on the ground to the right. The person appears to be wearing dark clothing and is lying on their back with their legs in the air. Snow is visible around them, and the background consists of leafless trees, suggesting a winter setting. The overall scene has a cold and serene atmosphere.",
+        "caption_ko": "이미지는 왼쪽에 무스가 서있는 눈 덮인 풍경을 묘사합니다. 무스는 바닥에 오른쪽에 누워있는 사람을 향하고 있습니다. 그 사람은 어두운 옷을 입고있는 것처럼 보이고 다리를 공중에두고 등을 대고 누워 있습니다. 눈이 주위에 보이고 배경은 잎이없는 나무로 구성되어 겨울철을 시사합니다. 전체 장면에는 차갑고 고요한 분위기가 있습니다."
+    },
+    {
+        "video_id": "5qlG1ODkRWw",
+        "timestamp": "50.5",
+        "frame_image_path": "./test_dataset_79/5qlG1ODkRWw_50.500.jpg",
+        "caption": "The image depicts a winter scene with a snowy landscape. In the foreground, there is a snowman made of three snowballs, with a carrot nose, coal eyes, and buttons. To the left of the snowman stands a girl wearing a vibrant purple cloak, blue skirt, and a green scarf. She has a concerned or curious expression. To the right of the snowman is a boy dressed in a dark outfit with a hat, holding a reindeer by its harness. The reindeer has a white coat and is adorned with a harness. The background features snow-covered trees with icicles hanging from their branches, creating a magical,",
+        "caption_ko": "공개된 이미지에는 눈 덮인 풍경이 담긴 겨울 풍경이 담겨 있다. 전경에는 당근 코, 석탄 눈, 단추가 달린 눈덩이 3개로 만든 눈사람이 있습니다. 눈사람 왼쪽에는 선명한 보라색 망토, 파란색 치마, 녹색 스카프를 입은 소녀가 서 있습니다. 그녀는 걱정스럽거나 호기심이 많은 표정을 가지고 있습니다. 눈사람 오른쪽에는 모자를 쓰고 어두운 옷을 입은 소년이 마구로 순록을 잡고 있습니다. 순록은 흰색 코트를 입고 있으며 마구로 장식되어 있습니다. 배경에는 나뭇가지에 고드름이 매달려 있는 눈 덮인 나무가 있어 마법같은 분위기를 연출합니다."
+    },
+    {
+        "video_id": "6ZMZYrdXtP0",
+        "timestamp": "84.0",
+        "frame_image_path": "./test_dataset_79/6ZMZYrdXtP0_84.000.jpg",
+        "caption": "The image shows a person sitting in a bathtub filled with water. The person is shirtless and appears to be in a bathroom setting. In front of them is a table with various items on it, including a remote control, a bowl of colorful candies, and what looks like a puzzle or game. The bathroom has white tiles, and there is a shower curtain with a geometric pattern in the background. The overall scene seems to be from a comedic or absurd context, given the unusual combination of items on the table.",
+        "caption_ko": "공개된 사진에는 물이 담긴 욕조에 앉아 있는 사람의 모습이 담겨 있다. 그 사람은 셔츠를 입지 않았으며 화장실에 있는 것으로 보입니다. 그들 앞에는 리모콘, 알록달록한 사탕 한 그릇, 퍼즐이나 게임처럼 보이는 것 등 다양한 물건이 놓여 있는 테이블이 있습니다. 욕실은 흰색 타일로 마감되어 있으며, 배경에는 기하학적 패턴의 샤워 커튼이 있습니다. 테이블 위에 놓인 물건들의 특이한 조합으로 볼 때 전체적인 장면은 코미디적이거나 터무니없는 맥락에서 나온 것처럼 보입니다."
+    },
+    {
+        "video_id": "6ZMZYrdXtP0",
+        "timestamp": "86.0",
+        "frame_image_path": "./test_dataset_79/6ZMZYrdXtP0_86.000.jpg",
+        "caption": "The image shows two elderly women sitting on a couch in a cozy living room setting. They are wearing matching light-colored robes and appear to be engaged in a conversation. The woman on the left is holding a pillow with a photograph of a man on it. In front of them on the coffee table, there are two cups, one yellow and one green, suggesting they might be enjoying a warm beverage. The room is warmly lit, with lamps on either side of the couch, and there are framed pictures on the wall behind them. The overall atmosphere is calm and intimate.",
+        "caption_ko": "이미지는 아늑한 거실 분위기의 소파에 앉아있는 두 명의 노인 여성을 보여줍니다. 그들은 일치하는 밝은 색의 가운을 입고 대화에 참여하는 것처럼 보입니다. 왼쪽의 여자는 남자의 사진과 함께 베개를 들고 있습니다. 커피 테이블 앞에는 두 개의 컵, 노란색과 녹색 1 개가있어 따뜻한 음료를 즐길 수 있음을 시사합니다. 방은 따뜻하게 불이 붙었고 소파 양쪽에 램프가 있으며 벽 뒤에는 짜여진 그림이 있습니다. 전반적인 분위기는 차분하고 친밀합니다."
+    },
+    {
+        "video_id": "7DfNc-wxnBM",
+        "timestamp": "26.75",
+        "frame_image_path": "./test_dataset_79/7DfNc-wxnBM_26.750.jpg",
+        "caption": "The image depicts a scene from a movie set in an opulent room with rich, dark wood paneling and ornate wallpaper. The room is furnished with a large, ornate desk, a chair, and a table with a lamp and decorative items. A man in a suit is seen in a dynamic pose, seemingly in motion, while a woman in a dramatic, flowing dress appears to be in a state of distress or surprise. The lighting is warm, creating a dramatic atmosphere. The overall setting suggests a scene of tension or conflict.",
+        "caption_ko": "이미지는 풍부하고 어두운 목재 판넬과 화려한 벽지가있는 화려한 방에있는 영화의 장면을 묘사합니다. 객실에는 넓고 화려한 책상, 의자 및 램프와 장식 아이템이있는 테이블이 있습니다. 정장을 입은 남자는 역동적 인 포즈로 보이는 것처럼 보이는 것처럼 보이며, 드라마틱하고 흐르는 드레스를 입은 여성은 고통이나 놀라움의 상태에있는 것처럼 보입니다. 조명은 따뜻해 극적인 분위기를 조성합니다. 전체 설정은 긴장 또는 갈등의 장면을 암시합니다."
+    },
+    {
+        "video_id": "7DfNc-wxnBM",
+        "timestamp": "34.0",
+        "frame_image_path": "./test_dataset_79/7DfNc-wxnBM_34.000.jpg",
+        "caption": "The image depicts a scene from a movie. A person is seated at a table, holding a pen or a similar object in their hand. Another person is standing behind them, leaning in close, with their arms wrapped around the seated person's shoulders. The setting appears to be an indoor environment, possibly a restaurant or a formal room, with a blurred background that suggests a cozy or elegant atmosphere. The lighting is warm, adding to the intimate feel of the scene. The image has a watermark from \"MOVIECLIPS.COM\" in the bottom left corner.",
+        "caption_ko": "이미지는 영화의 장면을 묘사합니다. 사람은 펜이나 ​​비슷한 물건을 손에 들고 테이블에 앉아 있습니다. 다른 사람이 앉은 사람의 어깨 주위에 팔을 감싸면서 가까이 기대어 뒤에 서 있습니다. 설정은 실내 환경, 아마도 식당이나 공식적인 방으로 보이며 아늑하거나 우아한 분위기를 암시하는 배경이 흐려집니다. 조명은 따뜻해 장면의 친밀한 느낌을 더합니다. 이미지에는 왼쪽 하단 모서리에 \"movieclips.com\"의 워터 마크가 있습니다."
+    },
+    {
+        "video_id": "7DfNc-wxnBM",
+        "timestamp": "6.5",
+        "frame_image_path": "./test_dataset_79/7DfNc-wxnBM_6.500.jpg",
+        "caption": "The image is a still from a movie, showing a man and a woman in a conversation. The woman is wearing a black outfit with intricate gold embroidery on the sleeves and is adorned with long, dangling earrings. Her hair is styled in an elegant updo. The man is facing her, and they appear to be in a formal setting, possibly a room with a richly decorated background, including a painting and some decorative items on a table. The lighting is warm, creating a dramatic and intimate atmosphere. The image is watermarked with \"MOVIECLIPS.COM\" in the bottom left corner.",
+        "caption_ko": "공개된 사진은 한 남자와 한 여자가 대화를 나누고 있는 영화 속 스틸컷이다. 여자는 소매에 복잡한 금색 자수가 달린 검은색 의상을 입고 있으며, 길게 늘어진 귀걸이로 장식되어 있습니다. 그녀의 머리는 우아한 업두 스타일입니다. 남자는 그녀를 바라보고 있으며, 그들은 공식적인 자리에 있는 것으로 보입니다. 아마도 그림과 테이블 위에 있는 몇 가지 장식 품목을 포함하여 배경이 풍부하게 장식된 방일 것입니다. 조명은 따뜻하여 드라마틱하고 친밀한 분위기를 조성합니다. 이미지의 왼쪽 하단에 \"MOVIECLIPS.COM\"이라는 워터마크가 표시되어 있습니다."
+    },
+    {
+        "video_id": "7DfNc-wxnBM",
+        "timestamp": "92.0",
+        "frame_image_path": "./test_dataset_79/7DfNc-wxnBM_92.000.jpg",
+        "caption": "The image appears to be a still from a film or a theatrical production. It features a man standing in a room that resembles a study or a library. The man is dressed in period clothing, with a white shirt, a dark jacket, and light-colored pants. He has a confident posture, with one hand on his hip and the other resting on a sword that is sheathed at his side. Behind him, there is a piano and a desk with papers, suggesting a scholarly or intellectual setting. The room has a warm, vintage ambiance, with a framed picture or bust on the wall. The image is framed with a decorative border,",
+        "caption_ko": "이미지가 영화나 연극 작품의 스틸컷인 것 같습니다. 서재나 도서관 같은 방에 한 남자가 서 있는 모습이 담겨 있다. 남자는 흰색 셔츠, 어두운 색 재킷, 밝은 색 바지를 입은 시대 의상을 입고 있습니다. 그는 한 손은 엉덩이에, 다른 손은 옆구리에 꽂힌 검을 얹은 자신감 넘치는 자세를 취하고 있습니다. 그 뒤에는 피아노와 서류가 담긴 책상이 있어 학문적이거나 지적인 환경을 암시합니다. 그림 액자나 흉상이 벽에 걸려 있어 따뜻하고 빈티지한 분위기를 풍기는 객실입니다. 이미지는 장식적인 테두리로 둘러싸여 있습니다."
+    },
+    {
+        "video_id": "94AnEUa_z8U",
+        "timestamp": "112.25",
+        "frame_image_path": "./test_dataset_79/94AnEUa_z8U_112.250.jpg",
+        "caption": "The image shows a scene from a movie. A young man is seen knocking on a closed door in a hallway. The hallway is well-lit, with a series of doors on one side and a staircase on the other. The man is wearing a gray long-sleeve shirt and appears to be in a hurry or distressed. The door has a nameplate above it, but the name is not clearly visible. The overall atmosphere suggests a tense or urgent situation.",
+        "caption_ko": "이미지는 영화의 장면을 보여줍니다. 한 청년이 복도에서 닫힌 문을 두드리는 것을 보았습니다. 복도는 조명이 좋으며 한쪽에는 일련의 문이 있고 다른쪽에 계단이 있습니다. 그 남자는 회색 긴 소매 셔츠를 입고 서둘러서 고민하는 것처럼 보입니다. 문에는 위에 명판이 있지만 이름은 명확하게 보이지 않습니다. 전반적인 분위기는 긴장하거나 긴급한 상황을 시사합니다."
+    },
+    {
+        "video_id": "94AnEUa_z8U",
+        "timestamp": "118.75",
+        "frame_image_path": "./test_dataset_79/94AnEUa_z8U_118.750.jpg",
+        "caption": "The image appears to be a still from a movie or TV show. It shows a man and a woman in a hallway. The man is wearing a black sweater with horizontal stripes and is holding a red object, possibly a toy or prop. He seems to be in motion, possibly running or moving quickly. The woman is standing behind him, wearing a gray top, and appears to be looking at him with a concerned or surprised expression. In the background, there is a staircase and another person walking up the stairs. The setting looks like an indoor environment, possibly a house or apartment. The lighting is dim, adding to the dramatic atmosphere of",
+        "caption_ko": "이미지가 영화나 TV 프로그램의 스틸 이미지인 것 같습니다. 복도에 있는 남자와 여자의 모습입니다. 남자는 가로 줄무늬가 있는 검은색 스웨터를 입고 빨간색 물체, 아마도 장난감이나 소품을 들고 있습니다. 그는 움직이고 있는 것처럼 보이며 아마도 달리거나 빠르게 움직일 수도 있습니다. 그의 뒤에는 회색 상의를 입은 여성이 서 있는데, 걱정스럽거나 놀란 표정으로 그를 바라보고 있는 것 같다. 배경에는 계단이 있고 계단을 올라가는 또 다른 사람이 있습니다. 설정은 실내 환경, 아마도 집이나 아파트처럼 보입니다. 조명도 은은해서 드라마틱한 분위기를 더해줍니다."
+    },
+    {
+        "video_id": "94AnEUa_z8U",
+        "timestamp": "29.0",
+        "frame_image_path": "./test_dataset_79/94AnEUa_z8U_29.000.jpg",
+        "caption": "The image depicts a scene from a movie or TV show. It shows a dimly lit hallway with a person in the foreground, facing away from the camera, holding a gun. The person is wearing a dark coat and appears to be cautiously moving forward. The hallway is decorated with wall sconces and framed pictures on the walls. At the end of the hallway, another person is visible, also holding a gun and moving towards the camera. The atmosphere is tense, suggesting a confrontation or a chase. The lighting is low, creating a dramatic and suspenseful mood.",
+        "caption_ko": "해당 이미지는 영화나 TV 프로그램의 한 장면을 묘사한 것입니다. 총을 들고 카메라를 등지고 있는 사람이 전경에 있는 어두운 복도를 보여줍니다. 그 사람은 어두운 코트를 입고 조심스럽게 앞으로 나아가는 것처럼 보입니다. 복도는 벽 장식과 벽에 액자로 장식되어 있습니다. 복도 끝에는 또 다른 사람이 보이고, 역시 총을 들고 카메라를 향해 움직이고 있습니다. 대결이나 추격을 암시하는 듯한 긴장감 넘치는 분위기다. 조명이 낮아 드라마틱하고 긴장감 넘치는 분위기를 연출합니다."
+    },
+    {
+        "video_id": "94AnEUa_z8U",
+        "timestamp": "3.0",
+        "frame_image_path": "./test_dataset_79/94AnEUa_z8U_3.000.jpg",
+        "caption": "The image depicts a scene from a movie or TV show. Two individuals are in a hallway, appearing to be in a tense situation. The person on the left is wearing a dark jacket and seems to be holding a gun, pointing it forward. The person on the right is also holding a gun and appears to be in a defensive stance. The hallway is narrow, with a door visible in the background. The lighting is dim, creating a dramatic atmosphere. The image has a watermark in the bottom left corner that reads \"MOVIECLIPS.com.\"",
+        "caption_ko": "해당 이미지는 영화나 TV 프로그램의 한 장면을 묘사한 것입니다. 두 사람이 복도에 있어 긴장된 상황에 처해 있습니다. 왼쪽에 있는 사람은 검은 색 재킷을 입고 총을 들고 앞으로 겨누고 있는 것 같습니다. 오른쪽 사람도 총을 들고 방어 자세를 취하고 있는 것으로 보인다. 복도는 좁고 뒤쪽에 문이 보입니다. 조명이 은은해서 드라마틱한 분위기를 자아낸다. 이미지의 왼쪽 하단에 \"MOVIECLIPS.com\"이라는 워터마크가 있습니다."
+    },
+    {
+        "video_id": "94AnEUa_z8U",
+        "timestamp": "94.5",
+        "frame_image_path": "./test_dataset_79/94AnEUa_z8U_94.500.jpg",
+        "caption": "The image depicts a scene from a movie. A person is standing in a dimly lit hallway, wearing a dark, long-sleeved shirt. The hallway has a simple, domestic feel, with a white door on the right and a small table with a red object on it in the background. The lighting is low, creating a somewhat eerie atmosphere. The person's face is not visible, adding to the mysterious and suspenseful mood of the scene. The image has a watermark in the bottom left corner that reads \"MOVIECLIPS.COM.\"",
+        "caption_ko": "이미지는 영화의 장면을 묘사합니다. 사람이 어둡고 긴팔 셔츠를 입고 희미한 조명 복도에 서 있습니다. 복도에는 단순하고 가정적인 느낌이 있으며 오른쪽에 흰색 문이 있고 배경에 빨간색 물체가있는 작은 테이블이 있습니다. 조명이 낮아서 약간 섬뜩한 분위기를 조성합니다. 그 사람의 얼굴은 눈에 띄지 않아 장면의 신비 롭고 긴장된 분위기를 더합니다. 이미지에는 \"movieclips.com\"을 읽는 왼쪽 하단 모서리에 워터 마크가 있습니다."
+    },
+    {
+        "video_id": "9iZFtT4aShI",
+        "timestamp": "15.5",
+        "frame_image_path": "./test_dataset_79/9iZFtT4aShI_15.500.jpg",
+        "caption": "The image depicts a cozy nursery room with a woman standing near a crib. The room is softly lit, creating a warm and inviting atmosphere. \n\nIn the foreground, there is a white crib with a colorful polka dot pattern on the side. Above the crib, a mobile hangs from the ceiling, featuring various hanging toys, including a blue whale, a red star, and other shapes.\n\nThe woman is standing with her hands on her hips, wearing a light-colored jacket over a dark top. She appears to be looking at something or someone off-camera.\n\nIn the background, there is a white dresser with a lamp on top, casting a",
+        "caption_ko": "이미지는 침대 근처에 서있는 여자가있는 아늑한 보육 실을 묘사합니다. 방은 부드럽게 켜져 따뜻하고 매력적인 분위기를 조성합니다. \n\n전경에는 측면에 다채로운 폴카 도트 패턴이있는 흰색 침대가 있습니다. 침대 위의 모바일은 천장에 매달려 푸른 고래, 붉은 별 및 기타 모양을 포함한 다양한 매달린 장난감이 있습니다.\n\n여자는 엉덩이에 손을 대고 서서 어두운 꼭대기 위에 밝은 색의 재킷을 입고 있습니다. 그녀는 카메라 밖에서 무언가를보고있는 것 같습니다.\n\n백그라운드에는 램프가있는 흰색 드레서가 있습니다."
+    },
+    {
+        "video_id": "9iZFtT4aShI",
+        "timestamp": "34.5",
+        "frame_image_path": "./test_dataset_79/9iZFtT4aShI_34.500.jpg",
+        "caption": "The image depicts a modern architectural setting, likely a house or a studio. The entrance features a minimalist design with a concrete wall and a wooden door. The door is flanked by two vertical wooden panels. There is a small tree to the left of the door, and a bottle is placed on the steps leading up to the entrance. The right side of the image shows a glass wall, through which an interior space is visible, including a table and some furniture. The overall atmosphere is calm and serene, with a focus on clean lines and natural materials.",
+        "caption_ko": "이미지는 현대 건축 환경, 아마도 집이나 스튜디오를 묘사합니다. 입구에는 콘크리트 벽과 나무 문이있는 미니멀리스트 디자인이 있습니다. 문에는 두 개의 수직 목재 패널이 측면에 있습니다. 문 왼쪽에는 작은 나무가 있으며 입구까지 이어지는 계단에 병이 놓여 있습니다. 이미지의 오른쪽은 유리 벽을 보여줍니다.이 벽은 테이블과 일부 가구를 포함하여 내부 공간이 보이는 것을 보여줍니다. 전체 분위기는 깨끗하고 고요하며 깨끗한 선과 천연 재료에 중점을 둡니다."
+    },
+    {
+        "video_id": "9iZFtT4aShI",
+        "timestamp": "39.0",
+        "frame_image_path": "./test_dataset_79/9iZFtT4aShI_39.000.jpg",
+        "caption": "The image depicts a modern architectural setting with a minimalist design. A person is crouching near the entrance of a building, which features large glass doors and a concrete exterior. The person is wearing dark clothing and appears to be interacting with a small dog that is peeking out from behind the door. The scene is set in a serene environment, with trees and greenery visible in the background. The overall atmosphere is calm and quiet, emphasizing the simplicity and elegance of the architecture.",
+        "caption_ko": "이미지는 미니멀리스트 디자인으로 현대적인 건축 환경을 묘사합니다. 커다란 유리문과 콘크리트 외관이 돋보이는 건물 입구 근처에 한 사람이 웅크리고 있다. 해당 인물은 어두운 옷을 입고 있으며, 문 뒤에서 밖을 내다보고 있는 작은 개와 대화를 나누고 있는 것으로 보입니다. 배경에는 나무와 녹지가 보이는 고요한 환경이 배경입니다. 전체적인 분위기는 차분하고 조용하며 건축물의 단순함과 우아함을 강조합니다."
+    },
+    {
+        "video_id": "9iZFtT4aShI",
+        "timestamp": "49.25",
+        "frame_image_path": "./test_dataset_79/9iZFtT4aShI_49.250.jpg",
+        "caption": "The image depicts a dimly lit scene of three people sitting around a table, engaged in a conversation. The setting appears to be indoors, possibly in a restaurant or a cozy dining area. The table is covered with a simple tablecloth, and there are glasses and a bowl on it, suggesting they might be having a meal or a drink. The lighting is low, creating a warm and intimate atmosphere. The people are dressed casually, and the overall mood seems relaxed and conversational. The background is dark, with curtains and a lamp visible, adding to the cozy ambiance.",
+        "caption_ko": "이미지는 대화에 참여한 세 사람이 테이블 주위에 앉아있는 희미하게 조명 된 장면을 묘사합니다. 이 환경은 실내, 아마도 식당이나 아늑한 식사 공간에있는 것으로 보입니다. 테이블은 간단한 식탁보로 덮여 있으며 안경과 그릇이있어 식사 나 음료를 마실 수 있습니다. 조명은 낮아서 따뜻하고 친밀한 분위기를 조성합니다. 사람들은 우연히 옷을 입고 있으며 전반적인 분위기는 편안하고 대화적인 것처럼 보입니다. 배경은 어둡고 커튼과 램프가 보이며 아늑한 분위기에 추가됩니다."
+    },
+    {
+        "video_id": "9iZFtT4aShI",
+        "timestamp": "89.0",
+        "frame_image_path": "./test_dataset_79/9iZFtT4aShI_89.000.jpg",
+        "caption": "The image depicts a serene pond scene with several colorful koi fish swimming near the surface. The water is calm, creating clear reflections of the surrounding rocks and foliage. The pond is bordered by variously sized rocks, and there's a white object, possibly a decorative item, resting on one of the rocks. The overall atmosphere is tranquil, with the natural elements blending harmoniously.",
+        "caption_ko": "이미지는 표면 근처에서 여러 마리의 다채로운 잉어 물고기가 헤엄치는 고요한 연못 장면을 묘사합니다. 물은 잔잔하여 주변 바위와 나뭇잎이 선명하게 반사됩니다. 연못은 다양한 크기의 바위로 둘러싸여 있으며, 바위 중 하나에는 장식용으로 추정되는 흰색 물체가 놓여 있습니다. 전반적인 분위기는 고요하며 자연 요소가 조화롭게 조화를 이루고 있습니다."
+    },
+    {
+        "video_id": "AHHH770W4Wk",
+        "timestamp": "100.0",
+        "frame_image_path": "./test_dataset_79/AHHH770W4Wk_100.000.jpg",
+        "caption": "The image depicts a couple on a small white boat on a body of water, possibly a lake or river. The man is dressed in a black suit, and the woman is wearing a white dress with a strapless design. They are embracing and kissing, suggesting a romantic moment. The boat has a colorful design on its side, and there are pink decorations, possibly for a celebration or special occasion. The water is slightly choppy, and the background shows a hazy, overcast sky. The overall atmosphere is intimate and serene.",
+        "caption_ko": "이 이미지는 호수나 강과 같은 수역 위의 작은 흰색 보트를 타고 있는 커플을 묘사합니다. 남자는 검은색 정장을 입고, 여자는 끈이 없는 디자인의 흰색 드레스를 입고 있다. 포옹과 키스를 하고 있어 로맨틱한 순간을 암시하고 있다. 배의 측면에는 화려한 디자인이 있고, 축하나 특별한 날을 위한 분홍색 장식이 있습니다. 물은 약간 고르지 못하고 배경은 흐릿하고 흐린 하늘을 보여줍니다. 전체적인 분위기는 친밀하고 고요합니다."
+    },
+    {
+        "video_id": "AHHH770W4Wk",
+        "timestamp": "123.0",
+        "frame_image_path": "./test_dataset_79/AHHH770W4Wk_123.000.jpg",
+        "caption": "The image shows two women sitting on a bed in a cozy, colorful room. The woman on the right is wearing an orange blouse with white lace details and patterned pants. She is sitting cross-legged and appears to be engaged in a conversation with the other woman, who is facing her. The room has a warm, inviting atmosphere, with a pink bedspread featuring a cartoon character. The walls are decorated with various items, including a map and framed pictures. There is a sense of comfort and intimacy in the setting.",
+        "caption_ko": "이미지는 아늑하고 다채로운 방에서 침대에 앉아있는 두 명의 여성을 보여줍니다. 오른쪽에있는 여자는 흰색 레이스 디테일과 패턴 바지가 달린 오렌지 블라우스를 착용하고 있습니다. 그녀는 다리를 가로 지르고 있으며 그녀를 향하고있는 다른 여자와 대화를 나누는 것처럼 보입니다. 객실에는 따뜻하고 매력적인 분위기가 있으며 만화 캐릭터가 특징 인 분홍색 침대 스프레드가 있습니다. 벽은지도와 액자 사진을 포함한 다양한 아이템으로 장식되어 있습니다. 환경에는 안락함과 친밀감이 있습니다."
+    },
+    {
+        "video_id": "AHHH770W4Wk",
+        "timestamp": "54.5",
+        "frame_image_path": "./test_dataset_79/AHHH770W4Wk_54.500.jpg",
+        "caption": "The image shows three men standing outdoors, dressed in formal black suits with bow ties. Each man has a boutonniere pinned to their lapels, featuring a yellow flower. They appear to be standing on a hill or elevated area, with a scenic view of a body of water and greenery in the background. The sky is overcast, suggesting a cloudy day. The men are looking in different directions, possibly engaged in conversation or observing something off-camera.",
+        "caption_ko": "이미지는 야외에서 서있는 세 남자를 보여 주며 활 넥타이가 담긴 공식적인 검은 옷을 입고 있습니다. 각 남자는 황갈색에 고정되어 노란 꽃이 특징입니다. 그들은 언덕이나 높은 지역에 서있는 것으로 보이며, 배경에서 물과 녹지의 몸을 경치 한 것으로 보입니다. 하늘은 흐려져 흐린 날을 제안합니다. 남자들은 다른 방향으로보고 대화에 참여하거나 카메라 밖에서 무언가를 관찰 할 수 있습니다."
+    },
+    {
+        "video_id": "AHHH770W4Wk",
+        "timestamp": "63.75",
+        "frame_image_path": "./test_dataset_79/AHHH770W4Wk_63.750.jpg",
+        "caption": "The image depicts a lively scene with two large, elaborately decorated cakes placed on a table. The cake on the left is vibrant and colorful, adorned with flowers and a small figurine on top. It has multiple tiers and is surrounded by a floral arrangement. The cake on the right is more subdued, featuring a red and black design with a similar tiered structure. \n\nIn the background, several people are gathered around the cakes, some of whom appear to be in motion, possibly dancing or celebrating. The setting seems to be outdoors, with a building visible in the background and some greenery around. The atmosphere is festive and energetic,",
+        "caption_ko": "공개된 이미지에는 정교하게 장식된 커다란 케이크 두 개가 테이블 위에 놓여 있는 생동감 넘치는 장면이 담겨 있습니다. 왼쪽의 케이크는 생동감 넘치고 다채로우며, 위에는 꽃과 작은 조각상으로 장식되어 있습니다. 여러 층으로 이루어져 있으며 꽃꽂이로 둘러싸여 있습니다. 오른쪽의 케이크는 비슷한 층 구조에 빨간색과 검은색 디자인이 더 차분한 것이 특징입니다. \n\n배경에는 여러 사람이 케이크 주위에 모여 있는데, 그 중 일부는 움직이고 있는 것처럼 보이며 아마도 춤을 추거나 축하하는 것 같습니다. 배경에는 건물이 보이고 주변에는 녹지가 있어 야외인 것 같습니다. 분위기는 축제적이고 활기차고,"
+    },
+    {
+        "video_id": "AHHH770W4Wk",
+        "timestamp": "85.5",
+        "frame_image_path": "./test_dataset_79/AHHH770W4Wk_85.500.jpg",
+        "caption": "The image depicts a dramatic scene with two individuals standing on the edge of a rocky cliff. The person on the left is dressed in a dark suit and appears to be in mid-air, possibly jumping or falling off the cliff. The person on the right is wearing a flowing, light-colored dress and is also in mid-air, with arms raised, suggesting they are either jumping or falling as well. The background features a clear blue sky and some sparse vegetation, including a small palm-like plant on the cliff. The overall atmosphere is intense and dynamic, with a sense of action and movement.",
+        "caption_ko": "이미지는 바위 절벽의 가장자리에 두 명의 개인이 서있는 극적인 장면을 묘사합니다. 왼쪽의 사람은 어두운 옷을 입고 공중에있는 것처럼 보이며 절벽에서 뛰어 내리거나 떨어지는 것처럼 보입니다. 오른쪽에있는 사람은 흐르는 밝은 색의 드레스를 입고 있으며 공중에서 팔을 들고 무기를 들고 점프하거나 떨어지는 것을 시사합니다. 배경에는 맑은 푸른 하늘과 절벽에 작은 야자 같은 식물을 포함하여 약간의 희소 식물이 있습니다. 전반적인 분위기는 행동과 움직임의 감각으로 강렬하고 역동적입니다."
+    },
+    {
+        "video_id": "AHHH770W4Wk",
+        "timestamp": "86.75",
+        "frame_image_path": "./test_dataset_79/AHHH770W4Wk_86.750.jpg",
+        "caption": "The image depicts a dynamic scene with two helicopters flying in close proximity against a backdrop of a clear blue sky with some clouds. The helicopters appear to be in motion, possibly engaged in a chase or maneuver. The rocky terrain below suggests a rugged, possibly mountainous or desert-like environment. The image has a cinematic quality, likely from a movie or action sequence. The watermark \"MOVIECLIP.COM\" is visible in the bottom left corner.",
+        "caption_ko": "공개된 이미지에는 구름이 낀 맑고 푸른 하늘을 배경으로 헬리콥터 두 대가 근접 비행하는 역동적인 장면이 담겨 있다. 헬리콥터는 움직이고 있는 것으로 보이며 추격이나 기동에 참여할 가능성이 있습니다. 아래의 바위 지형은 울퉁불퉁하고 산악이나 사막과 같은 환경을 암시합니다. 이미지는 영화나 액션 시퀀스에서 나온 것처럼 영화 같은 품질을 가지고 있습니다. 워터마크 \"MOVIECLIP.COM\"이 왼쪽 하단에 표시됩니다."
+    },
+    {
+        "video_id": "AHHH770W4Wk",
+        "timestamp": "90.0",
+        "frame_image_path": "./test_dataset_79/AHHH770W4Wk_90.000.jpg",
+        "caption": "The image shows a close-up of a red heart-shaped object floating on a body of water. The water appears to be rippling, with sunlight reflecting off its surface, creating a shimmering effect. The heart is positioned in the center of the frame, and its vibrant red color contrasts with the darker blue of the water. The overall scene has a serene and romantic feel.",
+        "caption_ko": "공개된 사진에는 물 위에 떠 있는 붉은 하트 모양의 물체를 클로즈업한 모습이 담겨 있다. 물이 파문을 일으키고 햇빛이 표면에 반사되어 반짝이는 효과를 만들어내는 것처럼 보입니다. 하트는 프레임 중앙에 위치하며 선명한 붉은색은 물의 어두운 파란색과 대조를 이룹니다. 전체적인 장면은 고요하고 로맨틱한 느낌을 줍니다."
+    },
+    {
+        "video_id": "C4y_tu3LYlo",
+        "timestamp": "27.25",
+        "frame_image_path": "./test_dataset_79/C4y_tu3LYlo_27.250.jpg",
+        "caption": "The image is a split-screen showing two different scenes.\n\nOn the left side, there is a person dressed in a white military-style uniform standing in a grassy field. The background is misty and wooded, giving a mysterious or eerie atmosphere.\n\nOn the right side, two people are standing in a field of tall, golden grass. One person is wearing a white dress and the other is in a black suit. The person in the white dress is holding a handkerchief to their face, and the person in the suit is speaking to them. The sky is overcast, and the setting appears calm and serene.\n\nAt the bottom of",
+        "caption_ko": "이미지는 두 개의 서로 다른 장면을 보여주는 분할 화면입니다.\n\n왼쪽에는 흰 군복을 입은 사람이 잔디밭에 서 있다. 배경은 안개가 자욱하고 숲이 우거져 신비롭거나 으스스한 분위기를 자아냅니다.\n\n오른쪽에는 키가 큰 황금빛 풀밭에 두 사람이 서 있습니다. 한 사람은 흰색 드레스를 입고 있고, 다른 한 사람은 검은색 정장을 입고 있다. 하얀 드레스를 입은 사람이 손수건을 얼굴에 대고 있고, 양복을 입은 사람이 그들에게 말을 하고 있다. 하늘은 흐리고 주변 환경은 고요하고 고요해 보입니다.\n\n하단에는"
+    },
+    {
+        "video_id": "C4y_tu3LYlo",
+        "timestamp": "4.0",
+        "frame_image_path": "./test_dataset_79/C4y_tu3LYlo_4.000.jpg",
+        "caption": "The image is split into two sections, each depicting a different scene.\n\nOn the left side, there is a person dressed in all white, running along a path surrounded by dense green foliage. The person is seen from behind, and the path appears to be in a forest or wooded area.\n\nOn the right side, two people are running across a field with tall, dry grass. The sky is overcast, and the field stretches into the distance with a few trees visible in the background. The scene has a more open, rural feel compared to the left side.",
+        "caption_ko": "이미지는 두 섹션으로 나뉘며 각각은 다른 장면을 묘사합니다.\n\n왼쪽에는 밀도가 높은 녹색 단풍으로 둘러싸인 길을 따라 달리는 모든 흰색 옷을 입은 사람이 있습니다. 그 사람은 뒤에서 보이고 길은 숲이나 나무가 우거진 지역에있는 것처럼 보입니다.\n\n오른쪽에서 두 사람이 키가 크고 마른 잔디가있는 들판을 가로 질러 달리고 있습니다. 하늘은 흐려지고, 배경에 몇 개의 나무가 보이는 곳에 들판이 거리로 뻗어 있습니다. 장면은 왼쪽에 비해 더 개방적이고 시골의 느낌을 가지고 있습니다."
+    },
+    {
+        "video_id": "C4y_tu3LYlo",
+        "timestamp": "63.5",
+        "frame_image_path": "./test_dataset_79/C4y_tu3LYlo_63.500.jpg",
+        "caption": "The image shows a view through a window with multiple panes. The window is slightly open, and raindrops are visible on the glass, indicating that it is raining outside. The outside view reveals a lush, green landscape with trees and foliage. The interior of the room is dimly lit, and a shadowy figure is visible in the foreground, reaching out towards the window. The overall atmosphere is moody and atmospheric, with the rain adding a sense of melancholy or introspection.",
+        "caption_ko": "이미지는 여러 개의 창이 있는 창을 통해 보이는 모습을 보여줍니다. 창문은 살짝 열려 있고, 유리창에 빗방울이 맺혀 있어 밖에 비가 내리고 있음을 알 수 있습니다. 바깥 풍경은 나무와 나뭇잎이 무성한 녹색 풍경을 드러냅니다. 방 내부는 어두컴컴하고, 앞쪽에 그림자 같은 인물이 창문을 향해 손을 뻗고 있는 것이 보인다. 전체적인 분위기는 침울하고 분위기 있으며, 비가 내리면 우울함이나 성찰의 느낌이 더해집니다."
+    },
+    {
+        "video_id": "C4y_tu3LYlo",
+        "timestamp": "67.0",
+        "frame_image_path": "./test_dataset_79/C4y_tu3LYlo_67.000.jpg",
+        "caption": "The image shows a woman with curly red hair, wearing a pink sleeveless top, stepping out of a building. She is holding a stack of white towels in her right hand. In the foreground, there is a large red rose partially obscuring the view. The background features a stone building with green ivy climbing up the wall. The scene appears to be outdoors, possibly in a garden or courtyard setting.",
+        "caption_ko": "이미지는 곱슬 붉은 머리카락을 가진 여성을 보여주고 분홍색 민소매 상단을 입고 건물에서 나옵니다. 그녀는 오른손에 흰 수건 더미를 들고 있습니다. 전경에는 볼을 부분적으로 가리는 큰 빨간 장미가 있습니다. 배경에는 녹색 아이비가 벽을 올라가는 석조 건물이 있습니다. 장면은 야외에서, 아마도 정원이나 안뜰 환경에있는 것처럼 보입니다."
+    },
+    {
+        "video_id": "Fz9HnTVx52g",
+        "timestamp": "1.0",
+        "frame_image_path": "./test_dataset_79/Fz9HnTVx52g_1.000.jpg",
+        "caption": "The image shows a beautifully decorated birthday cake. The cake has a light brown or tan color, possibly made of cardboard or a similar material. It is adorned with pink roses and green leaves, creating a floral border around the edges. The roses are detailed and realistic-looking, adding a touch of elegance to the cake.\n\nOn the top of the cake, there is a message written in blue icing. The message reads: \"Happy Birthday my love, Love, Jerry.\" The font is cursive and elegant, enhancing the romantic and personal feel of the cake. The overall presentation is festive and loving, making it perfect for a special birthday celebration.",
+        "caption_ko": "공개된 이미지에는 아름답게 장식된 생일 케이크가 담겨 있습니다. 케이크는 연한 갈색이나 황갈색을 띠고 있으며 판지나 이와 유사한 재료로 만들어졌을 가능성이 있습니다. 분홍색 장미와 녹색 잎으로 장식되어 가장자리에 꽃무늬 테두리를 만듭니다. 장미는 섬세하고 사실적으로 표현되어 케이크에 우아함을 더해줍니다.\n\n케이크 상단에는 파란색 아이싱으로 메시지가 적혀 있습니다. 메시지에는 \"생일 축하해 내 사랑, 사랑, 제리\"라고 적혀 있다. 글꼴은 필기체와 우아함으로 케이크의 낭만적이고 개인적인 느낌을 향상시킵니다. 전반적인 프레젠테이션은 축제적이고 사랑스럽기 때문에 특별한 생일 축하 행사에 적합합니다."
+    },
+    {
+        "video_id": "Fz9HnTVx52g",
+        "timestamp": "25.5",
+        "frame_image_path": "./test_dataset_79/Fz9HnTVx52g_25.500.jpg",
+        "caption": "The image depicts a cozy living room scene with a group of people gathered around a table. There are six individuals seated, engaged in conversation. The room has a warm, inviting atmosphere, with a lamp on a side table providing soft lighting. The walls are adorned with floral-patterned wallpaper, and there's a brick fireplace in the background. A man stands at the center, gesturing as he speaks, while the others listen attentively. The room is decorated with various items, including a globe and a framed picture on the wall. The overall mood is casual and friendly.",
+        "caption_ko": "공개된 이미지에는 테이블 주위에 한 무리의 사람들이 모여 있는 아늑한 거실 장면이 담겨 있습니다. 6명이 앉아 대화를 나누고 있다. 방은 따뜻하고 매력적인 분위기를 갖고 있으며, 옆 테이블에 램프가 있어 은은한 조명을 제공합니다. 벽은 꽃무늬 벽지로 장식되어 있고, 배경에는 벽돌 벽난로가 있습니다. 한 남자가 중앙에 서서 그가 말하는 동안 몸짓을 하고 있고, 다른 사람들은 주의 깊게 듣고 있습니다. 객실은 지구본과 벽에 걸린 그림 액자 등 다양한 아이템으로 장식되어 있습니다. 전체적인 분위기는 캐주얼하고 친근합니다."
+    },
+    {
+        "video_id": "Fz9HnTVx52g",
+        "timestamp": "33.0",
+        "frame_image_path": "./test_dataset_79/Fz9HnTVx52g_33.000.jpg",
+        "caption": "The image shows a pair of hands holding a small, silver flip phone wrapped in a pink ribbon with a bow. Attached to the phone is a small piece of paper with the handwritten message \"PLAY ME\" in black ink. The background is blurred, focusing attention on the phone and the note. The setting appears to be indoors, with a soft, warm lighting. The overall scene suggests a playful or romantic gesture.",
+        "caption_ko": "공개된 이미지에는 리본이 달린 핑크색 리본으로 감싼 작은 은색 플립폰을 들고 있는 한 쌍의 손이 담겨 있습니다. 휴대전화에는 검은 잉크로 'PLAY ME'라는 메시지를 손으로 쓴 작은 종이가 붙어 있었습니다. 배경이 흐려져 휴대폰과 메모에 주의가 집중됩니다. 부드럽고 따뜻한 조명이 있는 실내인 것 같습니다. 전체적인 장면은 장난스럽거나 낭만적인 몸짓을 암시합니다."
+    },
+    {
+        "video_id": "Pwv4avomXYo",
+        "timestamp": "102.0",
+        "frame_image_path": "./test_dataset_79/Pwv4avomXYo_102.000.jpg",
+        "caption": "The image shows a person sitting in a dimly lit environment. The individual is wearing a dark denim jacket over a striped shirt with a yellow and white pattern. They have a bald head and are wearing dark sunglasses. In the background, there are indistinct figures and clothing items, including a checkered shirt and a leather jacket. The lighting is low, creating a moody atmosphere. The image has a watermark in the bottom left corner that reads \"FANDANGO MOVIECLIPS.\"",
+        "caption_ko": "이미지에는 조명이 어두운 환경에 앉아 있는 사람의 모습이 나와 있습니다. 해당 인물은 노란색과 흰색 무늬가 있는 줄무늬 셔츠 위에 어두운 데님 재킷을 입고 있습니다. 그들은 대머리이고 어두운 선글라스를 쓰고 있습니다. 배경에는 체크무늬 셔츠와 가죽 재킷 등 불명확한 인물과 의류 아이템이 있다. 조명이 은은해서 은은한 분위기를 연출해줍니다. 이미지의 왼쪽 하단에 \"FANDANGO MOVIECLIPS\"라고 적힌 워터마크가 있습니다."
+    },
+    {
+        "video_id": "Pwv4avomXYo",
+        "timestamp": "104.75",
+        "frame_image_path": "./test_dataset_79/Pwv4avomXYo_104.750.jpg",
+        "caption": "The image shows a scene from a movie or TV show. A police officer is sitting in the driver's seat of a police car, which is parked at night. The officer is wearing a dark uniform with a badge visible on the chest. The car's interior is dimly lit, and the outside environment appears to be a street or alleyway. The officer seems to be looking out of the car window, possibly observing something outside. The lighting is low, creating a moody atmosphere. The image has a watermark from \"Fandango Movieclips\" in the bottom left corner.",
+        "caption_ko": "이미지는 영화 나 TV 쇼의 장면을 보여줍니다. 경찰관이 밤에 주차 된 경찰차의 운전석에 앉아 있습니다. 경찰관은 가슴에 배지가 보이는 어두운 유니폼을 입고 있습니다. 자동차의 내부는 희미하게 밝아지고 외부 환경은 거리 또는 골목길 인 것처럼 보입니다. 경찰관은 차 창 밖을 바라보고있는 것 같습니다. 조명이 낮아서 변덕스러운 분위기를 조성합니다. 이미지에는 왼쪽 하단에 \"Fandango Movieclips\"의 워터 마크가 있습니다."
+    },
+    {
+        "video_id": "Pwv4avomXYo",
+        "timestamp": "37.75",
+        "frame_image_path": "./test_dataset_79/Pwv4avomXYo_37.750.jpg",
+        "caption": "The image shows a person standing on a street at night. They are wearing a dark jacket with blue stripes on the sleeves, a red shirt underneath, and a dark cap. The person is holding a white bottle in their right hand. The background features a storefront with graffiti on the windows, including the word \"94\" in large letters. The scene has a dimly lit, urban atmosphere. The image is from a movie clip, as indicated by the \"Fandango Movieclips\" watermark in the bottom left corner.",
+        "caption_ko": "이미지에는 밤에 거리에 서있는 사람의 모습이 담겨 있습니다. 그들은 소매에 파란색 줄무늬가 있는 어두운색 재킷, 그 아래에는 빨간색 셔츠, 어두운색 모자를 쓰고 있습니다. 그 사람은 오른손에 흰색 병을 들고 있습니다. 배경에는 큰 글자로 \"94\"라는 단어를 포함하여 창문에 낙서가 있는 상점 전면이 있습니다. 장면은 조명이 어둡고 도시적인 분위기를 풍깁니다. 이미지는 왼쪽 하단 모서리에 있는 \"Fandango Movieclips\" 워터마크로 표시된 대로 영화 클립에서 가져온 것입니다."
+    },
+    {
+        "video_id": "Pwv4avomXYo",
+        "timestamp": "47.0",
+        "frame_image_path": "./test_dataset_79/Pwv4avomXYo_47.000.jpg",
+        "caption": "The image shows a person holding a gun pointed directly at the camera. The person is wearing a dark jacket and appears to be in a tense or confrontational situation. The background is dimly lit, suggesting an urban or industrial setting, with a building and some graffiti visible. The lighting is low, creating a dramatic and intense atmosphere. The image is from a movie clip, as indicated by the watermark \"Fandango Movieclips\" in the bottom left corner.",
+        "caption_ko": "이미지는 카메라를 직접 뾰족한 총을 들고있는 사람을 보여줍니다. 그 사람은 어두운 재킷을 입고 긴장하거나 대립적인 상황에 처한 것 같습니다. 배경은 어둡게 켜져 도시 또는 산업 환경을 시사하며 건물과 일부 낙서가 보입니다. 조명이 낮아 극적이고 강렬한 분위기를 조성합니다. 이미지는 왼쪽 하단의 Watermark \"Fandango movieclips\"로 표시된 영화 클립에서 나온 것입니다."
+    },
+    {
+        "video_id": "Pwv4avomXYo",
+        "timestamp": "66.25",
+        "frame_image_path": "./test_dataset_79/Pwv4avomXYo_66.250.jpg",
+        "caption": "The image shows a person standing in front of a wall with two identical campaign posters. The posters feature a man in a suit and tie, with the words \"RE-ELECT\" above his image and \"BULWORTH\" below. The posters have signatures scribbled over the man's face. The person in the foreground is wearing a black beanie and a jacket with a red collar. The lighting is dim, giving the scene a moody atmosphere. The image is from a movie clip, as indicated by the text \"FANDANGO MOVIECLIPS\" in the bottom left corner.",
+        "caption_ko": "이미지는 두 개의 동일한 캠페인 포스터가있는 벽 앞에 서있는 사람을 보여줍니다. 포스터에는 양복과 넥타이가있는 사람이 있으며 그의 이미지 위에 \"재선\"이라는 단어와 아래의 \"Bulworth\"라는 단어가 있습니다. 포스터에는 사람의 얼굴에 서명이 낙서되어 있습니다. 전경에있는 사람은 검은 비니와 빨간 칼라가 달린 재킷을 입고 있습니다. 조명은 어둡기 때문에 장면에 변덕스러운 분위기를줍니다. 이미지는 왼쪽 하단의 \"Fandango movieclips\"텍스트로 표시된 영화 클립에서 나온 것입니다."
+    },
+    {
+        "video_id": "Pwv4avomXYo",
+        "timestamp": "71.0",
+        "frame_image_path": "./test_dataset_79/Pwv4avomXYo_71.000.jpg",
+        "caption": "The image shows a person in a dark setting, holding a gun with both hands. The person appears to be in a tense or aggressive stance, possibly in a confrontational situation. The background is dimly lit, with some signs and posters visible, suggesting an urban environment. The lighting is low, creating a dramatic and intense atmosphere. The person is wearing a dark outfit, and there are some white marks or stains on their face and clothing. The overall mood of the image is action-packed and suspenseful.",
+        "caption_ko": "이미지는 어두운 분위기의 사람을 보여주고 양손으로 총을 들고 있습니다. 그 사람은 긴장하거나 공격적인 입장, 아마도 대립 상황에 처한 것으로 보입니다. 일부 표지판과 포스터가 보이면서 배경이 어두워지면서 도시 환경을 시사합니다. 조명이 낮아 극적이고 강렬한 분위기를 조성합니다. 그 사람은 어두운 복장을 입고 있으며 얼굴과 옷에 흰색 자국이나 얼룩이 있습니다. 이미지의 전반적인 분위기는 액션으로 가득 차고 긴장감이 있습니다."
+    },
+    {
+        "video_id": "UdZuHyttXbw",
+        "timestamp": "52.5",
+        "frame_image_path": "./test_dataset_79/UdZuHyttXbw_52.500.jpg",
+        "caption": "The image depicts a large military parade on a wide, paved road. The scene is set in a desert-like environment, with several military helicopters parked on either side of the road. The road is lined with rows of soldiers marching in formation, creating a symmetrical pattern. The soldiers are wearing uniforms and are spaced evenly, suggesting a disciplined and organized military display. In the foreground, a person is seen running across the road, adding a dynamic element to the otherwise static scene. The overall atmosphere is one of military precision and order.",
+        "caption_ko": "이미지는 넓고 포장 된 도로에서 큰 군용 퍼레이드를 묘사합니다. 장면은 사막과 같은 환경에 위치하고 있으며 도로 양쪽에 여러 군용 헬리콥터가 주차되어 있습니다. 도로에는 군인 줄이 늘어서 있으며 대칭 패턴을 만듭니다. 군인들은 유니폼을 입고 균등하게 간격을 두어 훈련되고 조직 된 군사 전시를 제안합니다. 전경에서, 사람은 도로를 가로 질러 달리는 것을 보며 정적 장면에 동적 요소를 추가합니다. 전반적인 분위기는 군사적 정밀도와 질서 중 하나입니다."
+    },
+    {
+        "video_id": "UdZuHyttXbw",
+        "timestamp": "75.5",
+        "frame_image_path": "./test_dataset_79/UdZuHyttXbw_75.500.jpg",
+        "caption": "The image shows a person in a white shirt and light-colored shorts, floating on a yellow inflatable ring in a body of water. The water appears to be shallow and clear, with a sandy bottom visible. The person is holding onto the ring with one hand and seems to be enjoying the water. The scene is likely from a movie or TV show, as indicated by the watermark \"MOVIECLIPS.COM\" in the bottom left corner.",
+        "caption_ko": "이미지는 흰 셔츠와 밝은 색의 반바지를 입은 사람을 보여 주며, 물 한 몸에 노란 풍선 고리에 떠 있습니다. 물은 얕고 맑은 것처럼 보이며 모래 바닥이 보입니다. 그 사람은 한 손으로 반지를 붙잡고 물을 즐기고있는 것 같습니다. 장면은 왼쪽 하단 코너의 Watermark \"Movieclips.com\"으로 표시된 것처럼 영화 나 TV 쇼에서 나올 가능성이 높습니다."
+    },
+    {
+        "video_id": "UdZuHyttXbw",
+        "timestamp": "94.25",
+        "frame_image_path": "./test_dataset_79/UdZuHyttXbw_94.250.jpg",
+        "caption": "The image shows a person paddling a yellow inflatable raft on a body of water. The person is wearing a white shirt and sunglasses, and they are using a yellow paddle to navigate the raft. The water appears calm and blue, suggesting a serene environment. The scene is likely from a movie or TV show, as indicated by the watermark \"MOVIECLIPS.COM\" in the bottom left corner.",
+        "caption_ko": "이미지는 물 한 몸에 노란 풍선 뗏목을 젓는 사람을 보여줍니다. 그 사람은 흰 셔츠와 선글라스를 입고 있으며 뗏목을 탐색하기 위해 노란색 패들을 사용하고 있습니다. 물은 차분하고 푸른 것처럼 보이며 고요한 환경을 시사합니다. 장면은 왼쪽 하단 코너의 Watermark \"Movieclips.com\"으로 표시된 것처럼 영화 나 TV 쇼에서 나올 가능성이 높습니다."
+    },
+    {
+        "video_id": "j8fcNsJOtQo",
+        "timestamp": "34.5",
+        "frame_image_path": "./test_dataset_79/j8fcNsJOtQo_34.500.jpg",
+        "caption": "The image is a scene from an animated movie featuring a group of characters on a dock. On the left, there's a tall, slender character with a long neck and a small head, holding a large, glowing green crystal. This character is wearing a white outfit with a hat. To the right, there are three other characters: a man in a blue uniform with a hat, a woman in a red dress, and a large, yellow chicken wearing a hat. They are standing on a wooden dock with a scenic background of mountains and a sunset sky. The atmosphere is whimsical and colorful, typical of animated films.",
+        "caption_ko": "이미지는 도크에 캐릭터 그룹이 등장하는 애니메이션 영화의 장면입니다. 왼쪽에는 긴 목과 작은 머리가있는 키가 크고 가느 다란 캐릭터가 있으며 크고 빛나는 녹색 크리스탈을 들고 있습니다. 이 캐릭터는 모자가 달린 하얀 옷을 입고 있습니다. 오른쪽에는 다른 세 가지 캐릭터가 있습니다 : 모자가 달린 파란색 유니폼을 입은 남자, 빨간 드레스를 입은 여자, 모자를 쓰고있는 큰 노란색 닭고기. 그들은 산의 경치 좋은 배경과 일몰 하늘이있는 나무 선착장에 서 있습니다. 분위기는 기발하고 화려하며 전형적인 애니메이션 영화입니다."
+    },
+    {
+        "video_id": "j8fcNsJOtQo",
+        "timestamp": "39.5",
+        "frame_image_path": "./test_dataset_79/j8fcNsJOtQo_39.500.jpg",
+        "caption": "The image is a scene from an animated film featuring a whimsical character. The character appears to be a small, furry creature with a round body and large, expressive eyes. It has a brown, fuzzy texture and is wearing a hat. The character is surrounded by green, glowing energy or electricity, which seems to be emanating from its body. The background shows a wooden deck with a railing, and there's a hint of a sunset or sunrise with purple and orange hues in the sky. The overall atmosphere is vibrant and dynamic, with a sense of movement and energy.",
+        "caption_ko": "이미지는 기발한 캐릭터를 특징으로하는 애니메이션 영화의 장면입니다. 캐릭터는 둥근 몸과 크고 표현적인 눈을 가진 작고 모피 생물로 보입니다. 갈색의 퍼지 텍스처가 있고 모자를 쓰고 있습니다. 캐릭터는 녹색의 빛나는 에너지 또는 전기로 둘러싸여 있으며, 이는 몸에서 나오는 것처럼 보입니다. 배경은 난간이 달린 나무 데크를 보여 주며 하늘에 자주색과 주황색 색조의 일몰이나 일출이 있습니다. 전반적인 분위기는 운동과 에너지 감으로 활기차고 역동적입니다."
+    },
+    {
+        "video_id": "j8fcNsJOtQo",
+        "timestamp": "5.5",
+        "frame_image_path": "./test_dataset_79/j8fcNsJOtQo_5.500.jpg",
+        "caption": "The image is a scene from an animated film. It features a character with brown hair and a white face mask, wearing a green pajama top with a colorful pattern. The character is standing in a doorway, looking towards the viewer with a surprised or concerned expression. The background is a dark purple, and the lighting is dim, creating a dramatic effect. The character's hair is slightly tousled, and there is a sense of motion or urgency in the scene.",
+        "caption_ko": "이미지는 애니메이션 영화의 장면입니다. 갈색 머리와 흰색 얼굴 마스크가있는 캐릭터가 있으며 화려한 패턴의 녹색 파자마 탑을 착용합니다. 캐릭터는 출입구에 서서 놀랍거나 걱정스러운 표현으로 시청자를 바라보고 있습니다. 배경은 어두운 자주색이며 조명이 어둡기 때문에 극적인 효과를 만듭니다. 캐릭터의 머리카락은 약간 끔찍하며 장면에는 움직임이나 긴급 성이 있습니다."
+    },
+    {
+        "video_id": "j8fcNsJOtQo",
+        "timestamp": "6.5",
+        "frame_image_path": "./test_dataset_79/j8fcNsJOtQo_6.500.jpg",
+        "caption": "The image is a scene from an animated movie. It features a character with spiky, dark hair and a large nose, holding a small, furry creature with large eyes and a striped tail. The creature appears to be a mix of a monkey and a rabbit. The character is smiling and seems to be interacting with another character who is partially visible on the right side of the image. The background shows a room with a green door and a striped wall. The overall atmosphere is warm and friendly.",
+        "caption_ko": "이미지는 애니메이션 영화의 장면입니다. 그것은 뾰족하고 검은 머리카락과 큰 코가있는 캐릭터를 특징으로하며, 큰 눈과 줄무늬 꼬리를 가진 작고 모피 생물을 들고 있습니다. 생물은 원숭이와 토끼가 혼합 된 것으로 보입니다. 캐릭터는 웃고 있으며 이미지의 오른쪽에서 부분적으로 볼 수있는 다른 캐릭터와 상호 작용하는 것 같습니다. 배경은 녹색 문과 줄무늬 벽이있는 방을 보여줍니다. 전반적인 분위기는 따뜻하고 친절합니다."
+    },
+    {
+        "video_id": "j8fcNsJOtQo",
+        "timestamp": "90.0",
+        "frame_image_path": "./test_dataset_79/j8fcNsJOtQo_90.000.jpg",
+        "caption": "The image is a scene from an animated film featuring a character that resembles a vegetable. The character has a green, leafy top with a white bulbous base, resembling a cabbage or a similar vegetable. It has large, expressive eyes and a small mouth, giving it a cute and endearing appearance. The character is standing upright on a surface, possibly a table, with a background that includes a boat or a similar structure, suggesting a nautical setting. The overall tone of the image is whimsical and charming.",
+        "caption_ko": "공개된 이미지는 야채를 닮은 캐릭터가 등장하는 애니메이션 영화의 한 장면이다. 캐릭터는 녹색 잎이 많은 윗부분과 흰색 구근 밑 부분을 가지고 있으며 양배추나 유사한 야채와 비슷합니다. 크고 표정이 풍부한 눈과 작은 입이 있어 귀엽고 사랑스러운 외모를 갖고 있습니다. 캐릭터는 보트나 유사한 구조물이 포함된 배경을 가진 표면(예: 테이블) 위에 똑바로 서 있으며 이는 항해 설정을 암시합니다. 이미지의 전체적인 톤은 기발하고 매력적입니다."
+    },
+    {
+        "video_id": "mDUSjBiHYeY",
+        "timestamp": "29.75",
+        "frame_image_path": "./test_dataset_79/mDUSjBiHYeY_29.750.jpg",
+        "caption": "The image shows a close-up of a person's hand holding a large, hairy spider. The spider appears to be a tarantula, with long, spindly legs and a brownish body. The person's hand is wearing a red knitted sweater, and the background is blurred, suggesting an indoor setting. The image is likely from a movie or TV show, as indicated by the watermark \"FANDANGO MOVIECLIPS\" in the bottom left corner.",
+        "caption_ko": "공개된 이미지에는 크고 털이 많은 거미를 들고 있는 사람의 손이 클로즈업되어 있습니다. 거미는 길고 가느다란 다리와 갈색 몸체를 가진 타란툴라처럼 보입니다. 사람의 손은 빨간색 니트 스웨터를 입고 있고, 배경이 흐릿해 실내 환경을 연상케 합니다. 왼쪽 하단에 워터마크 \"FANDANGO MOVIECLIPS\"가 표시된 것처럼 이미지는 영화나 TV 프로그램에서 나온 것 같습니다."
+    },
+    {
+        "video_id": "mDUSjBiHYeY",
+        "timestamp": "62.25",
+        "frame_image_path": "./test_dataset_79/mDUSjBiHYeY_62.250.jpg",
+        "caption": "The image shows a child hanging out of a window, which is open and slightly ajar. The child is wearing a red sweater and dark pants. The window frame is white, and the interior of the room is dimly lit, with a warm glow coming from inside. The child appears to be playing or climbing, with their arms raised and holding onto the window frame. The background outside the window is dark, suggesting it might be nighttime. The image has a watermark in the bottom left corner that reads \"FANDANGO MOVIECLIPS.\"",
+        "caption_ko": "공개된 이미지에는 살짝 열려 있는 창문 밖으로 한 아이가 매달려 있는 모습이 담겨 있다. 아이는 빨간색 스웨터와 어두운 바지를 입고 있습니다. 창틀은 흰색이고 실내는 은은한 조명으로 내부에서 따뜻한 빛이 새어 나옵니다. 아이는 팔을 들고 창틀을 붙잡고 놀거나 기어오르는 것처럼 보입니다. 창 밖의 배경은 어두워서 밤이 될 수도 있음을 암시합니다. 이미지의 왼쪽 하단에 \"FANDANGO MOVIECLIPS\"라고 적힌 워터마크가 있습니다."
+    },
+    {
+        "video_id": "mDUSjBiHYeY",
+        "timestamp": "69.75",
+        "frame_image_path": "./test_dataset_79/mDUSjBiHYeY_69.750.jpg",
+        "caption": "The image shows a person in a dark brown coat with a high collar, standing indoors. The person has curly hair and is holding a black object that resembles a cane or a walking stick. The background features a green wall with a white door frame and a patterned curtain or fabric hanging to the right. The lighting is dim, creating a somewhat dramatic or tense atmosphere. The image appears to be a still from a movie or TV show, as indicated by the watermark \"Fandango Movieclips\" in the bottom left corner.",
+        "caption_ko": "이미지는 실내에 서있는 고리가있는 짙은 갈색 코트의 사람을 보여줍니다. 그 사람은 곱슬 머리를 가지고 있으며 지팡이 나 지팡이와 비슷한 검은 물체를 들고 있습니다. 배경에는 흰색 도어 프레임이있는 녹색 벽과 패턴 커튼 또는 직물이 오른쪽에 매달려 있습니다. 조명은 어둡기 때문에 다소 극적이거나 긴장된 분위기를 만듭니다. 이미지는 왼쪽 하단의 Watermark \"Fandango Movieclips\"로 표시된 것처럼 영화 나 TV 쇼에서 온 것으로 보입니다."
+    },
+    {
+        "video_id": "n1lbpj6868o",
+        "timestamp": "114.0",
+        "frame_image_path": "./test_dataset_79/n1lbpj6868o_114.000.jpg",
+        "caption": "The image appears to be a still from a movie or TV show. It shows two individuals in motion, possibly in a comedic or action scene. The person in the foreground is wearing a brown jacket and has their hair in a disheveled state, suggesting they might have been in a struggle or accident. The person in the background is wearing a blue jacket and seems to be moving away from the first person. The setting appears to be outdoors, with a road and some trees in the background. There is a sign that reads \"DINOSAUR PARK\" and \"HISTORIC ARENA\" in the background, indicating a",
+        "caption_ko": "이미지는 여전히 영화 나 TV 쇼에서 온 것 같습니다. 그것은 아마도 코미디 나 액션 장면에서 두 개인을 움직일 수 있습니다. 전경에있는 사람은 갈색 재킷을 입고 있으며 머리카락을 흐트러진 상태로 가지고있어 어려움이나 사고에 처해 있었을 것입니다. 백그라운드에있는 사람은 파란 재킷을 입고 있고 첫 번째 사람에게서 멀어지고있는 것 같습니다. 설정은 도로와 일부 나무가 배경에있는 야외 인 것처럼 보입니다. 백그라운드에서 \"공룡 공원\"과 \"역사적인 경기장\"을 읽는 표시가 있습니다."
+    },
+    {
+        "video_id": "n1lbpj6868o",
+        "timestamp": "28.75",
+        "frame_image_path": "./test_dataset_79/n1lbpj6868o_28.750.jpg",
+        "caption": "The image shows a road scene with a green road sign that reads \"Chippewa Falls 100\" and a yellow road sign indicating a left curve ahead. There are several vehicles on the road, including a blue car, a white pickup truck, and a black car with its hood open. The environment appears to be a rural or semi-rural area with leafless trees in the background, suggesting it might be winter or early spring. The sky is overcast, and the overall atmosphere is somewhat muted.",
+        "caption_ko": "이미지에는 \"Chippewa Falls 100\"이라고 적힌 녹색 도로 표지판과 전방 좌회전을 나타내는 노란색 도로 표지판이 있는 도로 장면이 나와 있습니다. 도로에는 파란색 자동차, 흰색 픽업트럭, 후드가 열린 검은색 자동차 등 여러 대의 차량이 있습니다. 배경은 잎이 없는 나무들을 배경으로 한 시골 또는 반 시골 지역인 것으로 보이며, 이는 겨울이나 초봄일 수 있음을 암시합니다. 하늘은 흐리고 전체적인 분위기는 다소 조용합니다."
+    },
+    {
+        "video_id": "n1lbpj6868o",
+        "timestamp": "58.0",
+        "frame_image_path": "./test_dataset_79/n1lbpj6868o_58.000.jpg",
+        "caption": "The image shows a scene from a movie or TV show. It features two people inside a vintage convertible car with the top down. The car's hood is open, revealing the engine. There is a can of \"Alto\" energy drink placed on the engine. The background shows a road with trees and a sign that reads \"Pine Plains.\" The setting appears to be outdoors during the daytime. The overall tone suggests a humorous or comedic moment.",
+        "caption_ko": "공개된 사진에는 영화나 TV 프로그램의 한 장면이 담겨 있다. 상단이 아래로 향한 빈티지 컨버터블 자동차 안에 두 사람이 있는 모습이 담겨 있습니다. 차량의 후드를 열면 엔진이 드러납니다. 엔진 위에는 \"알토\" 에너지 드링크 캔이 놓여 있습니다. 배경에는 나무가 있는 도로와 \"소나무 평원\"이라고 적힌 표지판이 표시됩니다. 낮에는 야외에 있는 것 같습니다. 전체적인 톤은 유머러스하거나 코믹한 순간을 암시합니다."
+    },
+    {
+        "video_id": "n1lbpj6868o",
+        "timestamp": "88.0",
+        "frame_image_path": "./test_dataset_79/n1lbpj6868o_88.000.jpg",
+        "caption": "The image depicts a scene from a movie or TV show. In the foreground, there's a road with a blue car parked on the side. A person is walking towards the car. In the background, there's a building with a sign that reads \"PREHISTORIC FOREST.\" Next to the building, there's a large, dinosaur-like sculpture. The area is surrounded by tall trees, giving it a forest-like appearance. The setting appears to be a gift shop or attraction related to prehistoric themes.",
+        "caption_ko": "해당 이미지는 영화나 TV 프로그램의 한 장면을 묘사한 것입니다. 전경에는 도로 옆에 파란색 차가 주차되어 있습니다. 한 사람이 차를 향해 걸어가고 있습니다. 배경에는 \"선사시대 숲(PREHISTORIC FOREST)\"이라고 적힌 간판이 있는 건물이 있습니다. 건물 옆에는 공룡을 닮은 커다란 조각상이 있습니다. 이 지역은 키가 큰 나무로 둘러싸여 있어 숲과 같은 모습을 보입니다. 배경은 선사시대 주제와 관련된 선물 가게나 명소로 보입니다."
+    },
+    {
+        "video_id": "oyYuYNnSq9E",
+        "timestamp": "0.75",
+        "frame_image_path": "./test_dataset_79/oyYuYNnSq9E_0.750.jpg",
+        "caption": "The image depicts a youth football game in progress. Two teams, one in blue and yellow uniforms and the other in red and white, are lined up in a scrimmage formation. The players are wearing helmets and pads, and the game appears to be taking place on a grassy field. A referee in a black and white striped shirt is overseeing the game. Spectators can be seen in the background, watching the match. The atmosphere suggests a casual, community-level game.",
+        "caption_ko": "이미지는 진행중인 청소년 축구 경기를 묘사합니다. 하나는 파란색과 노란색 유니폼이고 다른 하나는 빨간색과 흰색으로 구성되어 있습니다. 플레이어는 헬멧과 패드를 착용하고 있으며 게임은 잔디밭에서 진행되는 것으로 보입니다. 흑백 줄무늬 셔츠를 입은 심판이 게임을 감독하고 있습니다. 관중은 배경에서 볼 수 있으며 경기를 볼 수 있습니다. 분위기는 캐주얼 한 커뮤니티 수준의 게임을 제안합니다."
+    },
+    {
+        "video_id": "oyYuYNnSq9E",
+        "timestamp": "50.25",
+        "frame_image_path": "./test_dataset_79/oyYuYNnSq9E_50.250.jpg",
+        "caption": "The image shows three men engaged in a conversation on a grassy field. The man on the left is wearing a colorful, patterned shirt and a blue cap. The man in the middle is wearing a checkered shirt and appears to be speaking to the other two men. The man on the right is wearing a white cap and a dark blue polo shirt with a logo on the left chest. He is holding a pair of sunglasses in his hand. In the background, there are more people and some trees, suggesting an outdoor setting, possibly a sports field or park. The image has a watermark in the bottom left corner that reads \"MOV",
+        "caption_ko": "공개된 사진에는 잔디밭에서 대화를 나누고 있는 세 남자의 모습이 담겨 있다. 왼쪽의 남자는 화려한 패턴의 셔츠와 파란색 모자를 쓰고 있습니다. 중앙에 있는 남자는 체크무늬 셔츠를 입고 다른 두 남자에게 말하고 있는 것 같습니다. 오른쪽 남자는 흰색 모자를 쓰고 왼쪽 가슴에 로고가 새겨진 남색 폴로셔츠를 입고 있다. 그는 손에 선글라스를 들고 있습니다. 배경에는 더 많은 사람과 나무가 있어 야외 환경, 아마도 운동장이나 공원을 암시합니다. 이미지의 왼쪽 하단에 'MOV'라는 워터마크가 있습니다."
+    },
+    {
+        "video_id": "q-H62GgHjeg",
+        "timestamp": "23.5",
+        "frame_image_path": "./test_dataset_79/q-H62GgHjeg_23.500.jpg",
+        "caption": "The image is a scene from an animated movie featuring a group of penguins standing on snow. In the foreground, there is a large, colorful bird with a blue and yellow body, possibly a penguin or a similar creature, looking towards the penguins. The penguins are gathered closely together, with some looking up at the bird. The setting appears to be a snowy landscape, and the lighting suggests it might be daytime. The image has a watermark from \"Fandango Movieclips\" in the bottom left corner.",
+        "caption_ko": "공개된 이미지는 눈 위에 펭귄 떼가 서 있는 모습을 담은 애니메이션 영화의 한 장면이다. 전경에는 파란색과 노란색 몸을 가진 크고 화려한 새가 있는데, 아마도 펭귄이나 비슷한 생물이 펭귄을 바라보고 있습니다. 펭귄들은 촘촘하게 모여 있고 일부는 새를 올려다보고 있습니다. 배경은 눈 덮인 풍경으로 보이며 조명을 보면 낮일 수도 있습니다. 이미지의 왼쪽 하단에는 \"Fandango Movieclips\"의 워터마크가 있습니다."
+    },
+    {
+        "video_id": "q-H62GgHjeg",
+        "timestamp": "9.25",
+        "frame_image_path": "./test_dataset_79/q-H62GgHjeg_9.250.jpg",
+        "caption": "The image is a scene from an animated movie featuring penguins. In the foreground, a small penguin is seen from behind, looking up at a larger penguin standing on a snowy surface. The larger penguin has a colorful beak, possibly indicating a different species or a character with a unique appearance. The background shows a group of penguins standing in a line, facing the larger penguin. The setting appears to be a snowy landscape with a blue sky, suggesting a cold, icy environment. The overall scene conveys a sense of curiosity or interaction between the penguins.",
+        "caption_ko": "공개된 이미지는 펭귄이 등장하는 애니메이션 영화의 한 장면이다. 전경에는 작은 펭귄이 뒤에서 눈 덮인 표면에 서 있는 더 큰 펭귄을 올려다보는 모습이 보입니다. 더 큰 펭귄은 화려한 부리를 가지고 있는데, 이는 아마도 다른 종이나 독특한 외모를 가진 캐릭터를 나타내는 것일 수 있습니다. 배경에는 더 큰 펭귄을 바라보며 일렬로 서 있는 펭귄 무리가 나와 있습니다. 배경은 푸른 하늘과 눈 덮인 풍경으로 나타나 춥고 얼음이 많은 환경을 암시합니다. 전체적인 장면은 펭귄들 사이의 호기심이나 상호작용을 전달합니다."
+    },
+    {
+        "video_id": "s2wBtcmE5W8",
+        "timestamp": "70.75",
+        "frame_image_path": "./test_dataset_79/s2wBtcmE5W8_70.750.jpg",
+        "caption": "The image depicts a scene from a movie, likely set in a cold, snowy environment. There are several figures standing atop a snow-covered mountain. Each figure is holding a torch with a red flame, which illuminates their faces and the surrounding area. The figures appear to be wearing heavy, dark clothing, possibly for protection against the cold. The sky is a deep blue, suggesting it might be nighttime or early morning. The overall atmosphere is mysterious and tense, with the red flames providing a stark contrast to the cold, white landscape.",
+        "caption_ko": "이미지는 춥고 눈 덮인 환경에서 설정된 영화의 장면을 묘사합니다. 눈 덮인 산 꼭대기에 서있는 몇 가지 인물이 있습니다. 각 그림은 붉은 불꽃으로 횃불을 들고 얼굴과 주변 지역을 비 춥니 다. 인물은 차가운 옷을 보호하기 위해 무겁고 어두운 옷을 입고있는 것으로 보입니다. 하늘은 깊은 파란색이며 야간이나 이른 아침 일 수 있습니다. 전반적인 분위기는 신비 롭고 긴장하며, 빨간색 불꽃은 차갑고 흰색 풍경과 완전히 대조적입니다."
+    },
+    {
+        "video_id": "s2wBtcmE5W8",
+        "timestamp": "88.0",
+        "frame_image_path": "./test_dataset_79/s2wBtcmE5W8_88.000.jpg",
+        "caption": "The image shows two individuals dressed in fur-lined garments, standing in a snowy or icy environment. They appear to be wearing red and white striped sleeves, suggesting a costume or themed attire. The background is a cold, wintry setting with snow-covered ground and a pile of rocks or debris nearby. The lighting is dim, enhancing the chilly atmosphere. The individuals seem to be engaged in a conversation or interaction, with one pointing towards something off-screen.",
+        "caption_ko": "이미지에는 모피 안감 옷을 입은 두 사람이 눈이나 얼음이 있는 환경에 서 있는 모습이 담겨 있습니다. 그들은 빨간색과 흰색 줄무늬 소매를 입고 있는 것으로 나타나 의상이나 테마 복장을 암시합니다. 배경은 눈 덮인 땅과 근처에 바위나 파편 더미가 있는 춥고 겨울 환경입니다. 조명도 어두컴컴해서 쌀쌀한 분위기를 더해줍니다. 개인은 화면 밖의 무언가를 가리키는 등 대화나 상호 작용에 참여하는 것처럼 보입니다."
+    },
+    {
+        "video_id": "tBDHJCVi7_0",
+        "timestamp": "20.0",
+        "frame_image_path": "./test_dataset_79/tBDHJCVi7_0_20.000.jpg",
+        "caption": "The image depicts a scene with three individuals sitting on the ground outdoors. The setting appears to be a simple, rustic environment, possibly a workshop or a backyard. \n\nIn the foreground, an older man is seated on the ground, wearing a light-colored shirt and dark pants. He is holding a large, round object, which looks like a traditional tool or instrument, possibly used for grinding or pounding. His posture suggests he is engaged in some form of manual work.\n\nNext to him, a young boy is sitting on the ground, wearing a red shirt and dark shorts. He appears to be observing the older man or waiting for his turn to",
+        "caption_ko": "이미지는 세 명의 개인이 야외에 앉아있는 장면을 묘사합니다. 설정은 단순하고 소박한 환경, 워크샵 또는 뒷마당으로 보입니다. \n\n전경에서, 나이 든 남자는 밝은 색 셔츠와 어두운 바지를 입고 땅에 앉아 있습니다. 그는 크고 둥근 둥근 물체를 들고 있는데, 이는 전통적인 도구 나 악기처럼 보이며 갈거나 두근 거리는 데 사용될 수 있습니다. 그의 자세는 그가 어떤 형태의 수동 작업에 참여하고 있음을 시사합니다.\n\n그 옆에, 어린 소년이 땅에 앉아 빨간 셔츠와 어두운 반바지를 입고 있습니다. 그는 노인을 관찰하거나 그의 차례를 기다리는 것처럼 보입니다."
+    },
+    {
+        "video_id": "tBDHJCVi7_0",
+        "timestamp": "27.5",
+        "frame_image_path": "./test_dataset_79/tBDHJCVi7_0_27.500.jpg",
+        "caption": "The image depicts a street scene in an urban area. A large group of people, possibly a military or police force, is marching down the middle of the street. The street is lined with various shops and businesses, some of which have colorful signs in Thai. The buildings are closely packed, and there are numerous electrical wires crisscrossing above the street. The atmosphere appears to be orderly, with the group moving in a disciplined manner. The setting suggests a city environment, and the presence of the group indicates some form of organized activity or event.",
+        "caption_ko": "해당 이미지는 도시 지역의 거리 풍경을 묘사한 것입니다. 군대나 경찰로 추정되는 대규모의 사람들이 거리 한가운데를 행진하고 있습니다. 거리에는 다양한 상점과 상점이 늘어서 있으며, 그 중 일부는 태국어로 다채로운 간판을 가지고 있습니다. 건물은 빽빽하게 들어차 있고, 거리 위에는 수많은 전선이 교차되어 있습니다. 분위기는 질서정연해 보이며, 그룹은 규율 있게 움직인다. 설정은 도시 환경을 암시하며, 그룹의 존재는 어떤 형태의 조직화된 활동이나 이벤트를 나타냅니다."
+    },
+    {
+        "video_id": "tBDHJCVi7_0",
+        "timestamp": "45.5",
+        "frame_image_path": "./test_dataset_79/tBDHJCVi7_0_45.500.jpg",
+        "caption": "The image shows a person lying on the ground, seemingly injured or unconscious. The person is wearing a black hoodie with white text on the back. Next to them is a helmet, which appears to be detached from a bicycle or similar vehicle. There is a noticeable pool of dark liquid, possibly blood, on the ground near the person. The scene suggests an accident or injury, and the helmet indicates that the person might have been riding a bicycle. The setting appears to be outdoors, possibly on a paved surface.",
+        "caption_ko": "공개된 사진에는 부상을 입거나 의식을 잃은 채 바닥에 누워 있는 사람의 모습이 담겨 있다. 그 사람은 뒷면에 흰색 글자가 있는 검은색 후드티를 입고 있습니다. 그 옆에는 자전거나 유사한 차량에서 분리된 것처럼 보이는 헬멧이 있습니다. 사람 근처 바닥에 눈에 띄는 검은 액체, 아마도 혈액이 웅덩이가 있습니다. 그 장면은 사고나 부상을 암시하고, 헬멧은 그 사람이 자전거를 탔을 수도 있음을 나타냅니다. 배경은 야외인 것으로 보입니다. 아마도 포장된 표면일 가능성이 있습니다."
+    },
+    {
+        "video_id": "tBDHJCVi7_0",
+        "timestamp": "57.0",
+        "frame_image_path": "./test_dataset_79/tBDHJCVi7_0_57.000.jpg",
+        "caption": "The image depicts a chaotic scene in what appears to be a laboratory or office setting. There are several people present, some of whom are in motion, suggesting a sense of urgency or panic. The room is filled with various objects, including computers, desks, and other equipment. Smoke or steam is billowing from the background, adding to the chaotic atmosphere. The lighting is bright, with fluorescent lights overhead. The overall impression is one of disorder and activity.",
+        "caption_ko": "해당 이미지는 실험실이나 사무실로 보이는 혼란스러운 장면을 묘사하고 있습니다. 여러 사람이 참석하고 있으며 그 중 일부는 긴박감이나 공포감을 암시하며 움직이고 있습니다. 방은 컴퓨터, 책상, 기타 장비 등 다양한 물건으로 가득 차 있습니다. 배경에서 연기나 증기가 뿜어져 나와 혼란스러운 분위기를 더하고 있습니다. 조명은 밝으며 머리 위에는 형광등이 켜져 있습니다. 전체적인 인상은 무질서하고 활동적인 느낌입니다."
+    },
+    {
+        "video_id": "tBDHJCVi7_0",
+        "timestamp": "72.0",
+        "frame_image_path": "./test_dataset_79/tBDHJCVi7_0_72.000.jpg",
+        "caption": "The image depicts a person swimming underwater in a pool. The individual is wearing a colorful swimsuit with a floral pattern and has their hair tied back. They are crouching on the pool floor, with their arms raised and hands near their face. The pool's water is a deep blue, and the tiles on the pool floor are visible, creating a grid-like pattern. The lighting is dim, emphasizing the underwater environment.",
+        "caption_ko": "이미지는 수영장에서 수중 수영을하는 사람을 묘사합니다. 개인은 꽃 무늬가있는 화려한 수영복을 입고 머리카락을 뒤로 묶습니다. 그들은 수영장 바닥에서 웅크 리고 있으며 팔을 들고 얼굴 근처에 손을 쥐고 있습니다. 수영장의 물은 짙은 파란색이며 수영장 바닥의 타일이 보이며 그리드와 같은 패턴을 만듭니다. 조명은 희미하며 수중 환경을 강조합니다."
+    },
+    {
+        "video_id": "v8HrbX0hzX8",
+        "timestamp": "13.75",
+        "frame_image_path": "./test_dataset_79/v8HrbX0hzX8_13.750.jpg",
+        "caption": "The image depicts a scene inside a furniture store. In the foreground, a man is sitting on a striped sofa, appearing to be in a relaxed or playful pose. He is wearing a blue jacket and jeans. To his right, there is a man in a light blue shirt and dark pants, who seems to be gesturing or talking to the seated man. \n\nIn the background, several other people are present, some of whom are interacting with furniture items. There are various pieces of furniture, including sofas and chairs, displayed throughout the store. The store has a bright and spacious layout with high ceilings and ample lighting. The atmosphere appears casual",
+        "caption_ko": "공개된 이미지에는 가구점 내부의 모습이 담겨 있다. 전경에는 한 남자가 줄무늬 소파에 앉아 편안하거나 장난스러운 자세를 취하고 있습니다. 그는 파란색 재킷과 청바지를 입고 있습니다. 그의 오른쪽에는 하늘색 셔츠와 짙은 바지를 입은 남자가 앉아 있는 남자에게 몸짓을 하거나 이야기를 하고 있는 것 같다. \n\n배경에는 다른 여러 사람이 있고 그 중 일부는 가구 품목과 상호 작용하고 있습니다. 매장 곳곳에는 소파, 의자 등 다양한 가구가 전시되어 있습니다. 매장은 높은 천장과 충분한 조명을 갖춘 밝고 넓은 레이아웃을 갖추고 있습니다. 분위기가 캐쥬얼해보이네요"
+    },
+    {
+        "video_id": "v8HrbX0hzX8",
+        "timestamp": "34.0",
+        "frame_image_path": "./test_dataset_79/v8HrbX0hzX8_34.000.jpg",
+        "caption": "The image shows a person lying in bed, appearing to be in a state of distress or frustration. They are leaning forward with one arm raised and clenched in a fist, while the other arm is bent and resting on the bed. The person is wearing a sleeveless top and is covered with a brown blanket. In the background, there is a bookshelf filled with books and a digital clock displaying the time as 5:52. The setting appears to be a bedroom, and the overall mood seems tense or agitated.",
+        "caption_ko": "공개된 이미지에는 침대에 누워 괴로움이나 좌절감을 느끼는 모습이 담겨 있다. 그들은 한쪽 팔을 들고 주먹을 쥐고 앞으로 몸을 기울이고 있으며, 다른 쪽 팔은 구부려 침대 위에 누워 있습니다. 그 사람은 민소매 상의를 입고 갈색 담요를 덮고 있다. 배경에는 책이 가득한 책장과 5시 52분으로 시간을 표시하는 디지털 시계가 있습니다. 배경은 침실인 것 같고, 전체적인 분위기는 긴장되거나 동요된 것 ​​같습니다."
+    },
+    {
+        "video_id": "v8HrbX0hzX8",
+        "timestamp": "61.25",
+        "frame_image_path": "./test_dataset_79/v8HrbX0hzX8_61.250.jpg",
+        "caption": "The image is a scene from a movie, likely a comedic or action sequence. It shows a man in a blue shirt and jeans running through a large, well-lit warehouse or supermarket. He is holding a rope or strap, which is attached to another person who is being dragged behind him. The person being dragged is wearing a light-colored shirt and dark pants. The warehouse is filled with shelves stocked with various products, and there are other people in the background, some of whom appear to be observing the situation. The environment is busy, with bright lighting and a sense of urgency conveyed by the characters' actions.",
+        "caption_ko": "이미지는 영화의 장면, 아마도 코미디 또는 액션 시퀀스 일 것입니다. 그것은 파란색 셔츠와 청바지를 입은 남자를 보여줍니다. 그는 밧줄이나 스트랩을 들고 있는데, 그 뒤에 끌려가는 다른 사람에게 붙어 있습니다. 끌고있는 사람은 밝은 색 셔츠와 어두운 바지를 입고 있습니다. 창고에는 다양한 제품이있는 선반으로 가득 차 있으며 백그라운드에는 다른 사람들이 있으며 일부는 상황을 관찰하는 것으로 보입니다. 밝은 조명과 캐릭터의 행동에 의해 전달되는 긴급 성으로 환경이 바쁘다."
+    },
+    {
+        "video_id": "v8HrbX0hzX8",
+        "timestamp": "73.5",
+        "frame_image_path": "./test_dataset_79/v8HrbX0hzX8_73.500.jpg",
+        "caption": "The image shows two people riding small, motorized carts in what appears to be a large retail store. The person on the left is wearing a light blue shirt and jeans, while the person on the right is dressed in a black outfit. Both are seated on the carts, which have a simple design with a small motor and a steering wheel. The store has high ceilings and is filled with various products, including colorful items on shelves in the background. The floor is a smooth, light-colored surface, and the carts are moving forward. The scene has a playful and casual atmosphere.",
+        "caption_ko": "이미지에는 대형 소매점으로 보이는 곳에서 두 사람이 소형 전동 카트를 타고 있는 모습이 담겨 있습니다. 왼쪽 사람은 하늘색 셔츠와 청바지를 입고 있고, 오른쪽 사람은 검정색 옷을 입고 있다. 두 사람 모두 작은 모터와 스티어링 휠을 갖춘 심플한 디자인의 카트에 앉아 있습니다. 매장은 천장이 높고 배경 선반에 있는 다채로운 상품을 포함해 다양한 제품으로 가득 차 있습니다. 바닥은 매끄럽고 밝은 색상의 표면이며 수레는 앞으로 나아갑니다. 현장은 장난스럽고 캐주얼한 분위기를 연출합니다."
+    },
+    {
+        "video_id": "wFtBmw4cINY",
+        "timestamp": "157.75",
+        "frame_image_path": "./test_dataset_79/wFtBmw4cINY_157.750.jpg",
+        "caption": "The image depicts a scene of physical confrontation on a street. A person in a dark hoodie and pants is seen grabbing another person, who is wearing a light-colored jacket and dark pants. The person in the hoodie appears to be in a dominant position, holding the other person by the arm. In the background, there are parked cars, including a black SUV and a red car. The setting appears to be a residential area with trees lining the street. The scene suggests a moment of conflict or altercation.",
+        "caption_ko": "공개된 이미지에는 거리에서 몸싸움을 벌이는 장면이 담겨 있다. 어두운색 후드티와 바지를 입은 사람이 밝은색 재킷과 검은색 바지를 입은 다른 사람을 붙잡는 모습이 보인다. 후드티를 입은 사람은 다른 사람의 팔을 잡고 지배적인 위치에 있는 것처럼 보입니다. 배경에는 검은 색 SUV와 빨간색 자동차를 포함하여 주차 된 차량이 있습니다. 배경은 거리를 따라 늘어선 나무들이 있는 주거 지역으로 보입니다. 그 장면은 갈등이나 다툼의 순간을 암시합니다."
+    },
+    {
+        "video_id": "wFtBmw4cINY",
+        "timestamp": "47.5",
+        "frame_image_path": "./test_dataset_79/wFtBmw4cINY_47.500.jpg",
+        "caption": "The image depicts a scene inside a room with large windows, allowing natural light to fill the space. There are three individuals present: an older man with white hair, wearing glasses and a brown jacket, seated at a table; a younger man in a blue sweater, also seated at the table; and a chimpanzee standing on the table, reaching out towards the older man. The chimpanzee appears to be interacting with the older man, possibly offering or taking something from him. The table is cluttered with various items, including a newspaper and some food. The setting suggests a casual, domestic environment.",
+        "caption_ko": "이미지는 큰 창문이있는 방 안에있는 장면을 묘사하여 자연광이 공간을 채울 수 있도록합니다. 세 사람이 있습니다. 흰 머리카락을 가진 나이 많은 남자, 안경을 쓰고 갈색 재킷을 입고 테이블에 앉아 있습니다. 푸른 스웨터를 입은 젊은 남자도 테이블에 앉았습니다. 그리고 침팬지가 탁자 위에 서서 노인을 향해 손을 내밀었다. 침팬지는 노인과 상호 작용하여 아마도 그에게서 무언가를 제공하거나 가져가는 것처럼 보입니다. 이 테이블에는 신문과 음식을 포함한 다양한 품목이 혼란 스럽습니다. 이 설정은 캐주얼 한 가정 환경을 제안합니다."
+    },
+    {
+        "video_id": "wFtBmw4cINY",
+        "timestamp": "77.5",
+        "frame_image_path": "./test_dataset_79/wFtBmw4cINY_77.500.jpg",
+        "caption": "The image depicts a close-up of a chimpanzee sitting in a chair. The chimpanzee is holding a small, green, intricately designed object in its hand. The background features a wooden chair with a woven backrest and a blue wall. The lighting is soft, creating a warm and natural atmosphere. The chimpanzee appears to be engaged with the object, possibly examining it closely. The overall scene has a realistic and detailed animation style, suggesting it might be from a film or animated series.",
+        "caption_ko": "공개된 이미지에는 의자에 앉아 있는 침팬지의 모습이 담겨 있다. 침팬지는 작고 녹색이며 복잡하게 디자인된 물체를 손에 들고 있습니다. 배경에는 짠 등받이가 있는 나무 의자와 파란색 벽이 있습니다. 조명이 은은해서 따뜻하고 자연스러운 분위기를 연출해줍니다. 침팬지는 물체에 관심을 갖고 있는 것으로 보이며 아마도 물체를 자세히 조사했을 것입니다. 전체적인 장면은 현실적이고 상세한 애니메이션 스타일로 이루어져 있어 영화나 애니메이션 시리즈에서 나온 것일 수도 있습니다."
+    },
+    {
+        "video_id": "xqsDUwDwdUM",
+        "timestamp": "23.25",
+        "frame_image_path": "./test_dataset_79/xqsDUwDwdUM_23.250.jpg",
+        "caption": "The image shows a person clinging to a rock face, appearing to be in distress. The individual is wearing a dark jacket and has blood on their hand and arm, suggesting they have been injured. The setting seems to be outdoors, possibly in a mountainous or rocky area, with snow visible in the background. The person's expression and posture convey a sense of struggle or urgency. The image is likely from a movie or TV show, as indicated by the watermark \"FANDANGO MOVIECLIPS\" in the bottom left corner.",
+        "caption_ko": "공개된 사진에는 바위에 매달린 채 괴로움에 빠진 듯한 한 사람의 모습이 담겨 있다. 해당 남성은 검은색 재킷을 입고 있으며 손과 팔에 피가 묻어 있어 부상을 입은 것으로 보입니다. 배경은 눈이 보이는 산간 지역이나 바위 지역인 야외인 것 같습니다. 그 사람의 표정과 자세는 투쟁이나 긴박감을 전달합니다. 왼쪽 하단에 워터마크 \"FANDANGO MOVIECLIPS\"가 표시된 것처럼 이미지는 영화나 TV 프로그램에서 나온 것 같습니다."
+    },
+    {
+        "video_id": "xqsDUwDwdUM",
+        "timestamp": "67.25",
+        "frame_image_path": "./test_dataset_79/xqsDUwDwdUM_67.250.jpg",
+        "caption": "The image depicts a scene from a movie or TV show. It shows three individuals standing on a rocky cliff overlooking a body of water with ice formations. The water appears to be cold and icy, with chunks of ice floating in it. The individuals are dressed in heavy clothing, suggesting a cold environment. The person in the foreground is reaching out to the person in the middle, who is holding onto the cliff. The overall atmosphere is tense and dramatic, with the focus on the interaction between the characters.",
+        "caption_ko": "해당 이미지는 영화나 TV 프로그램의 한 장면을 묘사한 것입니다. 이 그림에는 얼음이 형성된 수역이 내려다보이는 바위 절벽 위에 세 사람이 서 있는 모습이 나와 있습니다. 물은 차갑고 얼음처럼 보이며 얼음 덩어리가 떠 있습니다. 사람들은 두꺼운 옷을 입고 있어 추운 환경을 암시합니다. 앞쪽에 있는 사람이 절벽을 붙잡고 있는 가운데 사람에게 손을 뻗고 있습니다. 전체적인 분위기는 긴장감 넘치고 극적이며, 등장인물 간의 상호작용에 중점을 두고 있습니다."
+    },
+    {
+        "video_id": "zjwBNUXCA-M",
+        "timestamp": "43.25",
+        "frame_image_path": "./test_dataset_79/zjwBNUXCA-M_43.250.jpg",
+        "caption": "The image depicts a scene from a movie set in a dense forest. Several characters are seen moving through the woods, carrying a large, makeshift structure on their shoulders. The atmosphere is misty and eerie, with the trees casting long shadows. The characters are dressed in what appears to be historical or fantasy attire, suggesting a scene from a period drama or fantasy film. The overall tone is dark and mysterious, with a focus on the characters' movement and the surrounding forest environment.",
+        "caption_ko": "이미지는 울창한 숲에있는 영화의 장면을 묘사합니다. 여러 캐릭터가 숲을 통해 움직이면서 어깨에 큰 임시 구조를 가지고 있습니다. 분위기는 안개가 자욱하고 섬뜩하며 나무는 긴 그림자를 던지고 있습니다. 캐릭터는 역사적 또는 판타지 복장으로 보이는 것으로 옷을 입고 있으며 시대의 드라마 나 판타지 영화의 장면을 제안합니다. 캐릭터의 움직임과 주변 산림 환경에 중점을 둔 전체 톤은 어둡고 신비 롭습니다."
+    }
+]

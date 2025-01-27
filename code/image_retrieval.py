@@ -6,12 +6,23 @@ import yaml
 from PIL import Image
 
 
-class ImageRetrieval:
-    def __init__(self, config_path="config.yaml"):
+class CLIPRetrieval:
+    """
+    Image-based retrieval using OpenAI CLIP model.
+    This class extracts or loads precomputed features for images, and
+    retrieves the most similar images given a user query.
+    """
+
+    def __init__(self, config_path: str = "clip_config.yaml"):
+        """
+        Initializes the CLIPRetrieval by loading configuration and model.
+
+        :param config_path: The path to the YAML configuration file.
+        """
         # Load configuration
         self.config = self.load_config(config_path)
 
-        # Set device
+        # Device setting
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         # Load CLIP model and preprocess
@@ -19,11 +30,12 @@ class ImageRetrieval:
             self.config["model_name"], device=self.device
         )
 
-        # Set paths
+        # Set file/directory paths
         self.frame_folder = self.config["frame_folder"]
         self.output_file = self.config["output_file"]
+        self.image_extensions = tuple(self.config["image_extensions"])
 
-        # Initialize attributes
+        # Internal attributes
         self.image_filenames = []
         self.image_features = None
 
@@ -32,80 +44,124 @@ class ImageRetrieval:
         if output_dir and not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-    def load_config(self, config_path):
-        with open(config_path, "r") as f:
+    def load_config(self, config_path: str) -> dict:
+        """
+        Loads YAML configuration file.
+
+        :param config_path: Path to the YAML file.
+        :return: Dictionary of configuration parameters.
+        """
+        with open(config_path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
 
-    def save_config(self, config_path):
-        with open(config_path, "w") as f:
+    def save_config(self, config_path: str) -> None:
+        """
+        Saves the current configuration to a YAML file.
+
+        :param config_path: Path to save the YAML file.
+        """
+        with open(config_path, "w", encoding="utf-8") as f:
             yaml.dump(self.config, f, default_flow_style=False)
 
-    def collect_image_filenames(self):
-        """Collects and sorts image filenames from the frame folder."""
+    def collect_image_filenames(self) -> None:
+        """
+        Collects and sorts image filenames from the frame folder.
+        """
+        all_files = os.listdir(self.frame_folder)
         self.image_filenames = [
             os.path.join(self.frame_folder, fname)
-            for fname in sorted(os.listdir(self.frame_folder))
-            if fname.endswith(tuple(self.config["image_extensions"]))
+            for fname in sorted(all_files)
+            if fname.endswith(self.image_extensions)
         ]
 
-    def extract_image_features(self):
-        """Extracts image features using the CLIP model and saves them."""
+    def extract_image_features(self) -> None:
+        """
+        Extracts features for each image using CLIP and saves them to output_file.
+        """
         self.collect_image_filenames()
         image_features = []
 
         for image_path in self.image_filenames:
             try:
-                image = (
-                    self.preprocess(Image.open(image_path).convert("RGB"))
-                    .unsqueeze(0)
-                    .to(self.device)
-                )
+                image = Image.open(image_path).convert("RGB")
+                image_input = self.preprocess(image).unsqueeze(0).to(self.device)
+
                 with torch.no_grad():
-                    feature = self.model.encode_image(image)
+                    feature = self.model.encode_image(image_input)
+                    # Normalize feature
                     feature /= feature.norm(dim=-1, keepdim=True)
                     image_features.append(feature.cpu())
+
             except Exception as e:
-                print(f"Image processing error: {image_path}, Error: {e}")
+                print(f"Image processing error ({image_path}): {e}")
 
         self.image_features = torch.cat(image_features, dim=0)
         torch.save(
             {"filenames": self.image_filenames, "features": self.image_features},
             self.output_file,
         )
-        print(f"Image features saved to {self.output_file}")
+        print(f"Image features saved to: {self.output_file}")
 
-    def load_image_features(self):
-        """Loads precomputed image features from the output file."""
-        data = torch.load(self.output_file, weights_only=True)
+    def load_image_features(self) -> None:
+        """
+        Loads precomputed image features from the output file.
+        """
+        data = torch.load(
+            self.output_file
+        )  # Removed weights_only=True (not a valid arg)
         self.image_filenames = data["filenames"]
         self.image_features = data["features"]
 
-    def find_similar_images(self, query, top_k=10):
-        """Finds and prints the top-k most similar images for a given query."""
-        # Tokenize and encode the query
+    def retrieve(self, query: str, top_k: int = 10) -> list:
+        """
+        Finds the top-k most similar images given a text query.
+
+        :param query: Text query string.
+        :param top_k: Number of results to retrieve.
+        :return: A list of dictionaries containing rank, image_filename, and similarity score.
+        """
+        # Encode query text
         text_tokens = clip.tokenize([query]).to(self.device)
         with torch.no_grad():
             text_features = self.model.encode_text(text_tokens)
             text_features /= text_features.norm(dim=-1, keepdim=True)
 
-        # Calculate similarity (ensure tensors are on the same device)
-        similarity = (
-            100.0 * self.image_features.to(self.device) @ text_features.T
-        ).squeeze(1)
+        # Compute similarity
+        similarity = (self.image_features.to(self.device) @ text_features.T).squeeze(1)
 
         # Get top-k indices
         top_indices = similarity.topk(top_k).indices.cpu().numpy()
 
-        # Print results
-        print(f"\nQuery: '{query}'")
+        # Compile results
+        results = []
         for rank, index in enumerate(top_indices, 1):
-            print(f"Rank {rank}: {self.image_filenames[index]}")
+            results.append(
+                {
+                    "rank": rank,
+                    "image_filename": self.image_filenames[index],
+                    "score": float(similarity[index].item()),
+                }
+            )
+        return results
 
 
-# Usage Example
 if __name__ == "__main__":
-    config_path = "config/clip_config.yaml"
-    retrieval = ImageRetrieval(config_path)
-    retrieval.extract_image_features()  # To preprocess and save image features
-    retrieval.load_image_features()  # To load precomputed features
-    retrieval.find_similar_images("Spider", top_k=5)  # Query example
+    # Initialize the CLIPRetrieval object
+    clip_config_path = "config/clip_config.yaml"
+    image_retriever = CLIPRetrieval(config_path=clip_config_path)
+
+    # Load precomputed image features or extract them
+    if not os.path.exists(image_retriever.output_file):
+        image_retriever.extract_image_features()
+
+    # Load precomputed features
+    image_retriever.load_image_features()
+
+    # Retrieve images
+    image_query = "Spider"
+    image_results = image_retriever.retrieve(image_query, top_k=5)
+    print("\n=== CLIPRetrieval Results ===")
+    for res in image_results:
+        print(
+            f"Rank {res['rank']}: Image={res['image_filename']}, Score={res['score']:.4f}"
+        )
