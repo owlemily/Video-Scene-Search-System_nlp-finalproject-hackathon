@@ -146,7 +146,7 @@ def process_fuse_results(input_csv, fused_results, output_csv):
             all_results.append(
                 {
                     "query_index": index,
-                    "query": query,
+                    "original_query": query,
                     "video_id": video_id,
                     "start": start,
                     "end": start,  # Here, start == end based on the filename
