@@ -13,12 +13,13 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## EvalCaption 테스트셋 다운 및 모델별 추론하는 법
+## scene_caption_pipeline.py 사용법
+1.1. https://huggingface.co/OpenGVLab/InternVideo2-Chat-8B 에서 동의하고 사용권한 확보  
+1.2. https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3 에서 동의하고 사용권한 확보
 ```bash
-chmod +x download_evalCaption_images.sh
-./download_evalCaption_images.sh
+huggingface-cli login # 특정 모델 사용시 토큰 필요
 
-python evalCaption_pipeline.py # evalCaption.yaml 적절히 모델, prompt 수정
+python scene_caption_pipeline.py # scene_config.yaml 적절히 모델, prompt 수정
 ```
 
 ## EvalCaption Streamlit 실행방법

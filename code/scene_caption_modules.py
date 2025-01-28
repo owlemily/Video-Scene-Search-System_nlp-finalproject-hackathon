@@ -13,10 +13,11 @@ import os
 
 import decord
 import torch
-from audio_utils import transcribe_audio
 from googletrans import Translator
-from specific_model_utils.InternVideo2_utils import load_video
 from transformers import AutoModel, AutoTokenizer
+
+from .audio_utils import transcribe_audio
+from .specific_model_utils.InternVideo2_utils import load_video
 
 decord.bridge.set_bridge("torch")
 
