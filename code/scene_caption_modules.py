@@ -116,6 +116,7 @@ def single_scene_caption_InternVideo2(
         "start_time": start,
         "end_time": end,
         "clip_id": f"{video_id}_{start}_{end}_{scene_id}",
+        "scene_path": scene_path,
         "caption": response,
         "caption_ko": translated_description,
     }
