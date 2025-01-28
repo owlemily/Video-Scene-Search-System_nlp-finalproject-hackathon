@@ -171,9 +171,9 @@ if __name__ == "__main__":
         frame_results,
         scene_results,
         clip_results,
-        w_frame=0.3,
-        w_scene=0.3,
-        w_clip=0.4,
+        w_frame=0.25,
+        w_scene=0.25,
+        w_clip=0.5,
         top_k=5,
     )
 

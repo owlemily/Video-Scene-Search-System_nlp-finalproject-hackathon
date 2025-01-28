@@ -142,7 +142,7 @@ class BGERetrieval:
 
         :param file_path: Path to load the embeddings from.
         """
-        data = torch.load(file_path)
+        data = torch.load(file_path, weights_only=True)
         self.data_info = data["data_info"]
         self.embeddings = data["features"]
         print(f"Embeddings loaded from {file_path}")
