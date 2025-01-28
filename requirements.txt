@@ -12,12 +12,10 @@ moviepy==2.0.0.dev2
 scenedetect[opencv-headless]
 tqdm
 openai-whisper
-decord
-transformers==4.39.1
+transformers==4.40.0
 sentencepiece
 protobuf
 easydict
 timm
 einops
 peft==0.5.0
-flash_attn

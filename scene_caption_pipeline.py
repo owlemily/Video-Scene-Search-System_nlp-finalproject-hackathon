@@ -10,17 +10,16 @@ scene_caption_pipeline.py
 6. Scene Caption 생성하여 json 파일로 저장
 """
 
-# from code.audio_utils import (
-#     save_all_mono_audio_from_scene_folder,
-#     transcribe_and_save_scene_information_into_json,
-# )
-
+import os
+from code.audio_utils import (
+    save_all_mono_audio_from_scene_folder,
+    transcribe_and_save_scene_information_into_json,
+)
 from code.scene_caption_modules import scene_caption
-
-# from code.scene_utils import (
-#     save_all_video_scenes_by_timestamps,
-#     save_timestamps_to_txt,
-# )
+from code.scene_utils import (
+    save_all_video_scenes_by_timestamps,
+    save_timestamps_to_txt,
+)
 from code.utils import load_config
 
 if __name__ == "__main__":
@@ -40,18 +39,21 @@ if __name__ == "__main__":
     use_audio = config["audio"]["use_audio"]
     scene_output_filename = config["data"]["scene_output_filename"]
 
-    # save_timestamps_to_txt(
-    #     video_folder, timestamp_file, threshold=30.0, min_scene_len=2
-    # )
+    save_timestamps_to_txt(
+        video_folder, timestamp_file, threshold=30.0, min_scene_len=2
+    )
 
-    # save_all_video_scenes_by_timestamps(video_folder, scene_folder, timestamp_file)
+    save_all_video_scenes_by_timestamps(video_folder, scene_folder, timestamp_file)
 
-    # if use_audio:
-    #     save_all_mono_audio_from_scene_folder(scene_folder, mono_audio_folder)
+    if use_audio:
+        save_all_mono_audio_from_scene_folder(scene_folder, mono_audio_folder)
 
-    #     transcribe_and_save_scene_information_into_json(
-    #         mono_audio_folder, scene_info_json_file, timestamp_file
-    #     )
+        transcribe_and_save_scene_information_into_json(
+            mono_audio_folder, scene_info_json_file, timestamp_file
+        )
+
+    os.makedirs("output", exist_ok=True)
+    scene_caption_output_path = os.path.join("output", scene_output_filename)
 
     scene_caption(
         model_path,
@@ -59,6 +61,7 @@ if __name__ == "__main__":
         prompt,
         generation_config,
         use_audio,
+        mono_audio_folder,
         scene_info_json_file,
-        scene_output_filename,
+        scene_caption_output_path,
     )
