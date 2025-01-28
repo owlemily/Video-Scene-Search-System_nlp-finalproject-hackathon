@@ -120,6 +120,8 @@ video/
 datasets/
 full_scenes/
 audio/
+mono_audio/
+video_timestamps.txt
 *.mp4
 *.jpg
 *.json
