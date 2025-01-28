@@ -2,7 +2,7 @@ general:
   device: "cuda"  # 사용할 디바이스: "cuda" (GPU) 또는 "cpu"
 
 data:
-  frames_folder: "./test_dataset_79"  # 프레임 이미지 저장 경로
+  frames_folder: "./test_dataset_22_videos"  # 프레임 이미지 저장 경로
   output_folder: "./output"  # 분석 결과 및 출력 파일 저장 경로
   datasets_folder: "./datasets"  # 데이터셋 저장 경로
   datasets_name: "my_test_dataset"  # 데이터셋 이름
