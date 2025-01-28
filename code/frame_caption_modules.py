@@ -25,8 +25,8 @@ from torchvision import transforms as T
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
 
-from .unsloth_vision_utils import Custom_UnslothVisionDataCollator
-from .utils import get_video_id_and_timestamp
+from .frame_utils import get_video_id_and_timestamp
+from .specific_model_utils.unsloth_vision_utils import Custom_UnslothVisionDataCollator
 
 # GPU 설정
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -59,8 +59,8 @@ def load_model(model_name, device):
                 .eval()
             )
             model.img_context_token_id = tokenizer.cls_token_id
-        except Exception:
-            raise ValueError(f"지원하지 않는 모델: {model_name}")
+        except Exception as e:
+            raise ValueError(f"지원하지 않는 모델: {model_name}\n오류: {e}")
 
     # unsloth 모델 로드
     else:
@@ -246,7 +246,9 @@ def generate_caption_UsingDataset_ForGeneralModel(
     for start_idx in tqdm(
         range(0, len(dataset), batch_size), desc="Generating captions in batches"
     ):
-        batch = dataset.select(range(start_idx, min(start_idx + batch_size, len(dataset))))
+        batch = dataset.select(
+            range(start_idx, min(start_idx + batch_size, len(dataset)))
+        )
         images = [
             dynamic_preprocess(sample["image"], image_size=448).to(device)
             for sample in batch

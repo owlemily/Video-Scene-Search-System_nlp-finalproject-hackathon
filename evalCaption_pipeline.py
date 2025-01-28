@@ -8,7 +8,8 @@ evalCaption_pipeline.py
 """
 
 from code.frame_caption_modules import frame_caption
-from code.utils import create_and_save_dataset, load_config
+from code.frame_utils import create_and_save_dataset
+from code.utils import load_config
 
 if __name__ == "__main__":
     # config 파일 로드

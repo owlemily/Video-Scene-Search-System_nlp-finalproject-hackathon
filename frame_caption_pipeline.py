@@ -9,7 +9,8 @@ frame_caption_pipeline.py
 """
 
 from code.frame_caption_modules import frame_caption
-from code.utils import create_and_save_dataset, extract_frames_from_folder, load_config
+from code.frame_utils import create_and_save_dataset, extract_frames_from_folder
+from code.utils import load_config
 
 if __name__ == "__main__":
     # config 파일 로드
