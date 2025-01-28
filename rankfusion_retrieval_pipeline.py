@@ -184,10 +184,10 @@ if __name__ == "__main__":
     image_retriever = CLIPRetrieval(config_path=clip_config_path)
 
     # 사용자 쿼리
-    user_query = "gun fight"
+    user_query = "Anna and Elsa playing in the snow"
 
     # (A) BGE 결과 (frame)
-    frame_results = frame_text_retriever.retrieve(user_query, top_k=10)
+    frame_results = frame_text_retriever.retrieve(user_query, top_k=100)
     # print("\n=== Frame Retrieval Results ===")
     # for i, item in enumerate(frame_results, start=1):
     #     print(
@@ -199,7 +199,7 @@ if __name__ == "__main__":
     #     )
 
     # (B) BGE 결과 (scene)
-    scene_results = scene_text_retriever.retrieve(user_query, top_k=10)
+    scene_results = scene_text_retriever.retrieve(user_query, top_k=100)
     # print("\n=== Scene Retrieval Results ===")
     # for i, item in enumerate(scene_results, start=1):
     #     print(
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     #     )
 
     # (C) CLIP 결과
-    clip_results = image_retriever.retrieve(user_query, top_k=10)
+    clip_results = image_retriever.retrieve(user_query, top_k=100)
     # print("\n=== CLIP Retrieval Results ===")
     # for i, item in enumerate(clip_results, start=1):
     #     print(f"Rank {i}: image={item['image_filename']}, score={item['score']:.4f}")
