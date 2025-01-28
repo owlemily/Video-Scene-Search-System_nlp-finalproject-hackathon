@@ -1,6 +1,7 @@
 torch
 transformers
 Pillow
+pandas
 matplotlib
 PyYAML
 opencv-python-headless

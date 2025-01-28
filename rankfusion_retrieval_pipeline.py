@@ -4,6 +4,8 @@ import ntpath
 from code.basic_retrieval import BGERetrieval
 from code.image_retrieval import CLIPRetrieval
 
+import pandas as pd
+
 
 def fuse_results(
     frame_results,  # BGERetrieval(frame) topK
@@ -113,6 +115,53 @@ def fuse_results(
     return fused_list[:top_k]
 
 
+def process_fuse_results(input_csv, fused_results, output_csv):
+    """
+    Process fuse results for each query in the input CSV and generate a new CSV with Top-K results.
+
+    Parameters:
+    - input_csv (str): Path to the input CSV containing queries.
+    - fused_results (list): Mock fused results or actual results from the fuse_results function.
+    - output_csv (str): Path to save the processed results CSV.
+
+    Returns:
+    - pd.DataFrame: DataFrame containing the processed results.
+    """
+    # Load input data
+    input_df = pd.read_csv(input_csv)
+
+    all_results = []
+
+    for _, row in input_df.iterrows():
+        query = row["query"]
+        index = row["index"]
+
+        # Simulate fused results for this query (use actual call to fuse_results if needed)
+        for item in fused_results:  # Replace with actual fuse_results call
+            filename = item["filename"]
+            video_id, timestamp = filename.rsplit("_", 1)
+            start = float(timestamp.replace(".jpg", ""))
+
+            # Append processed result
+            all_results.append(
+                {
+                    "query_index": index,
+                    "query": query,
+                    "video_id": video_id,
+                    "start": start,
+                    "end": start,  # Here, start == end based on the filename
+                }
+            )
+
+    # Create a new DataFrame from the results
+    final_results_df = pd.DataFrame(all_results)
+
+    # Save to CSV
+    final_results_df.to_csv(output_csv, index=False)
+
+    return final_results_df
+
+
 if __name__ == "__main__":
     """
     예시 실행:
@@ -135,10 +184,10 @@ if __name__ == "__main__":
     image_retriever = CLIPRetrieval(config_path=clip_config_path)
 
     # 사용자 쿼리
-    user_query = "monkey hitting man"
+    user_query = "gun fight"
 
     # (A) BGE 결과 (frame)
-    frame_results = frame_text_retriever.retrieve(user_query, top_k=5)
+    frame_results = frame_text_retriever.retrieve(user_query, top_k=10)
     # print("\n=== Frame Retrieval Results ===")
     # for i, item in enumerate(frame_results, start=1):
     #     print(
@@ -150,7 +199,7 @@ if __name__ == "__main__":
     #     )
 
     # (B) BGE 결과 (scene)
-    scene_results = scene_text_retriever.retrieve(user_query, top_k=5)
+    scene_results = scene_text_retriever.retrieve(user_query, top_k=10)
     # print("\n=== Scene Retrieval Results ===")
     # for i, item in enumerate(scene_results, start=1):
     #     print(
@@ -161,7 +210,7 @@ if __name__ == "__main__":
     #     )
 
     # (C) CLIP 결과
-    clip_results = image_retriever.retrieve(user_query, top_k=5)
+    clip_results = image_retriever.retrieve(user_query, top_k=10)
     # print("\n=== CLIP Retrieval Results ===")
     # for i, item in enumerate(clip_results, start=1):
     #     print(f"Rank {i}: image={item['image_filename']}, score={item['score']:.4f}")
@@ -171,9 +220,9 @@ if __name__ == "__main__":
         frame_results,
         scene_results,
         clip_results,
-        w_frame=0.25,
-        w_scene=0.25,
-        w_clip=0.5,
+        w_frame=0.2,
+        w_scene=0.2,
+        w_clip=0.6,
         top_k=5,
     )
 
@@ -187,3 +236,11 @@ if __name__ == "__main__":
             f"clip={item['clip_score']:.2f}, "
             f"scene_id={item['scene_id']}"
         )
+
+    input_csv_path = "dev/benchmark_en.csv"
+    output_csv_path = "processed_fuse_results.csv"
+
+    # Process results and save to output CSV
+    processed_df = process_fuse_results(input_csv_path, fused_top_k, output_csv_path)
+
+    print("Processed results saved to", output_csv_path)
