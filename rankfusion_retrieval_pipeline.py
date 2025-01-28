@@ -1,246 +1,204 @@
 import ntpath
 
-# 두 모듈에서 각 클래스 불러오기
+# 필요한 모듈에서 각 클래스 불러오기
 from code.basic_retrieval import BGERetrieval
 from code.image_retrieval import CLIPRetrieval
 
-import pandas as pd
 
-
-def fuse_results(
-    frame_results,  # BGERetrieval(frame) topK
-    scene_results,  # BGERetrieval(scene) topK
-    clip_results,  # CLIPRetrieval topK
-    w_frame=0.3,
-    w_scene=0.4,
-    w_clip=0.3,
-    top_k=10,
-):
+class RankFusionSystem:
     """
-    전체 프레임 메타정보가 없는 상황에서,
-    frame_results + scene_results + clip_results를 합쳐
-    최종 점수를 계산하는 간단한 방법.
+    BGE(frame), BGE(scene), CLIP 세 가지 Retrieval 결과를 합쳐
+    최종 점수를 산출하는 시스템을 하나의 클래스로 감싼 예시 코드입니다.
 
-    - 후보 프레임: (frame_results의 filename) ∪ (clip_results의 filename)
-    - frame_score: frame_results에 있으면 점수, 없으면 0
-    - scene_score: frame_results 통해 얻은 scene_id가 scene_results topK 중 있으면 점수, 없으면 0
-    - clip_score: clip_results에 있으면 점수, 없으면 0
-
-    final_score = w_frame * frame_score + w_scene * scene_score + w_clip * clip_score
+    사용법:
+        1) 객체 생성 시 config 경로와 가중치 설정
+        2) retrieve_and_fuse(user_query, top_k)를 호출해 결과 얻기
+        3) 필요하다면 print_fused_results() 메서드로 가독성 있게 결과 출력
     """
 
-    # -----------------------------
-    # (A) scene_id -> scene_score (scene_results 맵)
-    # -----------------------------
-    scene_score_map = {}
-    for s_item in scene_results:
-        sid = s_item.get("scene_id")
-        if sid is not None:
-            scene_score_map[sid] = s_item.get("score", 0.0)
+    def __init__(
+        self,
+        frame_text_config_path: str = "config/frame_description_config.yaml",
+        scene_text_config_path: str = "config/scene_description_config.yaml",
+        clip_config_path: str = "config/clip_config.yaml",
+        w_frame: float = 0.3,
+        w_scene: float = 0.4,
+        w_clip: float = 0.3,
+    ):
+        """
+        Args:
+            frame_text_config_path: BGE 프레임 설명용 config 경로
+            scene_text_config_path: BGE 씬 설명용 config 경로
+            clip_config_path: CLIP 이미지 검색용 config 경로
+            w_frame: frame score 가중치
+            w_scene: scene score 가중치
+            w_clip: clip score 가중치
+        """
+        self.frame_retriever = BGERetrieval(config_path=frame_text_config_path)
+        self.scene_retriever = BGERetrieval(config_path=scene_text_config_path)
+        self.clip_retriever = CLIPRetrieval(config_path=clip_config_path)
 
-    # -----------------------------
-    # (B) frame_results (filename -> frame_score, scene_id)
-    # -----------------------------
-    frame_score_map = {}
-    frame_scene_map = {}  # filename -> scene_id
+        self.w_frame = w_frame
+        self.w_scene = w_scene
+        self.w_clip = w_clip
 
-    frame_filenames = set()
+    def retrieve_all(self, user_query: str, top_k: int = 100):
+        """
+        동일한 쿼리에 대해 3가지 Retrieval 결과를 전부 얻어온다.
+        Returns:
+            tuple: (frame_results, scene_results, clip_results)
+        """
+        frame_results = self.frame_retriever.retrieve(user_query, top_k=top_k)
+        scene_results = self.scene_retriever.retrieve(user_query, top_k=top_k)
+        clip_results = self.clip_retriever.retrieve(user_query, top_k=top_k)
+        return frame_results, scene_results, clip_results
 
-    for f_item in frame_results:
-        raw_path = f_item.get("frame_image_path", "")
-        if raw_path.startswith("./"):
-            raw_path = raw_path[2:]
-        filename_only = ntpath.basename(raw_path)
-
-        frame_filenames.add(filename_only)
-        frame_score_map[filename_only] = f_item.get("score", 0.0)
-        frame_scene_map[filename_only] = f_item.get("scene_id", None)
-
-    # -----------------------------
-    # (C) clip_results (filename -> clip_score)
-    # -----------------------------
-    clip_score_map = {}
-    clip_filenames = set()
-
-    for c_item in clip_results:
-        raw_path = c_item.get("image_filename", "")
-        if raw_path.startswith("./"):
-            raw_path = raw_path[2:]
-        filename_only = ntpath.basename(raw_path)
-
-        clip_filenames.add(filename_only)
-        clip_score_map[filename_only] = c_item.get("score", 0.0)
-
-    # -----------------------------
-    # (D) 최종 후보 = frame_filenames ∪ clip_filenames
-    # -----------------------------
-    candidate_filenames = frame_filenames.union(clip_filenames)
-
-    # -----------------------------
-    # (E) 후보 각각에 대해 점수 계산
-    # -----------------------------
-    fused_list = []
-    for fname in candidate_filenames:
-        # frame_score
-        frame_s = frame_score_map.get(fname, 0.0)
-
-        # scene_score
-        #  - scene_id를 frame_results에서만 알 수 있다고 가정
-        scene_s = 0.0
-        sid = frame_scene_map.get(fname, None)
-        if sid is not None and sid in scene_score_map:
-            scene_s = scene_score_map[sid]
-
-        # clip_score
-        clip_s = clip_score_map.get(fname, 0.0)
-
-        # 최종 점수
-        final_s = w_frame * frame_s + w_scene * scene_s + w_clip * clip_s
-
-        fused_list.append(
-            {
-                "filename": fname,
-                "final_score": final_s,
-                "frame_score": frame_s,
-                "scene_score": scene_s,
-                "clip_score": clip_s,
-                "scene_id": sid,  # scene_id가 None일 수도 있음
-            }
-        )
-
-    # -----------------------------
-    # (F) final_score 내림차순 정렬 후 상위 top_k
-    # -----------------------------
-    fused_list.sort(key=lambda x: x["final_score"], reverse=True)
-    return fused_list[:top_k]
-
-
-def process_fuse_results(input_csv, fused_results, output_csv):
-    """
-    Process fuse results for each query in the input CSV and generate a new CSV with Top-K results.
-
-    Parameters:
-    - input_csv (str): Path to the input CSV containing queries.
-    - fused_results (list): Mock fused results or actual results from the fuse_results function.
-    - output_csv (str): Path to save the processed results CSV.
-
-    Returns:
-    - pd.DataFrame: DataFrame containing the processed results.
-    """
-    # Load input data
-    input_df = pd.read_csv(input_csv)
-
-    all_results = []
-
-    for _, row in input_df.iterrows():
-        query = row["query"]
-        index = row["index"]
-
-        # Simulate fused results for this query (use actual call to fuse_results if needed)
-        for item in fused_results:  # Replace with actual fuse_results call
-            filename = item["filename"]
-            video_id, timestamp = filename.rsplit("_", 1)
-            start = float(timestamp.replace(".jpg", ""))
-
-            # Append processed result
-            all_results.append(
-                {
-                    "query_index": index,
-                    "original_query": query,
-                    "video_id": video_id,
-                    "start": start,
-                    "end": start,  # Here, start == end based on the filename
-                }
-            )
-
-    # Create a new DataFrame from the results
-    final_results_df = pd.DataFrame(all_results)
-
-    # Save to CSV
-    final_results_df.to_csv(output_csv, index=False)
-
-    return final_results_df
-
-
-if __name__ == "__main__":
-    """
-    예시 실행:
-    - 1) BGE Retrieval (프레임 설명 기반) 객체 생성 후, 사용자 쿼리에 대해 top_k 추출
-    - 2) BGE Retrieval (씬 설명 기반) 객체 생성 후, 동일 쿼리에 대해 top_k 추출
-    - 3) CLIP Retrieval (이미지) 객체 생성 후, 동일 쿼리에 대해 top_k 추출
-    - 4) fuse_results 함수로 세 결과를 랭크퓨전 (w_frame, w_scene, w_clip 가중치 조절)
-    """
-
-    # 1) BGE Retrieval (frame)
-    frame_text_config_path = "config/frame_description_config.yaml"
-    frame_text_retriever = BGERetrieval(config_path=frame_text_config_path)
-
-    # 2) BGE Retrieval (scene)
-    scene_text_config_path = "config/scene_description_config.yaml"
-    scene_text_retriever = BGERetrieval(config_path=scene_text_config_path)
-
-    # 3) CLIP Retrieval (image)
-    clip_config_path = "config/clip_config.yaml"
-    image_retriever = CLIPRetrieval(config_path=clip_config_path)
-
-    # 사용자 쿼리
-    user_query = "Anna and Elsa playing in the snow"
-
-    # (A) BGE 결과 (frame)
-    frame_results = frame_text_retriever.retrieve(user_query, top_k=100)
-    # print("\n=== Frame Retrieval Results ===")
-    # for i, item in enumerate(frame_results, start=1):
-    #     print(
-    #         f"Rank {i}: timestamp={item['frame_timestamp']}, "
-    #         f"image_path={item['frame_image_path']}, "
-    #         # f"caption={item['frame_description']}, "
-    #         f"scene_id={item['scene_id']}, "
-    #         f"score={item['score']:.4f}"
-    #     )
-
-    # (B) BGE 결과 (scene)
-    scene_results = scene_text_retriever.retrieve(user_query, top_k=100)
-    # print("\n=== Scene Retrieval Results ===")
-    # for i, item in enumerate(scene_results, start=1):
-    #     print(
-    #         f"Rank {i}: start={item['scene_start_time']}, "
-    #         f"end={item['scene_end_time']}, "
-    #         # f"description={item['scene_description']}, "
-    #         f"score={item['score']:.4f}"
-    #     )
-
-    # (C) CLIP 결과
-    clip_results = image_retriever.retrieve(user_query, top_k=100)
-    # print("\n=== CLIP Retrieval Results ===")
-    # for i, item in enumerate(clip_results, start=1):
-    #     print(f"Rank {i}: image={item['image_filename']}, score={item['score']:.4f}")
-
-    # --- Rank Fusion ---
-    fused_top_k = fuse_results(
+    def fuse_results(
+        self,
         frame_results,
         scene_results,
         clip_results,
+        top_k: int = 10,
+    ):
+        """
+        전체 프레임 메타정보가 없는 상황에서,
+        frame_results + scene_results + clip_results를 합쳐
+        최종 점수를 계산하는 간단한 방법.
+
+        - 후보 프레임: (frame_results의 filename) ∪ (clip_results의 filename)
+        - frame_score: frame_results에 있으면 그 점수, 없으면 0
+        - scene_score: frame_results 통해 얻은 scene_id가 scene_results topK 중 있으면 점수, 없으면 0
+        - clip_score: clip_results에 있으면 그 점수, 없으면 0
+
+        final_score = w_frame * frame_score + w_scene * scene_score + w_clip * clip_score
+
+        Args:
+            frame_results: BGE(frame) 결과 리스트
+            scene_results: BGE(scene) 결과 리스트
+            clip_results: CLIP(image) 결과 리스트
+            top_k: 최종 상위 몇 개를 추출할지
+
+        Returns:
+            list: final_score 기준 내림차순 정렬된 상위 top_k개의 결과
+        """
+        # (A) scene_id -> scene_score (scene_results 맵)
+        scene_score_map = {}
+        for s_item in scene_results:
+            sid = s_item.get("scene_id")
+            if sid is not None:
+                scene_score_map[sid] = s_item.get("score", 0.0)
+
+        # (B) frame_results (filename -> frame_score, scene_id)
+        frame_score_map = {}
+        frame_scene_map = {}  # filename -> scene_id
+        frame_filenames = set()
+
+        for f_item in frame_results:
+            raw_path = f_item.get("frame_image_path", "")
+            if raw_path.startswith("./"):
+                raw_path = raw_path[2:]
+            filename_only = ntpath.basename(raw_path)
+
+            frame_filenames.add(filename_only)
+            frame_score_map[filename_only] = f_item.get("score", 0.0)
+            frame_scene_map[filename_only] = f_item.get("scene_id", None)
+
+        # (C) clip_results (filename -> clip_score)
+        clip_score_map = {}
+        clip_filenames = set()
+
+        for c_item in clip_results:
+            raw_path = c_item.get("image_filename", "")
+            if raw_path.startswith("./"):
+                raw_path = raw_path[2:]
+            filename_only = ntpath.basename(raw_path)
+
+            clip_filenames.add(filename_only)
+            clip_score_map[filename_only] = c_item.get("score", 0.0)
+
+        # (D) 최종 후보 = frame_filenames ∪ clip_filenames
+        candidate_filenames = frame_filenames.union(clip_filenames)
+
+        # (E) 후보 각각에 대해 점수 계산
+        fused_list = []
+        for fname in candidate_filenames:
+            frame_s = frame_score_map.get(fname, 0.0)
+            sid = frame_scene_map.get(fname, None)
+
+            scene_s = 0.0
+            if sid is not None and sid in scene_score_map:
+                scene_s = scene_score_map[sid]
+
+            clip_s = clip_score_map.get(fname, 0.0)
+
+            final_s = (
+                self.w_frame * frame_s + self.w_scene * scene_s + self.w_clip * clip_s
+            )
+
+            fused_list.append(
+                {
+                    "filename": fname,
+                    "final_score": final_s,
+                    "frame_score": frame_s,
+                    "scene_score": scene_s,
+                    "clip_score": clip_s,
+                    "scene_id": sid,
+                }
+            )
+
+        # (F) final_score 내림차순 정렬 후 상위 top_k
+        fused_list.sort(key=lambda x: x["final_score"], reverse=True)
+        return fused_list[:top_k]
+
+    def retrieve_and_fuse(self, user_query: str, top_k: int = 5):
+        """
+        세 가지 Retrieval을 모두 수행한 뒤, fuse_results까지 자동으로 진행한다.
+        """
+        frame_results, scene_results, clip_results = self.retrieve_all(
+            user_query, top_k=100
+        )
+        fused_top_k = self.fuse_results(
+            frame_results, scene_results, clip_results, top_k=top_k
+        )
+        return fused_top_k
+
+    def print_fused_results(self, fused_list):
+        """
+        fuse_results로 나온 결과를 보기 좋게 출력한다.
+        """
+        print("\n=== Rank Fusion Results ===")
+        for i, item in enumerate(fused_list, start=1):
+            print(
+                f"Rank {i}: "
+                f"filename={item['filename']}, "
+                f"Final={item['final_score']:.4f}, "
+                f"frame={item['frame_score']:.2f}, "
+                f"scene={item['scene_score']:.2f}, "
+                f"clip={item['clip_score']:.2f}, "
+                f"scene_id={item['scene_id']}"
+            )
+
+    def run_demo(
+        self, user_query: str = "Anna and Elsa playing in the snow", top_k: int = 5
+    ):
+        """
+        데모 시나리오: 사용자 쿼리에 대해 Retrieve & Fuse 후 결과를 출력.
+        """
+        fused_top_k = self.retrieve_and_fuse(user_query=user_query, top_k=top_k)
+        self.print_fused_results(fused_top_k)
+
+
+if __name__ == "__main__":
+    # RankFusionSystem 객체 생성 (필요시 가중치, config 경로를 원하는 대로 조절 가능)
+    rank_fusion_system = RankFusionSystem(
+        frame_text_config_path="config/frame_description_config.yaml",
+        scene_text_config_path="config/scene_description_config.yaml",
+        clip_config_path="config/clip_config.yaml",
         w_frame=0.2,
         w_scene=0.2,
         w_clip=0.6,
-        top_k=5,
     )
 
-    print("\n=== Rank Fusion Results ===")
-    for i, item in enumerate(fused_top_k, start=1):
-        print(
-            f"Rank {i}: filename={item['filename']}, "
-            f"Final={item['final_score']:.4f}, "
-            f"frame={item['frame_score']:.2f}, "
-            f"scene={item['scene_score']:.2f}, "
-            f"clip={item['clip_score']:.2f}, "
-            f"scene_id={item['scene_id']}"
-        )
-
-    input_csv_path = "dev/benchmark_en.csv"
-    output_csv_path = "processed_fuse_results.csv"
-
-    # Process results and save to output CSV
-    processed_df = process_fuse_results(input_csv_path, fused_top_k, output_csv_path)
-
-    print("Processed results saved to", output_csv_path)
+    # 데모 실행
+    # 예) "Anna and Elsa playing in the snow" 쿼리에 대해 top_k=5개 결과 표시
+    rank_fusion_system.run_demo(user_query="A man on cliff", top_k=5)
