@@ -3,4 +3,5 @@ transformers
 Pillow
 matplotlib
 PyYAML
+opencv-python-headless
 git+https://github.com/openai/CLIP.git
