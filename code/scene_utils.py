@@ -59,7 +59,7 @@ def get_filled_scene_timestamps(video_path, threshold=30.0, min_scene_len=2):
     if previous_end < real_end:
         filled_timestamps.append((previous_end, real_end))
 
-    return timestamps
+    return filled_timestamps
 
 
 def save_timestamps_to_txt(
