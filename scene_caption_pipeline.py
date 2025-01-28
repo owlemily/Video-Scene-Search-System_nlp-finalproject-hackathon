@@ -39,19 +39,24 @@ if __name__ == "__main__":
     use_audio = config["audio"]["use_audio"]
     scene_output_filename = config["data"]["scene_output_filename"]
 
+    # 비디오 폴더의 모든 비디오에 대해 타임스탬프 추출하여 txt 파일로 저장
     save_timestamps_to_txt(
         video_folder, timestamp_file, threshold=30.0, min_scene_len=2
     )
 
+    # 타임스탬프 txt 파일로부터 비디오 Scene(mp4) 추출하여 scene_folder에 저장
     save_all_video_scenes_by_timestamps(video_folder, scene_folder, timestamp_file)
 
     if use_audio:
+        # Scene 폴더로부터 모든 Scene들의 모노 오디오를 mono_audio_folder에 저장
         save_all_mono_audio_from_scene_folder(scene_folder, mono_audio_folder)
 
+        # mono_audio_folder에 저장된 모든 Scene의 오디오를 텍스트로 변환하여 Scene 정보 JSON 파일로 저장
         transcribe_and_save_scene_information_into_json(
             mono_audio_folder, scene_info_json_file, timestamp_file
         )
 
+    # Scene Caption 생성하여 json 파일로 저장
     os.makedirs("output", exist_ok=True)
     scene_caption_output_path = os.path.join("output", scene_output_filename)
 
