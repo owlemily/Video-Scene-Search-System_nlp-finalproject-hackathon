@@ -22,42 +22,40 @@ huggingface-cli login # 특정 모델 사용시 토큰 필요
 python scene_caption_pipeline.py # scene_config.yaml 적절히 모델, prompt 수정
 ```
 
-## EvalCaption Streamlit 실행방법
+## EvalSceneCaption Streamlit 실행방법
 ```bash
-cd Evalcaption
+cd EvalSceneCaption
 streamlit run app.py --server.address 0.0.0.0 --server.port 1111 # 서버포트는 해당 서버에 맞는걸로
 ```
-또는, http://10.28.224.27:30846/ 에서 접속 가능
+또는, "아직 주소는 확정 x" 에서 접속 가능 - 필요시 서버 열겠습니다.
 
-## 22개 Retireval 테스트 동영상에 대한 Frame Caption 생성방법
-```bash
-python frame_caption_pipeline.py # fcs_config.yaml 적절히 수정
-```
 
 파일구조
 ```bash
 level4-nlp-finalproject-hackathon-nlp-01-lv3
 |-- README.md
-|-- code
+|-- code # pipeline에서 사용되는 모듈들
 |   |-- __init__.py
-|   |-- frame_caption_modules.py # frame_caption 모듈
-|   |-- unsloth_vision_utils.py # Custom_UnslothVisionDataCollator
-|   `-- utils.py # 여러 utils (extract_frames_from_folder, create_and_save_dataset 등..)
-|-- config # config 저장 경로
-|   |-- evalCaption.yaml
-|   `-- fcs_config.yaml
-|-- datasets # huggingface datasets 저장경로
-|   `-- test_dataset_79
-|-- download_22video.sh # 22개 영상 다운받는 스크립트
-|-- download_evalCaption_images.sh # 79개 이미지 다운받는 스크립트
-|-- evalCaption
-|   |-- output # streamlit app을 실행시켰을때, save 누를시 Json이 저장되는 경로
-|   `-- app.py # streamlit app 코드
-|-- evalCaption_pipeline.py # 실행시키면, 79개에 대한 캡셔닝을 진행하는 코드
-|-- frame_caption_pipeline.py # 실행시키면, 22개 영상에 대한 캡셔닝을 진행하는 코드
-|-- init.sh # 초기 apt 설치 및 22개 영상 다운로드
-|-- output # 캡션이 저장되는 경로
-|   `-- frame_output_test_dataset_79_v1.json
+|   |-- audio_utils.py
+|   |-- scene_caption_modules.py
+|   |-- scene_utils.py
+|   |-- utils.py
+|   `-- specific_model_utils
+|       |-- InternVideo2_utils.py
+|       `-- __init__.py
+|-- config
+|   `-- scene_config.yaml
+|-- download_22video.sh # 22개 동영상 다운
+|-- evalSceneCaption # Streamlit 서버로 Scene caption 평가하는 코드
+|   `-- app.py
+|-- init.sh # apt 설치 및 초기 세팅
+|-- mono_audio # mono 오디오 저장경로
+|-- output # 모든 Scene에 대한 캡션 결과를 담는 저장경로
+|   `-- scene_output_v25.json
 |-- requirements.txt
-`-- test_dataset_79 # 79개 이미지들 다운받았을때 생기는 폴더
+|-- scene_caption_pipeline.py # Scene caption 전과정을 적어놓은 코드
+|-- scene_info.json # 오디오 정보를 포함한 씬 정보들 모음
+|-- scenes # scene(mp4) 파일들이 모여있는 폴더
+|-- video # 전체 영상들이 모여있는 폴더
+`-- video_timestamps.txt # 모든 비디오를 씬 단위로 나눈 txt
 ```
