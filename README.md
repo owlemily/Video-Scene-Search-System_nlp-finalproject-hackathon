@@ -1,140 +1,138 @@
-# Rank Fusion for Multi-modal Retrieval
+# RankFusion Retrieval Pipeline
 
-This project combines results from two different retrieval methods, **BGE Retrieval** (text-based) and **CLIP Retrieval** (image-based), to produce a fused ranking using weighted scores.
+This project implements a rank fusion retrieval pipeline that combines multiple retrieval methods (frame, scene, and image retrieval) into a unified scoring mechanism to provide ranked results based on user queries. The pipeline leverages:
 
-## Overview
+1. **BGERetrieval (Basic Geometric Embedding Retrieval)** for text-based frame and scene retrieval.
+2. **CLIPRetrieval** for image-based retrieval using CLIP embeddings.
 
-The `fuse_results` function takes the outputs of BGE and CLIP retrieval methods and combines them into a single ranked list based on a weighted score. This approach leverages the strengths of both retrieval methods to improve overall result relevance.
+## Project Structure
 
-## Features
+```
+.
+|-- README.md                # Project documentation
+|-- code
+|   |-- __init__.py          # Initialization script for the code module
+|   |-- __pycache__          # Cached Python bytecode files
+|   |-- basic_retrieval.py   # Implementation of BGERetrieval for frame and scene
+|   -- image_retrieval.py    # Implementation of CLIPRetrieval for image retrieval
+|-- config
+|   |-- clip_config.yaml               # Configuration file for CLIP retrieval
+|   |-- frame_description_config.yaml  # Configuration file for frame retrieval
+|   -- scene_description_config.yaml   # Configuration file for scene retrieval
+|-- datasets
+|   |-- frames_22           # Dataset for frame retrieval
+|   -- test_dataset_79      # Test dataset for validation
+|-- description
+|   |-- frame_output_test_dataset_79_v1.json  # Sample frame retrieval outputs (v1)
+|   |-- frame_output_test_dataset_79_v2.json  # Sample frame retrieval outputs (v2)
+|   |-- frame_output_v3_unsloth_22.json       # Sample frame retrieval outputs (v3)
+|   -- scene_output_v22.json                  # Sample scene retrieval outputs
+|-- dev
+|   -- assign_scene_id.py   # Script for assigning scene IDs to frames
+|-- init_dataset
+|   |-- download_test_dataset_79.sh  # Script to download test dataset
+|   |-- download_video.sh            # Script to download video data
+|   |-- only_extract_frames.py       # Script to extract frames from video
+|   -- video                         # Directory for raw video files
+|-- rankfusion_retrieval_pipeline.py # Main pipeline script for rank fusion
+-- requirements.txt                  # Python dependencies
+```
 
-- **BGE Retrieval**: Retrieves text-based results based on a user query.
-- **CLIP Retrieval**: Matches text queries with image results.
-- **Rank Fusion**: Combines results using weighted scores from both retrieval methods.
+## Key Components
 
-## Example Use Case
+### 1. **BGERetrieval (Basic Geometric Embedding Retrieval)**
 
-The example demonstrates:
-1. Creating BGE and CLIP retrieval objects.
-2. Performing retrieval using a user query.
-3. Fusing the results with customizable weights.
+This module handles retrieval based on textual descriptions of frames and scenes.
 
-## Requirements
+- **Frame Retrieval**: Extracts relevant frames based on user queries.
+- **Scene Retrieval**: Extracts relevant scenes based on user queries.
 
-- Python 3.x
-- YAML configuration files for BGE and CLIP retrieval (`config/basic_config.yaml`, `config/clip_config.yaml`)
+### 2. **CLIPRetrieval**
 
-Install necessary libraries (if required):
+This module performs image-based retrieval using CLIP embeddings to match images to user queries.
+
+### 3. **Rank Fusion Logic**
+
+The `fuse_results` function combines retrieval results from frame, scene, and image retrieval modules using weighted scores:
+
+- **Input**: Results from the three retrieval methods.
+- **Weights**: Adjustable parameters for frame, scene, and clip scores.
+- **Output**: Unified top-k results ranked by the final score.
+
+## Configuration Files
+
+- `config/frame_description_config.yaml`: Configuration for frame retrieval.
+- `config/scene_description_config.yaml`: Configuration for scene retrieval.
+- `config/clip_config.yaml`: Configuration for image retrieval.
+
+## Usage
+
+### Prerequisites
+
+Ensure Python 3 is installed along with the required dependencies listed in `requirements.txt`:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-## How to Use
+### Steps to Run
 
-### 1. Prepare Configuration Files
+1. **Prepare Datasets**:
 
-Ensure you have the appropriate YAML configuration files for both BGE and CLIP retrieval methods:
-- `config/basic_config.yaml`
-- `config/clip_config.yaml`
+   - Use `init_dataset/download_test_dataset_79.sh` to download the test dataset.
 
-### 2. Function Parameters
 
-#### `fuse_results` Function
+   - Use `init_dataset/only_extract_frames.py` to extract frames from video files.
 
-| Parameter      | Description                                       |
-|----------------|---------------------------------------------------|
-| `text_results` | List of results from BGE Retrieval               |
-| `image_results`| List of results from CLIP Retrieval              |
-| `w_bge`        | Weight for BGE scores (default: 0.5)             |
-| `w_clip`       | Weight for CLIP scores (default: 0.5)            |
-| `top_k`        | Number of top results to return (default: 10)    |
+2. **Run the Pipeline**:
+   Execute the main script to perform retrieval and rank fusion:
 
-Each result list should follow the structure:
+   ```bash
+   python rankfusion_retrieval_pipeline.py
+   ```
 
-**Text Results Example**:
-```python
-[
-  {
-    'rank': 1,
-    'frame_timestamp': '50.5',
-    'frame_image_path': './test_dataset_79/5qlG1ODkRWw_50.500.jpg',
-    'score': 0.8501
-  },
-  ...
-]
+3. **Example Query**:
+   Update the user query in the `rankfusion_retrieval_pipeline.py` script (e.g., `user_query = "monkey hitting man"`).
+
+4. **Output**:
+   The script will output the top-k fused results, including individual scores from frame, scene, and image retrieval.
+
+### Sample Output
+
+An example of rank fusion results:
+
 ```
-
-**Image Results Example**:
-```python
-[
-  {
-    'rank': 1,
-    'image_filename': 'test_dataset_79/mDUSjBiHYeY_29.750.jpg',
-    'score': 0.2800
-  },
-  ...
-]
-```
-
-### 3. Execute the Script
-
-Run the script:
-```bash
-python rank_fusion.py
-```
-
-### 4. Adjust Weights
-
-Customize the weights for BGE and CLIP scores:
-```python
-fused_top_k = fuse_results(
-    bge_results, clip_results, w_bge=0.7, w_clip=0.3, top_k=5
-)
-```
-
-### 5. View Results
-
-The fused results will be printed:
-```text
 === Rank Fusion Results ===
-Rank 1: filename= 5qlG1ODkRWw_50.500.jpg, FinalScore=0.6100, BGE=0.8501, CLIP=0.2800
+Rank 1: filename=frame_001.jpg, Final=0.8540, frame=0.30, scene=0.40, clip=0.15, scene_id=12
+Rank 2: filename=frame_002.jpg, Final=0.7450, frame=0.25, scene=0.35, clip=0.14, scene_id=8
 ...
 ```
 
-## Implementation Details
+## File Descriptions
 
-### Key Steps in `fuse_results`
+### Code
 
-1. **Dictionary Conversion**: Convert the input lists (`text_results` and `image_results`) into a dictionary for efficient processing. Each key corresponds to a unique filename.
-2. **Score Fusion**: Compute the weighted average of BGE and CLIP scores.
-3. **Ranking**: Sort the results by the final fused score in descending order.
+- `basic_retrieval.py`: Implements the `BGERetrieval` class for text-based retrieval.
+- `image_retrieval.py`: Implements the `CLIPRetrieval` class for image-based retrieval.
 
-### Example Workflow in `__main__`
+### Datasets
 
-1. Initialize BGE and CLIP retrievers with their respective configuration files.
-2. Retrieve results for a sample query (`user_query`).
-3. Use `fuse_results` to combine the top results from both methods.
-4. Display the fused results.
+- `frames_22`: Contains frame data for retrieval.
+- `test_dataset_79`: Contains test data for validation.
 
-## Customization
+### Scripts
 
-- **Top-k Results**: Adjust the number of top results using the `top_k` parameter in the `fuse_results` function.
-- **Weight Adjustment**: Modify `w_bge` and `w_clip` to prioritize one retrieval method over the other.
+- `rankfusion_retrieval_pipeline.py`: Main script to execute the rank fusion pipeline.
+- `assign_scene_id.py`: Utility to map scene IDs to frames.
+- `only_extract_frames.py`: Extract frames from video files for frame-based retrieval.
 
-## Example Output
+## Future Work
 
-For a query like "monkey hitting man," the fused results might look like:
-```text
-=== Rank Fusion Results ===
-Rank 1: filename= test_dataset_79/mDUSjBiHYeY_29.750.jpg, FinalScore=0.6500, BGE=0.4000, CLIP=0.9000
-Rank 2: filename= test_dataset_79/5qlG1ODkRWw_50.500.jpg, FinalScore=0.6100, BGE=0.8501, CLIP=0.2800
-...
-```
-
-## License
-
-This project is licensed under the MIT License.
+- Incorporate advanced rank fusion techniques.
+- Add support for real-time retrieval pipelines.
+- Improve weight optimization for fused scoring.
 
 ---
 
-Feel free to customize the script to meet your specific use case!
+For questions or contributions, please contact the project maintainer.
+
