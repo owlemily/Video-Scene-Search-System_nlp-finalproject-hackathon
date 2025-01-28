@@ -16,8 +16,9 @@ import re
 import torch
 import torchaudio
 import whisper
-from scene_utils import read_timestamps_from_txt
 from tqdm import tqdm
+
+from .scene_utils import read_timestamps_from_txt
 
 
 def reduce_repeated_characters(text, max_repeats=5):

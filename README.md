@@ -1,5 +1,5 @@
 ## 운영환경
-Linux, cuda 12.1, V100 32GB
+Linux, cuda 12.2, V100 32GB
 
 ## 초기 환경 설치
 ```bash
