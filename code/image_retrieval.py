@@ -4,6 +4,7 @@ import clip
 import torch
 import yaml
 from PIL import Image
+from tqdm import tqdm
 
 
 class CLIPRetrieval:
@@ -87,7 +88,9 @@ class CLIPRetrieval:
         self.collect_image_filenames()
         image_embeddings = []
 
-        for image_path in self.image_filenames:
+        for image_path in tqdm(
+            self.image_filenames, desc="Processing images embeddings"
+        ):
             try:
                 image = Image.open(image_path)  # .convert("RGB")
                 image_input = self.preprocess(image).unsqueeze(0).to(self.device)
@@ -106,7 +109,7 @@ class CLIPRetrieval:
             {"filenames": self.image_filenames, "features": self.image_embeddings},
             self.embedding_file,
         )
-        print(f"Image features saved to: {self.embedding_file}")
+        print(f"Image features(embeddings) saved to: {self.embedding_file}")
 
     def load_image_embeddings(self) -> None:
         """

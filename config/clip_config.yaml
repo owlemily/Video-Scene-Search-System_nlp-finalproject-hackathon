@@ -1,6 +1,6 @@
 model_name: "ViT-L/14@336px" # ['RN50', 'RN101', 'RN50x4', 'RN50x16', 'RN50x64', 'ViT-B/32', 'ViT-B/16', 'ViT-L/14', 'ViT-L/14@336px']
 frame_folder: "datasets/frames_22"
-output_file: "output/frame_vectors.pt"
+output_file: "output/clip_vectors.pt"
 image_extensions:
   - ".jpg"
   - ".png"
