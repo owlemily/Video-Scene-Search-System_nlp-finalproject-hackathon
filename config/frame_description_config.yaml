@@ -1,0 +1,4 @@
+model_name: "BAAI/bge-large-en"
+type: "frame"
+json_file: "description/frame_output_v3_unsloth_22.json"
+output_file: "output/frame_description_vectors.pt"

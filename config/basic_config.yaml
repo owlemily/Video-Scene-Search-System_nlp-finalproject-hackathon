@@ -1,3 +1,0 @@
-model_name: "BAAI/bge-large-en"
-frame_json_file: "description/frame_output_test_dataset_79_v1.json"
-output_file: "output/description_vectors.pt"

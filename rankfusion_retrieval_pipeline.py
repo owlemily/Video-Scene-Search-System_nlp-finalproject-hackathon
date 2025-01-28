@@ -6,142 +6,184 @@ from code.image_retrieval import CLIPRetrieval
 
 
 def fuse_results(
-    text_results,  # BGERetrieval (text-based) 결과
-    image_results,  # CLIPRetrieval (image-based) 결과
-    w_bge=0.5,  # BGE 점수 가중치
-    w_clip=0.5,  # CLIP 점수 가중치
+    frame_results,  # BGERetrieval(frame) topK
+    scene_results,  # BGERetrieval(scene) topK
+    clip_results,  # CLIPRetrieval topK
+    w_frame=0.3,
+    w_scene=0.4,
+    w_clip=0.3,
     top_k=10,
 ):
     """
-    텍스트 검색 결과(text_results)와 이미지 검색 결과(image_results)를 합쳐
-    최종 랭킹을 구하는 함수.
+    전체 프레임 메타정보가 없는 상황에서,
+    frame_results + scene_results + clip_results를 합쳐
+    최종 점수를 계산하는 간단한 방법.
 
-    각 결과 예시:
-      image_results: [
-        {
-          'rank': 1,
-          'image_filename': 'test_dataset_79/mDUSjBiHYeY_29.750.jpg',
-          'score': 0.2800
-        }, ...
-      ]
-      text_results: [
-        {
-          'rank': 1,
-          'frame_timestamp': '50.5',
-          'frame_image_path': './test_dataset_79/5qlG1ODkRWw_50.500.jpg',
-          'score': 0.8501
-        }, ...
-      ]
+    - 후보 프레임: (frame_results의 filename) ∪ (clip_results의 filename)
+    - frame_score: frame_results에 있으면 점수, 없으면 0
+    - scene_score: frame_results 통해 얻은 scene_id가 scene_results topK 중 있으면 점수, 없으면 0
+    - clip_score: clip_results에 있으면 점수, 없으면 0
 
-    :param text_results: BGE(Retrieval) 결과 리스트
-    :param image_results: CLIP(Retrieval) 결과 리스트
-    :param w_bge: BGE 점수에 대한 가중치
-    :param w_clip: CLIP 점수에 대한 가중치
-    :param top_k: 최종 상위 몇 개 결과를 뽑을지
-    :return: rank fusion 후 (최종 점수 기준 내림차순) 상위 top_k 리스트
+    final_score = w_frame * frame_score + w_scene * scene_score + w_clip * clip_score
     """
 
-    # 1) 결과를 dict 형태로 변환하여 관리
-    #    key = 파일명 (예: "mDUSjBiHYeY_29.750.jpg")
-    fusion_dict = {}
+    # -----------------------------
+    # (A) scene_id -> scene_score (scene_results 맵)
+    # -----------------------------
+    scene_score_map = {}
+    for s_item in scene_results:
+        sid = s_item.get("scene_id")
+        if sid is not None:
+            scene_score_map[sid] = s_item.get("score", 0.0)
 
-    # --- BGE(Text) 결과 처리 ---
-    for item in text_results:
-        # 예: "./test_dataset_79/5qlG1ODkRWw_50.500.jpg"
-        raw_path = item.get("frame_image_path", "")
-        # (1) 앞의 "./" 제거
+    # -----------------------------
+    # (B) frame_results (filename -> frame_score, scene_id)
+    # -----------------------------
+    frame_score_map = {}
+    frame_scene_map = {}  # filename -> scene_id
+
+    frame_filenames = set()
+
+    for f_item in frame_results:
+        raw_path = f_item.get("frame_image_path", "")
         if raw_path.startswith("./"):
             raw_path = raw_path[2:]
-        # (2) 파일명만 추출
-        filename_only = ntpath.basename(raw_path)  # "5qlG1ODkRWw_50.500.jpg"
+        filename_only = ntpath.basename(raw_path)
 
-        fusion_dict[filename_only] = {
-            "bge_score": item["score"],
-            "clip_score": 0.0,
-            "bge_info": item,
-            "clip_info": None,
-        }
+        frame_filenames.add(filename_only)
+        frame_score_map[filename_only] = f_item.get("score", 0.0)
+        frame_scene_map[filename_only] = f_item.get("scene_id", None)
 
-    # --- CLIP(Image) 결과 처리 ---
-    for item in image_results:
-        # 예: "test_dataset_79/mDUSjBiHYeY_29.750.jpg"
-        raw_path = item.get("image_filename", "")
-        # (1) 혹시 모를 "./" 제거
+    # -----------------------------
+    # (C) clip_results (filename -> clip_score)
+    # -----------------------------
+    clip_score_map = {}
+    clip_filenames = set()
+
+    for c_item in clip_results:
+        raw_path = c_item.get("image_filename", "")
         if raw_path.startswith("./"):
             raw_path = raw_path[2:]
-        # (2) 파일명만 추출
-        filename_only = ntpath.basename(raw_path)  # "mDUSjBiHYeY_29.750.jpg"
+        filename_only = ntpath.basename(raw_path)
 
-        if filename_only in fusion_dict:
-            # 이미 BGE에서 들어온 항목이 있는 경우
-            fusion_dict[filename_only]["clip_score"] = item["score"]
-            fusion_dict[filename_only]["clip_info"] = item
-        else:
-            # 신규
-            fusion_dict[filename_only] = {
-                "bge_score": 0.0,
-                "clip_score": item["score"],
-                "bge_info": None,
-                "clip_info": item,
-            }
+        clip_filenames.add(filename_only)
+        clip_score_map[filename_only] = c_item.get("score", 0.0)
 
-    # 2) 최종 스코어 계산 (가중합)
+    # -----------------------------
+    # (D) 최종 후보 = frame_filenames ∪ clip_filenames
+    # -----------------------------
+    candidate_filenames = frame_filenames.union(clip_filenames)
+
+    # -----------------------------
+    # (E) 후보 각각에 대해 점수 계산
+    # -----------------------------
     fused_list = []
-    for filename_key, v in fusion_dict.items():
-        fused_score = w_bge * v["bge_score"] + w_clip * v["clip_score"]
+    for fname in candidate_filenames:
+        # frame_score
+        frame_s = frame_score_map.get(fname, 0.0)
+
+        # scene_score
+        #  - scene_id를 frame_results에서만 알 수 있다고 가정
+        scene_s = 0.0
+        sid = frame_scene_map.get(fname, None)
+        if sid is not None and sid in scene_score_map:
+            scene_s = scene_score_map[sid]
+
+        # clip_score
+        clip_s = clip_score_map.get(fname, 0.0)
+
+        # 최종 점수
+        final_s = w_frame * frame_s + w_scene * scene_s + w_clip * clip_s
+
         fused_list.append(
             {
-                "filename": filename_key,
-                "final_score": fused_score,
-                "bge_score": v["bge_score"],
-                "clip_score": v["clip_score"],
-                "bge_info": v["bge_info"],
-                "clip_info": v["clip_info"],
+                "filename": fname,
+                "final_score": final_s,
+                "frame_score": frame_s,
+                "scene_score": scene_s,
+                "clip_score": clip_s,
+                "scene_id": sid,  # scene_id가 None일 수도 있음
             }
         )
 
-    # 3) final_score 내림차순 정렬 후 상위 top_k만
+    # -----------------------------
+    # (F) final_score 내림차순 정렬 후 상위 top_k
+    # -----------------------------
     fused_list.sort(key=lambda x: x["final_score"], reverse=True)
-
-    # 최종 결과 반환
     return fused_list[:top_k]
 
 
 if __name__ == "__main__":
     """
     예시 실행:
-    - 1) BGE Retrieval (텍스트 기반) 객체 생성 후, 사용자 쿼리에 대해 top_k 추출
-    - 2) CLIP Retrieval (텍스트->이미지 매칭) 객체 생성 후, 동일 쿼리에 대해 top_k 추출
-    - 3) fuse_results 함수로 랭크퓨전 진행 (w_bge, w_clip으로 가중치 조절)
+    - 1) BGE Retrieval (프레임 설명 기반) 객체 생성 후, 사용자 쿼리에 대해 top_k 추출
+    - 2) BGE Retrieval (씬 설명 기반) 객체 생성 후, 동일 쿼리에 대해 top_k 추출
+    - 3) CLIP Retrieval (이미지) 객체 생성 후, 동일 쿼리에 대해 top_k 추출
+    - 4) fuse_results 함수로 세 결과를 랭크퓨전 (w_frame, w_scene, w_clip 가중치 조절)
     """
 
-    # 1) BGE Retrieval 생성
-    text_config_path = "config/basic_config.yaml"
-    text_retriever = BGERetrieval(config_path=text_config_path)
+    # 1) BGE Retrieval (frame)
+    frame_text_config_path = "config/frame_description_config.yaml"
+    frame_text_retriever = BGERetrieval(config_path=frame_text_config_path)
 
-    # 2) CLIP Retrieval 생성
+    # 2) BGE Retrieval (scene)
+    scene_text_config_path = "config/scene_description_config.yaml"
+    scene_text_retriever = BGERetrieval(config_path=scene_text_config_path)
+
+    # 3) CLIP Retrieval (image)
     clip_config_path = "config/clip_config.yaml"
     image_retriever = CLIPRetrieval(config_path=clip_config_path)
 
-    # 사용자 쿼리(텍스트)
+    # 사용자 쿼리
     user_query = "monkey hitting man"
 
-    # BGE 결과 (top_k=5)
-    bge_results = text_retriever.retrieve(user_query, top_k=5)
+    # (A) BGE 결과 (frame)
+    frame_results = frame_text_retriever.retrieve(user_query, top_k=5)
+    # print("\n=== Frame Retrieval Results ===")
+    # for i, item in enumerate(frame_results, start=1):
+    #     print(
+    #         f"Rank {i}: timestamp={item['frame_timestamp']}, "
+    #         f"image_path={item['frame_image_path']}, "
+    #         # f"caption={item['frame_description']}, "
+    #         f"scene_id={item['scene_id']}, "
+    #         f"score={item['score']:.4f}"
+    #     )
 
-    # CLIP 결과 (top_k=5)
+    # (B) BGE 결과 (scene)
+    scene_results = scene_text_retriever.retrieve(user_query, top_k=5)
+    # print("\n=== Scene Retrieval Results ===")
+    # for i, item in enumerate(scene_results, start=1):
+    #     print(
+    #         f"Rank {i}: start={item['scene_start_time']}, "
+    #         f"end={item['scene_end_time']}, "
+    #         # f"description={item['scene_description']}, "
+    #         f"score={item['score']:.4f}"
+    #     )
+
+    # (C) CLIP 결과
     clip_results = image_retriever.retrieve(user_query, top_k=5)
+    # print("\n=== CLIP Retrieval Results ===")
+    # for i, item in enumerate(clip_results, start=1):
+    #     print(f"Rank {i}: image={item['image_filename']}, score={item['score']:.4f}")
 
     # --- Rank Fusion ---
-    # 예시: BGE 쪽에 좀 더 가중치(0.7)를 주고, CLIP 쪽에는 0.3 부여
     fused_top_k = fuse_results(
-        bge_results, clip_results, w_bge=0.3, w_clip=0.7, top_k=5
+        frame_results,
+        scene_results,
+        clip_results,
+        w_frame=0.3,
+        w_scene=0.3,
+        w_clip=0.4,
+        top_k=5,
     )
 
     print("\n=== Rank Fusion Results ===")
     for i, item in enumerate(fused_top_k, start=1):
         print(
-            f"Rank {i}: filename= {item['filename']}, "
-            f"FinalScore={item['final_score']:.4f}, "
-            f"BGE={item['bge_score']:.4f}, CLIP={item['clip_score']:.4f}"
+            f"Rank {i}: filename={item['filename']}, "
+            f"Final={item['final_score']:.4f}, "
+            f"frame={item['frame_score']:.2f}, "
+            f"scene={item['scene_score']:.2f}, "
+            f"clip={item['clip_score']:.2f}, "
+            f"scene_id={item['scene_id']}"
         )

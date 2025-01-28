@@ -1,0 +1,4 @@
+model_name: "BAAI/bge-large-en"
+type: "scene"
+json_file: "description/scene_output_v22.json"
+output_file: "output/scene_description_vectors.pt"
