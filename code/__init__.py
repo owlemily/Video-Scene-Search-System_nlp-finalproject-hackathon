@@ -5,18 +5,14 @@ code
 
 모듈 목록:
 1. utils.py
-2. frame_utils.py
-3. scene_utils.py
-4. audio_utils.py
-5. frame_caption_modules.py
-6. scene_caption_modules.py
+2. scene_utils.py
+3. audio_utils.py
+4. scene_caption_modules.py
 """
 
 __all__ = [
     "utils",
-    "frame_utils",
     "scene_utils",
     "audio_utils",
-    "frame_caption_modules",
     "scene_caption_modules",
 ]

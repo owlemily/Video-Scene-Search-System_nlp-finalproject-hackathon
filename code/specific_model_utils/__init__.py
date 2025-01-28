@@ -5,11 +5,9 @@ specific_model_utils
 이 패키지의 모듈들은 굳이 안 보셔도 됩니다.
 
 모듈 목록:
-1. unsloth_vision_utils.py
-2. InternVideo2_utils.py
+1. InternVideo2_utils.py
 """
 
 __all__ = [
-    "unsloth_vision_utils",
     "InternVideo2_utils",
 ]
