@@ -94,9 +94,9 @@ if __name__ == "__main__":
     # -- (7) 실제 함수 실행 --
     run_rank_fusion_for_csv(
         csv_input_path="dev/benchmark_en.csv",
-        csv_output_path="dev/benchmark_fused.csv",
-        top_k=5,  # 각 쿼리에 대해 상위 5개 저장
-        w_frame=0,
-        w_scene=0,
-        w_clip=1,
+        csv_output_path="/data/ephemeral/home/level4-nlp-finalproject-hackathon-nlp-01-lv3/benchmark_fused.csv",
+        top_k=1,
+        w_frame=1,
+        w_scene=2,
+        w_clip=4,
     )

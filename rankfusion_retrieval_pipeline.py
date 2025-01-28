@@ -178,9 +178,7 @@ class RankFusionSystem:
                 f"scene_id={item['scene_id']}"
             )
 
-    def run_demo(
-        self, user_query: str = "Anna and Elsa playing in the snow", top_k: int = 5
-    ):
+    def run_demo(self, user_query: str = "Anna", top_k: int = 5):
         """
         데모 시나리오: 사용자 쿼리에 대해 Retrieve & Fuse 후 결과를 출력.
         """
@@ -194,11 +192,12 @@ if __name__ == "__main__":
         frame_text_config_path="config/frame_description_config.yaml",
         scene_text_config_path="config/scene_description_config.yaml",
         clip_config_path="config/clip_config.yaml",
-        w_frame=0.2,
-        w_scene=0.2,
-        w_clip=0.6,
+        w_frame=1,
+        w_scene=1.6,
+        w_clip=4,
     )
 
     # 데모 실행
-    # 예) "Anna and Elsa playing in the snow" 쿼리에 대해 top_k=5개 결과 표시
-    rank_fusion_system.run_demo(user_query="A man on cliff", top_k=5)
+    rank_fusion_system.run_demo(
+        user_query="Man pushes police officer down with police car", top_k=5
+    )
