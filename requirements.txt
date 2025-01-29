@@ -27,3 +27,7 @@ git+https://github.com/LLaVA-VL/LLaVA-NeXT.git
 av
 imageio
 opencv-python
+
+pydub
+librosa
+soundfile

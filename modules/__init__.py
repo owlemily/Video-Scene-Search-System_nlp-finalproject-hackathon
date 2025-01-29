@@ -8,6 +8,7 @@ code
 2. scene_utils.py
 3. audio_utils.py
 4. scene_caption_modules.py
+5. extra_utils.py
 """
 
 __all__ = [
@@ -15,4 +16,5 @@ __all__ = [
     "scene_utils",
     "audio_utils",
     "scene_caption_modules",
+    "extra_utils",
 ]
