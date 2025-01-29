@@ -5,6 +5,14 @@ InternVideo2 모델을 사용하는데 필요한 함수들을 적어두었습니
 굳이, 안 읽어보셔도 됩니다.
 
 바깥 코드에서는 load_video 함수만 사용합니다.
+
+InternVideo2는 model, tokenizer만 반환하여 추론에 사용합니다.
+- Llava-Video에서는 model, tokenizer, image_processor를 반환해서 이를 추론할 때 사용합니다.
+- InternVideo2_5_Chat에서는 Generator만 반환하여 추론에 사용합니다.
+
+함수 목록:
+1. get_index
+2. load_video
 """
 
 import decord

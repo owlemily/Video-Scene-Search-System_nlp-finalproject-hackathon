@@ -1,3 +1,20 @@
+"""
+LlavaVideo_utils.py
+
+LlavaVideo 모델을 사용하는데 필요한 함수들을 적어두었습니다.
+바깥 코드에서는 load_llava_video_model, get_video_and_input_ids 함수만 사용합니다.
+저 2개의 코드들만 보셔도 됩니다.
+
+Llava-Video에서는 model, tokenizer, image_processor를 반환해서 이를 추론할 때 사용합니다.
+- InternVideo2는 model, tokenizer만 반환했었음
+- InternVideo2_5_Chat에서는 Generator만 반환함
+
+함수 목록:
+1. load_video
+2. load_llava_video_model
+3. get_video_and_input_ids
+"""
+
 import copy
 import warnings
 
@@ -35,6 +52,14 @@ def load_video(video_path, max_frames_num, fps=1, force_sample=False):
 
 
 def load_llava_video_model():
+    """
+    LlavaVideo 모델을 사용하기 위해 tokenizer, model, image_processor를 반환합니다.
+
+    Returns:
+        tokenizer: tokenizer
+        model: model
+        image_processor: image_processor
+    """
     pretrained = "lmms-lab/LLaVA-Video-7B-Qwen2"
     model_name = "llava_qwen"
     device_map = "auto"  # 오류 떠서 주석처리함 {"": "cuda"}
@@ -63,7 +88,19 @@ def get_video_and_input_ids(
     prompt="Please describe this video in detail.",
 ):
     """
-    Please describe this video in detail.
+    비디오 경로(Scene 경로)를 받아서 비디오와 input_ids를 반환합니다.
+
+    Args:
+        video_path (str): 비디오 경로 (Scene 경로)
+        tokenizer: tokenizer
+        model: model
+        image_processor: image_processor
+        max_frames_num (int): 최대 프레임 수 (default: 64)
+        prompt (str): 질문
+
+    Returns:
+        video: 가공한 비디오
+        input_ids: input_ids
     """
     video, frame_time, video_time = load_video(
         video_path, max_frames_num, 1, force_sample=True

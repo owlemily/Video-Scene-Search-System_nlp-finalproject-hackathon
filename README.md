@@ -41,7 +41,9 @@ level4-nlp-finalproject-hackathon-nlp-01-lv3
 |   |-- scene_utils.py
 |   |-- utils.py
 |   `-- specific_model_utils
-|       |-- InternVideo2_utils.py
+|   |   |-- InternVideo2_5_Chat_utils.py
+|   |   |-- InternVideo2_utils.py
+|   |   |-- LlavaVideo_utils.py
 |       `-- __init__.py
 |-- config
 |   `-- scene_config.yaml

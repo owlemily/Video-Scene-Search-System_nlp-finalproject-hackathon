@@ -4,8 +4,10 @@ scene_caption_modules.py
 함수 목록:
 1. initialize_model
 2. single_scene_caption_InternVideo2
-3. single_scene_caption
-4. scene_caption - 메인 함수
+3. single_scene_caption_LlavaVideo
+4. single_scene_caption_InternVideo2_5_Chat
+5. single_scene_caption
+6. scene_caption - 메인 함수
 """
 
 import json
@@ -149,6 +151,26 @@ def single_scene_caption_LlavaVideo(
     mono_audio_folder,
     scene_info_json_file_path=None,  # 오디오 스크립트 정보 포함
 ):
+    """
+    1개의 scene에 대한 캡션을 LlavaVideo 모델을 사용하여 생성하는 함수
+
+    Args:
+        model (torch.nn.Module): 모델
+        tokenizer (transformers.tokenization_utils_base.PreTrainedTokenizer): tokenizer
+        image_processor: 이미지 처리기 (lmms-lab/LLaVA-Video-7B-Qwen2에 쓰임)
+        max_frames_num (int): 최대 프레임 수
+        scene_path (str): scene 경로
+        prompt (dict): prompt 정보
+        use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
+        mono_audio_folder (str): 모노 오디오 폴더 경로
+        scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
+
+        만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 None이면, whisper 모델을 사용하여 오디오 스크립트 추출
+        만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 있으면, 해당 경로에서 오디오 스크립트 추출
+
+    Returns:
+        result (dict): 캡션 결과
+    """
     translator = Translator()
 
     # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start:.3f}_{end:.3f}_{i + 1:03d})
@@ -209,7 +231,7 @@ def single_scene_caption_InternVideo2_5_Chat(
     scene_info_json_file_path=None,  # 오디오 스크립트 정보 포함
 ):
     """
-    1개의 scene에 대한 캡션을 InternVideo2 모델을 사용하여 생성하는 함수
+    1개의 scene에 대한 캡션을 InternVideo2_5_Chat 모델을 사용하여 생성하는 함수
 
     Args:
         generator (DescriptionGenerator): 모델
@@ -350,6 +372,7 @@ def scene_caption(
         prompt (dict): prompt 정보
         generation_config (dict): 생성 설정
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
+        mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
         output_scene_caption_json_path (str): 캡션 결과를 저장할 json 파일 경로
 

@@ -1,3 +1,31 @@
+"""
+InternVideo2_5_Chat_utils.py
+
+InternVideo2_5_Chat_8B 모델을 사용하는데 필요한 함수들을 적어두었습니다.
+바깥 코드에서는 DescriptionGenerator 클래스를 사용하여 바로 추론합니다.
+클래스를 상세히 보실 필요는 없고, 바깥 코드에서는 DescriptionGenerator만 사용하시면 됩니다. (필요시, 현재 파이썬 파일의 main 함수 참고)
+
+InternVideo2_5_Chat에서는 Generator만 반환하여 추론에 사용합니다.
+- InternVideo2는 model, tokenizer만 반환했었음
+- Llava-Video에서는 model, tokenizer, image_processor를 반환해서 이를 추론할 때 사용합니다.
+
+클래스 목록:
+1. DescriptionGenerator
+"""
+
+"""
+LlavaVideo_utils.py
+
+LlavaVideo 모델을 사용하는데 필요한 함수들을 적어두었습니다.
+바깥 코드에서는 load_llava_video_model, get_video_and_input_ids 함수만 사용합니다.
+저 2개의 코드들만 보셔도 됩니다.
+
+함수 목록:
+1. load_video
+2. load_llava_video_model
+3. get_video_and_input_ids
+"""
+
 import numpy as np
 import torch
 import torchvision.transforms as T
