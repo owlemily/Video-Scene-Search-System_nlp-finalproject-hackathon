@@ -8,9 +8,9 @@ frame_caption_pipeline.py
 4. 데이터셋으로부터 프레임 캡션 생성 후 Json 파일로 저장
 """
 
-from code.frame_caption_modules import frame_caption
-from code.frame_utils import create_and_save_dataset, extract_frames_from_folder
-from code.utils import load_config
+from modules.frame_caption_modules import frame_caption
+from modules.frame_utils import create_and_save_dataset, extract_frames_from_folder
+from modules.utils import load_config
 
 if __name__ == "__main__":
     # config 파일 로드
