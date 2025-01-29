@@ -170,8 +170,11 @@ def single_scene_caption_LlavaVideo(
         scene_path, tokenizer, model, image_processor, max_frames_num, prompt
     )
 
+    attention_mask = (input_ids != tokenizer.pad_token_id).long().to("cuda")
+
     cont = model.generate(
         input_ids,
+        attention_mask=attention_mask,
         images=video,
         modalities=["video"],
         do_sample=False,

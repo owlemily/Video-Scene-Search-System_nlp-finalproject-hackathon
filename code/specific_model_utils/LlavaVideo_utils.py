@@ -2,6 +2,7 @@ import copy
 import warnings
 
 import numpy as np
+import torch
 from decord import VideoReader, cpu
 from llava.constants import DEFAULT_IMAGE_TOKEN, IMAGE_TOKEN_INDEX
 from llava.conversation import conv_templates
@@ -28,7 +29,7 @@ def load_video(video_path, max_frames_num, fps=1, force_sample=False):
         frame_idx = uniform_sampled_frames.tolist()
         frame_time = [i / vr.get_avg_fps() for i in frame_idx]
     frame_time = ",".join([f"{i:.2f}s" for i in frame_time])
-    spare_frames = vr.get_batch(frame_idx).asnumpy()
+    spare_frames = vr.get_batch(frame_idx).numpy()
     # import pdb;pdb.set_trace()
     return spare_frames, frame_time, video_time
 
@@ -46,6 +47,7 @@ def load_llava_video_model():
         attn_implementation="sdpa",
     )  # Add any other thing you want to pass in llava_model_args
     model.eval()
+    model = model.half()
     return tokenizer, model, image_processor, max_length
 
 
@@ -67,7 +69,7 @@ def get_video_and_input_ids(
     video = (
         image_processor.preprocess(video, return_tensors="pt")["pixel_values"]
         .cuda()
-        .half()
+        .to(torch.float16)
     )
     video = [video]
 
