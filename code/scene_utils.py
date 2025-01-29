@@ -15,6 +15,7 @@ import cv2
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from scenedetect import SceneManager, open_video
 from scenedetect.detectors import ContentDetector
+from tqdm import tqdm
 
 
 def get_filled_scene_timestamps(video_path, threshold=30.0, min_scene_len=2):
@@ -55,6 +56,7 @@ def get_filled_scene_timestamps(video_path, threshold=30.0, min_scene_len=2):
     real_end = float(
         cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FRAME_COUNT)
     ) / cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
+    real_end = round(real_end, 3)
 
     if previous_end < real_end:
         filled_timestamps.append((previous_end, real_end))
@@ -83,7 +85,9 @@ def save_timestamps_to_txt(
             for video_name in os.listdir(video_folder)
             if video_name.endswith(".mp4")
         ]
-        for video_name in video_files:
+        for video_name in tqdm(
+            video_files, desc="타임스탬프를 추출하여 txt 파일에 저장하는 중"
+        ):
             video_path = os.path.join(video_folder, video_name)
             video_id = os.path.splitext(video_name)[0]
 
@@ -142,6 +146,10 @@ def save_video_scenes_by_timestamps(video_path, timestamps, output_scene_folder)
 
     video_id = os.path.splitext(os.path.basename(video_path))[0]
 
+    # 만약 video_id가 '-'로 시작하면, '_'로 변경 (scene 변환시 오류 방지)
+    if video_id.startswith("-"):
+        video_id = "_" + video_id.lstrip("-")
+
     video = VideoFileClip(video_path)
 
     for i, (start, end) in enumerate(timestamps):
@@ -149,7 +157,9 @@ def save_video_scenes_by_timestamps(video_path, timestamps, output_scene_folder)
         output_scene_path = os.path.join(
             output_scene_folder, f"{video_id}_{start:.3f}_{end:.3f}_{i + 1:03d}.mp4"
         )
-        clip.write_videofile(output_scene_path, codec="libx264", audio_codec="aac")
+        clip.write_videofile(
+            output_scene_path, codec="libx264", audio_codec="aac", logger=None
+        )
         print(f"Scene {i + 1} saved: {output_scene_path}")
     video.close()
 
@@ -170,7 +180,7 @@ def save_all_video_scenes_by_timestamps(
     """
     timestamp_dict = read_timestamps_from_txt(timestamp_txt_path)
 
-    for video_id, timestamps in timestamp_dict.items():
+    for video_id, timestamps in tqdm(timestamp_dict.items(), desc="Scene 저장 중"):
         video_path = os.path.join(video_folder, f"{video_id}.mp4")
         if not os.path.exists(video_path):
             print(f"Video file {video_path} not found. Skipping...")
