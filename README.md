@@ -13,13 +13,30 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## scene_caption_pipeline.py 사용법
-1.1. https://huggingface.co/OpenGVLab/InternVideo2-Chat-8B 에서 동의하고 사용권한 확보  
-1.2. https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3 에서 동의하고 사용권한 확보
-```bash
-huggingface-cli login # 특정 모델 사용시 토큰 필요
+## 사용할 수 있는 모델 종류
+- OpenGVLab/InternVideo2-Chat-8B
+- lmms-lab/LLaVA-Video-7B-Qwen2
+- OpenGVLab/InternVideo2_5_Chat_8B
 
-python scene_caption_pipeline.py # scene_config.yaml 적절히 모델, prompt 수정
+### 특정 모델 사용시 사용권한을 얻어야 합니다.
+1. https://huggingface.co/OpenGVLab/InternVideo2-Chat-8B 에서 동의하고 사용권한 확보  
+2. https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3 에서 동의하고 사용권한 확보
+3. 그 후에, Hugging Face Token으로 로그인을 합니다.
+```bash
+huggingface-cli login
+```
+
+## 22개의 비디오에 대해 Scene을 추출하고 Caption을 다는 Pipeline 함수 실행법
+scene_config.yaml에서 model, prompt, use_audio 등을 적절히 수정하고 파이썬 파일을 실행합니다.
+```bash
+python scene_caption_pipeline.py
+```
+
+## 이미 구축된 Scene 모음(mp4)들에 대해 Caption을 다는 Pipeline 함수 실행법
+evalSceneCaption.yaml에서 model, prompt, use_audio 등을 적절히 수정하고 파이썬 파일을 실행합니다.  
+현재, 각 모델별 config 파일도 포함되어있어서 파이썬 파일에서 config를 갈아끼워도 됩니다. (아니면, model 인자만 바꿔도 작동함)
+```bash
+python evalSceneCaption_pipeline.py
 ```
 
 ## EvalSceneCaption Streamlit 실행방법

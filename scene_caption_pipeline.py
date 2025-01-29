@@ -4,7 +4,7 @@ scene_caption_pipeline.py
 코드 구조:
 1. config 파일 로드
 2. 비디오 폴더로부터 타임스탬프 추출하여 txt 파일로 저장
-3. 타임스탬프 파일로부터 비디오 Scene 추출하여 저장
+3. 타임스탬프 파일로부터 비디오 Scene들을 추출하여 Scene 폴더에 저장
 4. Scene 폴더로부터 모든 Scene의 오디오를 저장 (if use_audio)
 5. Scene 오디오를 텍스트로 변환하여 json 파일로 저장 (if use_audio)
 6. Scene Caption 생성하여 json 파일로 저장

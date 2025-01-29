@@ -1,6 +1,9 @@
 """
 evalSceneCaption_pipeline.py
 
+- 이 코드에서는 비디오 폴더로부터 타임스탬프 추출하여 Scene들을 Scene 폴더에 저장하는 부분은 제외되었음
+- 대신, Scene 폴더로부터 이미 생성되어있는 Scene(mp4)들을 이용하여 Scene Caption을 생성함
+
 코드 구조:
 1. config 파일 로드
 2. Scene Caption 생성하여 json 파일로 저장
