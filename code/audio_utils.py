@@ -67,7 +67,7 @@ def save_all_mono_audio_from_scene_folder(scene_folder, output_mono_audio_folder
     """
     os.makedirs(output_mono_audio_folder, exist_ok=True)
 
-    for scene_file in os.listdir(scene_folder):
+    for scene_file in tqdm(os.listdir(scene_folder), desc="Saving mono audio"):
         if not scene_file.endswith(".mp4"):
             continue
 
@@ -82,7 +82,7 @@ def save_all_mono_audio_from_scene_folder(scene_folder, output_mono_audio_folder
         )
 
         # mp4 파일(Scene)에서 오디오 추출하는 ffmpeg 명령어 (temp_audio_path에 저장)
-        ffmpeg_command = f'ffmpeg -i "{scene_path}" -vn -acodec pcm_s16le -ar 44100 -ac 2 -y "{temp_audio_path}"'
+        ffmpeg_command = f'ffmpeg -i "{scene_path}" -vn -acodec pcm_s16le -ar 44100 -ac 2 -y "{temp_audio_path}" -loglevel error'
         os.system(ffmpeg_command)
 
         # 모노로 변환하여 mono_audio_path에 저장
@@ -123,6 +123,7 @@ def transcribe_and_save_scene_information_into_json(
     Returns:
         None
     """
+    print("Loading SST model...")
 
     # STT 모델인 Whisper를 불러옴
     whisper_model = whisper.load_model("large-v3")
@@ -132,6 +133,10 @@ def transcribe_and_save_scene_information_into_json(
     results = {}
 
     for video_id, timestamps in tqdm(timestamp_dict.items()):
+        # 만약 video_id가 '-'로 시작하면, '_'로 변경 (scene 변환시 오류 방지)
+        if video_id.startswith("-"):
+            video_id = "_" + video_id.lstrip("-")
+
         results[video_id] = []
         for i, (start, end) in enumerate(timestamps):
             mono_audio_path = os.path.join(
