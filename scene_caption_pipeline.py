@@ -11,16 +11,17 @@ scene_caption_pipeline.py
 """
 
 import os
-from code.audio_utils import (
+
+from modules.audio_utils import (
     save_all_mono_audio_from_scene_folder,
     transcribe_and_save_scene_information_into_json,
 )
-from code.scene_caption_modules import scene_caption
-from code.scene_utils import (
+from modules.scene_caption_modules import scene_caption
+from modules.scene_utils import (
     save_all_video_scenes_by_timestamps,
     save_timestamps_to_txt,
 )
-from code.utils import load_config
+from modules.utils import load_config
 
 if __name__ == "__main__":
     # config 파일 로드

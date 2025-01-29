@@ -10,8 +10,9 @@ evalSceneCaption_pipeline.py
 """
 
 import os
-from code.scene_caption_modules import scene_caption
-from code.utils import load_config
+
+from modules.scene_caption_modules import scene_caption
+from modules.utils import load_config
 
 if __name__ == "__main__":
     # config 파일 로드

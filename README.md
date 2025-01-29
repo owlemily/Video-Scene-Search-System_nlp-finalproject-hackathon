@@ -51,7 +51,7 @@ streamlit run app.py --server.address 0.0.0.0 --server.port 1111 # 서버포트�
 ```bash
 level4-nlp-finalproject-hackathon-nlp-01-lv3
 |-- README.md
-|-- code # pipeline에서 사용되는 모듈들
+|-- modules # pipeline에서 사용되는 모듈들
 |   |-- __init__.py
 |   |-- audio_utils.py
 |   |-- scene_caption_modules.py
