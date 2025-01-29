@@ -6,8 +6,10 @@ specific_model_utils
 
 모듈 목록:
 1. InternVideo2_utils.py
+2. LlavaVideo_utils.py
 """
 
 __all__ = [
     "InternVideo2_utils",
+    "LlavaVideo_utils",
 ]
