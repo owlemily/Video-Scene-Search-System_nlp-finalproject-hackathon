@@ -170,7 +170,7 @@ class DescriptionGenerator:
 
         for frame_index in frame_indices:
             # decord VideoReader를 통해 frame_index번째 프레임을 읽어 PIL 이미지로 변환
-            img = Image.fromarray(vr[frame_index].asnumpy()).convert("RGB")
+            img = Image.fromarray(vr[frame_index].numpy()).convert("RGB")
 
             # _dynamic_preprocess로 분할 처리
             img_tiles = self._dynamic_preprocess(
@@ -210,7 +210,7 @@ class DescriptionGenerator:
         pixel_values, num_patches_list = self.load_video(
             video_path, num_segments=num_segments
         )
-        print(pixel_values.shape)
+        # print(pixel_values.shape) # 비디오(Scene) 1개마다 출력되서 주석 처리함
         pixel_values = pixel_values.to(torch.bfloat16).cuda()
 
         # 영상의 각 프레임을 순서대로 prompt에 추가
@@ -236,7 +236,7 @@ class DescriptionGenerator:
         단일 이미지를 모델에게 질의하여 답변을 생성합니다.
         """
         pixel_values = self.load_image(image_path)
-        print(pixel_values.shape)
+        # print(pixel_values.shape) # 사진 1장마다 출력되서 주석 처리함
         pixel_values = pixel_values.to(torch.bfloat16).cuda()
 
         query = f"<image>\n{question}"
