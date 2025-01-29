@@ -12,7 +12,7 @@ from code.utils import load_config
 
 if __name__ == "__main__":
     # config 파일 로드
-    config = load_config("./config/scene_config.yaml")
+    config = load_config("./config/scene_config_llava_video.yaml")
 
     video_folder = config["extract_frames"]["video_folder"]  # 비디오 폴더
     scene_folder = config["extract_scenes"]["scene_folder"]  # Scene 폴더
