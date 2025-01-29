@@ -38,7 +38,12 @@ def load_llava_video_model():
     model_name = "llava_qwen"
     device_map = "auto"
     tokenizer, model, image_processor, max_length = load_pretrained_model(
-        pretrained, None, model_name, torch_dtype="bfloat16", device_map=device_map
+        pretrained,
+        None,
+        model_name,
+        torch_dtype="bfloat16",
+        device_map=device_map,
+        attn_implementation="sdpa",
     )  # Add any other thing you want to pass in llava_model_args
     model.eval()
     return tokenizer, model, image_processor, max_length
