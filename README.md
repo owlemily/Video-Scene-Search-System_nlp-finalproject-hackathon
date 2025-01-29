@@ -47,7 +47,7 @@ streamlit run app.py --server.address 0.0.0.0 --server.port 1111 # 서버포트�
 ```bash
 level4-nlp-finalproject-hackathon-nlp-01-lv3
 |-- README.md
-|-- code
+|-- modules
 |   |-- __init__.py
 |   |-- frame_caption_modules.py # frame_caption 모듈
 |   |-- unsloth_vision_utils.py # Custom_UnslothVisionDataCollator
