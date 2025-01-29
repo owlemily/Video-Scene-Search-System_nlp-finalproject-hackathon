@@ -44,15 +44,13 @@ def initialize_model(model_path="OpenGVLab/InternVideo2-Chat-8B"):
         model = AutoModel.from_pretrained(
             model_path, torch_dtype=torch.bfloat16, trust_remote_code=True
         ).cuda()
+        image_processor = None
 
     # LlavaVideo 모델에서는 자체적으로 tokenizer, model을 불러옴
     elif model_path == "lmms-lab/LLaVA-Video-7B-Qwen2":
-        tokenizer, model = (
-            None,
-            None,
-        )
+        tokenizer, model, image_processor, max_length = load_llava_video_model()
 
-    return model, tokenizer
+    return model, tokenizer, image_processor
 
 
 def single_scene_caption_InternVideo2(
@@ -201,6 +199,7 @@ def single_scene_caption(
     model_path,
     model,
     tokenizer,
+    image_processor,
     scene_path,
     prompt,
     generation_config,
@@ -215,6 +214,7 @@ def single_scene_caption(
         model_path (str): 모델 경로
         model (torch.nn.Module): 모델
         tokenizer (transformers.tokenization_utils_base.PreTrainedTokenizer): tokenizer
+        image_processor: 이미지 처리기 (lmms-lab/LLaVA-Video-7B-Qwen2에 쓰임)
         scene_path (str): scene 경로
         prompt (dict): prompt 정보
         generation_config (dict): 생성 설정
@@ -240,7 +240,6 @@ def single_scene_caption(
             scene_info_json_file_path,
         )
     elif model_path == "lmms-lab/LLaVA-Video-7B-Qwen2":
-        tokenizer, model, image_processor, max_length = load_llava_video_model()
         max_frames_num = 64
         return single_scene_caption_LlavaVideo(
             model,
@@ -283,7 +282,7 @@ def scene_caption(
     Returns:
         None
     """
-    model, tokenizer = initialize_model(model_path)
+    model, tokenizer, image_processor = initialize_model(model_path)
 
     final_json_data = []
 
@@ -297,6 +296,7 @@ def scene_caption(
             model_path,
             model,
             tokenizer,
+            image_processor,
             scene_path,
             prompt,
             generation_config,

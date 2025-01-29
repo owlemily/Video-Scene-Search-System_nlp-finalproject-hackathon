@@ -37,7 +37,8 @@ def load_video(video_path, max_frames_num, fps=1, force_sample=False):
 def load_llava_video_model():
     pretrained = "lmms-lab/LLaVA-Video-7B-Qwen2"
     model_name = "llava_qwen"
-    device_map = "auto"
+    device_map = "auto"  # 오류 떠서 주석처리함 {"": "cuda"}
+
     tokenizer, model, image_processor, max_length = load_pretrained_model(
         pretrained,
         None,
@@ -46,8 +47,10 @@ def load_llava_video_model():
         device_map=device_map,
         attn_implementation="sdpa",
     )  # Add any other thing you want to pass in llava_model_args
+
     model.eval()
     model = model.half()
+
     return tokenizer, model, image_processor, max_length
 
 
