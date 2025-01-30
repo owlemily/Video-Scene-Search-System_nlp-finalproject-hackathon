@@ -443,7 +443,8 @@ def frame_caption(
     if use_datasets:
         dataset_path = os.path.join(datasets_folder, datasets_name)
         dataset = load_from_disk(dataset_path)
-        results = generate_caption_UsingDataset(
+
+        frames_caption_list = generate_caption_UsingDataset(
             model,
             tokenizer,
             dataset,
@@ -454,12 +455,23 @@ def frame_caption(
             device,
             model_name,
         )
+        final_json_output = {
+            "model_path": model_name,
+            "prompt": caption_prompt,
+            "max_new_tokens": max_new_tokens,
+            "frames": frames_caption_list,
+        }
     else:
         frame_files = sorted(
             [f for f in os.listdir(frames_folder) if f.endswith(".jpg")],
             key=lambda x: get_video_id_and_timestamp(x),
         )
-        results = []
+        final_json_output = {
+            "model_path": model_name,
+            "prompt": caption_prompt,
+            "max_new_tokens": max_new_tokens,
+            "frames": [],
+        }
 
         for frame_file in tqdm(frame_files, desc="Processing frames"):
             frame_path = os.path.join(frames_folder, frame_file)
@@ -476,7 +488,7 @@ def frame_caption(
             )
 
             video_id, timestamp = get_video_id_and_timestamp(frame_file)
-            results.append(
+            final_json_output["frames"].append(
                 {
                     "video_id": video_id,
                     "timestamp": timestamp,
@@ -489,7 +501,7 @@ def frame_caption(
     output_path = os.path.join(output_folder, frame_output_filename)
     os.makedirs(output_folder, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=4)
+        json.dump(final_json_output, f, ensure_ascii=False, indent=4)
 
     print(f"모든 프레임에 대해 캡션 생성 완료. 결과가 {output_path}에 저장되었습니다.")
 

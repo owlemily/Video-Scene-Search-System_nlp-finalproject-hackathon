@@ -13,12 +13,10 @@ if "checks" not in st.session_state:
     st.session_state.checks = {}
 if "file_name" not in st.session_state:
     st.session_state.file_name = "evaluation_results"
-if "model_name" not in st.session_state:
-    st.session_state.model_name = "unsloth/Qwen2-VL-7B-Instruct-bnb-4bit"
-if "prompt" not in st.session_state:
-    st.session_state.prompt = "Describe this image in detail."
 if "evaluator_name" not in st.session_state:
     st.session_state.evaluator_name = ""
+if "prompt_number" not in st.session_state:
+    st.session_state.prompt_number = "1"
 if "version_number" not in st.session_state:
     st.session_state.version_number = "1"
 
@@ -31,9 +29,11 @@ def save_results(checks, total_scores, file_name):
     output_data = {
         "checks": checks,
         "total_scores": total_scores,
-        "model_name": st.session_state.model_name,
-        "prompt": st.session_state.prompt,
+        "model_name": st.session_state.uploaded_json_file["model_path"],
+        "prompt": st.session_state.uploaded_json_file["prompt"],
+        "max_new_tokens": st.session_state.uploaded_json_file["max_new_tokens"],
         "evaluator_name": st.session_state.evaluator_name,
+        "prompt_number": st.session_state.prompt_number,
         "version_number": st.session_state.version_number,
     }
     output_folder = "./output"
@@ -55,7 +55,7 @@ if "uploaded_json_file" not in st.session_state:
     if uploaded_file:
         st.session_state.uploaded_json_file = load_json(uploaded_file)
 
-        for idx, item in enumerate(st.session_state.uploaded_json_file):
+        for idx, item in enumerate(st.session_state.uploaded_json_file["frames"]):
             if idx not in st.session_state.checks:
                 st.session_state.checks[idx] = {
                     "video_id": item["video_id"],
@@ -70,7 +70,7 @@ if "uploaded_json_file" not in st.session_state:
         st.rerun()
 
 if "uploaded_json_file" in st.session_state:
-    data = st.session_state.uploaded_json_file
+    data = st.session_state.uploaded_json_file["frames"]
 
     # Navigation buttons
     col1, col2 = st.columns([1, 1])
@@ -109,6 +109,9 @@ if "uploaded_json_file" in st.session_state:
 
     # Evaluation questions
     st.markdown("### Evaluation")
+    st.text(f"Model: {st.session_state.uploaded_json_file['model_path']}")
+    st.text(f"Prompt: {st.session_state.uploaded_json_file['prompt']}")
+    st.text(f"Max New Tokens: {st.session_state.uploaded_json_file['max_new_tokens']}")
     current_checks = st.session_state.checks[current_index]
 
     questions = [
@@ -156,14 +159,11 @@ if "uploaded_json_file" in st.session_state:
             "평가결과를 저장할 파일명을 적어주세요 (.json은 빼고 적어주세요)",
             value=st.session_state.file_name,
         )
-        st.session_state.model_name = st.text_input(
-            "모델명을 적어주세요", value=st.session_state.model_name
-        )
-        st.session_state.prompt = st.text_area(
-            "사용한 Prompt를 적어주세요", value=st.session_state.prompt
-        )
         st.session_state.evaluator_name = st.text_input(
             "평가자 이름을 적어주세요", value=st.session_state.evaluator_name
+        )
+        st.session_state.prompt_number = st.text_input(
+            "프롬프트 번호를 적어주세요", value=st.session_state.prompt_number
         )
         st.session_state.version_number = st.text_input(
             "버전 번호를 적어주세요", value=st.session_state.version_number
@@ -175,7 +175,7 @@ if "uploaded_json_file" in st.session_state:
                 key: sum(item[key] for item in st.session_state.checks.values())
                 for key in keys
             }
-            full_file_name = f"{st.session_state.file_name}_v{st.session_state.version_number}_{st.session_state.evaluator_name}.json"
+            full_file_name = f"{st.session_state.file_name}_p{st.session_state.prompt_number}_v{st.session_state.version_number}_{st.session_state.evaluator_name}.json"
             success = save_results(
                 st.session_state.checks, total_scores, full_file_name
             )
