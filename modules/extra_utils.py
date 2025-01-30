@@ -1,25 +1,28 @@
 """
 extra_utils.py
 
-
+함수 목록:
+1. get_video_info (밖에서 쓰이는 함수)
+2. extract_fps
+3. extract_audio
+4. change_audio_speed
+5. change_fps (밖에서 쓰이는 함수)
+7. count_key_frames
+8. get_total_duration
+9. print_total_durations (밖에서 쓰이는 함수)
+10. extract_key_frames
 """
 
 import os
 import subprocess
 
 import cv2
-
-# import librosa
+import librosa
 import soundfile as sf
 import torch
 import torch.nn.functional as F
 import torchaudio
-import yaml
-
-# from pydub import AudioSegment
-
-# from scenedetect import SceneManager, open_video
-# from scenedetect.detectors import ContentDetector
+from pydub import AudioSegment
 
 
 def get_video_info(video_folder):
@@ -245,26 +248,6 @@ def change_fps(input_video_dir, output_video_dir):
             )
 
 
-def load_config(config_path):
-    """
-    YAML 설정 파일을 로드하는 함수
-    Args:
-        config_path (str): 설정 파일 경로 (ex. "../config/config.yaml")
-
-    Returns:
-        config (dict): 로드된 설정 파일
-    """
-    if not os.path.exists(config_path):
-        raise FileNotFoundError(
-            f"[ERROR] config_path가 존재하지 않습니다: {config_path}"
-        )
-    try:
-        with open(config_path, "r") as f:
-            return yaml.safe_load(f)
-    except yaml.YAMLError as e:
-        raise ValueError(f"[ERROR] 유효하지 않은 config 파일입니다: {config_path}\n{e}")
-
-
 def count_key_frames(key_frame_directory):
     """
     Key Frame 폴더의 모든 키프레임 파일 수를 세는 함수
@@ -362,15 +345,18 @@ def extract_key_frames(
     stddev_threshold=10,
 ):
     """
-    Extract key frames from a video using CLIP embeddings and save them to the output directory.
+    1개의 비디오 파일에서 키 프레임들을 추출하여 key_frames_output_folder에 저장하는 함수
 
-    Parameters:
-        video_path (str): Path to the video file.
-        output_dir (str): Directory to save the extracted key frames.
-        processor: CLIPProcessor instance for preprocessing frames.
-        clip_model: CLIPModel instance for generating embeddings.
-        similarity_threshold (float): Threshold for similarity between consecutive frames (default=0.85).
-        stddev_threshold (int): Threshold for determining solid color frames (default=10).
+    Args:
+        video_path (str): 비디오 파일 경로
+        key_frames_output_folder (str): 키 프레임 저장 폴더 경로
+        processor (CLIPProcessor): CLIP Processor
+        clip_model (CLIP): CLIP 모델
+        similarity_threshold (float): 이전 프레임과의 유사도 임계값
+        stddev_threshold (int): 단색 프레임 판단 임계값 (default: 10)
+
+    Returns:
+        None
     """
 
     def is_solid_color(frame, stddev_threshold=10):
@@ -463,162 +449,3 @@ def extract_key_frames(
 
     cap.release()
     print(f"[INFO] {video_id}: Extracted {saved_count} key frames.")
-
-
-def extract_scene_timestamps(video_path, threshold=30.0, min_scene_len=2):
-    video = open_video(video_path)
-    scene_manager = SceneManager()
-    scene_manager.add_detector(ContentDetector(threshold=threshold))
-
-    scene_manager.detect_scenes(video)
-    scene_list = scene_manager.get_scene_list()
-    timestamps = []
-
-    for scene in scene_list:
-        start = scene[0].get_seconds()
-        end = scene[1].get_seconds()
-        if end - start >= min_scene_len:
-            timestamps.append((start, end))
-
-    return timestamps
-
-
-def save_timestamps_to_txt(input_dir, output_txt, threshold=30.0, min_scene_len=2):
-    with open(output_txt, "w") as txt_file:
-        for video_name in os.listdir(input_dir):
-            if not video_name.endswith(".mp4"):
-                continue
-
-            video_path = os.path.join(input_dir, video_name)
-            video_id = os.path.splitext(video_name)[0]
-
-            try:
-                timestamps = extract_scene_timestamps(
-                    video_path, threshold, min_scene_len
-                )
-
-                # Merge consecutive timestamps to ensure no gaps
-                merged_timestamps = []
-                previous_end = 0.0
-
-                for start, end in timestamps:
-                    if start > previous_end:
-                        merged_timestamps.append((previous_end, start))
-                    merged_timestamps.append((start, end))
-                    previous_end = end
-
-                # Add final segment if there is a gap at the end
-                total_duration = float(
-                    cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FRAME_COUNT)
-                ) / cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS)
-
-                if previous_end < total_duration:
-                    merged_timestamps.append((previous_end, total_duration))
-
-                # Write to txt file
-                for start, end in merged_timestamps:
-                    txt_file.write(f"{video_id}\t{start:.2f}\t{end:.2f}\n")
-
-            except Exception as e:
-                print(f"Error processing {video_name}: {e}")
-
-
-def split_audio_from_txt(input_dir, output_dir, timestamp_txt):
-    """Split audio from video files based on timestamps in a text file."""
-    os.makedirs(output_dir, exist_ok=True)
-    try:
-        with open(timestamp_txt, "r") as txt_file:
-            lines = txt_file.readlines()
-    except FileNotFoundError:
-        print(f"[ERROR] Timestamp file not found: {timestamp_txt}")
-        return
-
-    for idx, line in enumerate(lines):
-        line = line.strip()
-        if not line:
-            print(f"[WARNING] Skipping empty line at index {idx}")
-            continue
-
-        try:
-            video_id, start, end = line.split("\t")
-            start = float(start)
-            end = float(end)
-        except ValueError:
-            print(f"[ERROR] Invalid line format at index {idx}: {line}")
-            continue
-
-        video_path = os.path.join(input_dir, f"{video_id}.mp4")
-        output_audio_path = os.path.join(
-            output_dir, f"{video_id}_scene_{start}-{end}.wav"
-        )
-
-        if not os.path.exists(video_path):
-            print(f"[WARNING] Video file {video_path} not found. Skipping...")
-            continue
-
-        try:
-            command = [
-                "ffmpeg",
-                "-i",
-                video_path,
-                "-ss",
-                f"{start:.3f}",
-                "-to",
-                f"{end:.3f}",
-                "-vn",
-                "-acodec",
-                "pcm_s16le",
-                output_audio_path,
-            ]
-            subprocess.run(
-                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True
-            )
-            print(f"[INFO] Saved audio: {output_audio_path}")
-        except subprocess.CalledProcessError as e:
-            print(
-                f"[ERROR] Error processing audio {output_audio_path}: {e.stderr.decode('utf-8')}"
-            )
-
-
-def split_scenes_from_txt(input_dir, output_dir, timestamp_txt):
-    """Split video scenes based on timestamps specified in a text file."""
-    os.makedirs(output_dir, exist_ok=True)
-
-    with open(timestamp_txt, "r") as txt_file:
-        for line in txt_file:
-            video_id, start, end = line.strip().split("\t")
-            start = float(start)
-            end = float(end)
-
-            video_path = os.path.join(input_dir, f"{video_id}.mp4")
-            output_scene_path = os.path.join(
-                output_dir, f"{video_id}_scene_{start}-{end}.mp4"
-            )
-
-            if not os.path.exists(video_path):
-                print(f"[WARNING] Video file {video_path} not found. Skipping...")
-                continue
-
-            try:
-                cap = cv2.VideoCapture(video_path)
-                fps = cap.get(cv2.CAP_PROP_FPS)
-                width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                out = cv2.VideoWriter(output_scene_path, fourcc, fps, (width, height))
-
-                start_frame = int(start * fps)
-                end_frame = int(end * fps)
-
-                cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-                for frame_idx in range(start_frame, end_frame):
-                    ret, frame = cap.read()
-                    if not ret:
-                        break
-                    out.write(frame)
-
-                cap.release()
-                out.release()
-                print(f"[INFO] Saved scene: {output_scene_path}")
-            except Exception as e:
-                print(f"[ERROR] Error processing scene {output_scene_path}: {e}")

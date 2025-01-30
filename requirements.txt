@@ -31,3 +31,5 @@ opencv-python
 pydub
 librosa
 soundfile
+
+git+https://github.com/openai/CLIP.git

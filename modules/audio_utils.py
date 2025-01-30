@@ -81,13 +81,15 @@ def save_all_mono_audio_from_scene_folder(scene_folder, output_mono_audio_folder
             output_mono_audio_folder, f"{scene_filename}.wav"
         )
 
+        _, start, end, _ = scene_filename.rsplit("_", 3)
+        duaration = float(end) - float(start)
         # mp4 파일(Scene)에서 오디오 추출하는 ffmpeg 명령어 (temp_audio_path에 저장)
-        ffmpeg_command = f'ffmpeg -i "{scene_path}" -vn -acodec pcm_s16le -ar 44100 -ac 2 -y "{temp_audio_path}" -loglevel error'
+        ffmpeg_command = f'ffmpeg -i "{scene_path}" -to {duaration} -vn -acodec pcm_s16le "{temp_audio_path}" -loglevel error'
         os.system(ffmpeg_command)
 
         # 모노로 변환하여 mono_audio_path에 저장
         convert_to_mono(temp_audio_path, mono_audio_path)
-        print(f"Audio saved: {mono_audio_path}")
+        # print(f"Audio saved: {mono_audio_path}") # 너무 출력이 많아서 주석처리함
 
         os.remove(temp_audio_path)
 
@@ -140,15 +142,15 @@ def transcribe_and_save_scene_information_into_json(
         results[video_id] = []
         for i, (start, end) in enumerate(timestamps):
             mono_audio_path = os.path.join(
-                mono_audio_folder, f"{video_id}_{start:.3f}_{end:.3f}_{i + 1:03d}.wav"
+                mono_audio_folder, f"{video_id}_{start}_{end}_{i + 1:03d}.wav"
             )
             audio_text = transcribe_audio(mono_audio_path, whisper_model)
             audio_text = reduce_repeated_characters(audio_text)
             results[video_id].append(
                 {
                     "clip_id": i + 1,
-                    "start": round(start, 3),
-                    "end": round(end, 3),
+                    "start": start,
+                    "end": end,
                     "audio_text": audio_text,
                 }
             )
