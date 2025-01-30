@@ -10,7 +10,7 @@ extra_utils.py
 7. count_key_frames
 8. get_total_duration
 9. print_total_durations (밖에서 쓰이는 함수)
-10. extract_key_frames
+10. extract_key_frames (밖에서 쓰이는 함수)
 """
 
 import os

@@ -57,6 +57,7 @@ level4-nlp-finalproject-hackathon-nlp-01-lv3
 |   |-- scene_caption_modules.py
 |   |-- scene_utils.py
 |   |-- utils.py
+|   |-- extra_utils.py
 |   `-- specific_model_utils
 |   |   |-- InternVideo2_5_Chat_utils.py
 |   |   |-- InternVideo2_utils.py
