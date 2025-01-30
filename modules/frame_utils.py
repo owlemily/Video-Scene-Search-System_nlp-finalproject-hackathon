@@ -6,6 +6,7 @@ frame_utils.py
 2. extract_frames_from_folder
 3. get_video_id_and_timestamp
 4. create_and_save_dataset
+5. extract_key_frames
 """
 
 import os
@@ -170,6 +171,121 @@ def create_and_save_dataset(
         os.makedirs(output_dataset_directory)
     dataset_name = os.path.join(output_dataset_directory, output_dataset_name)
     dataset.save_to_disk(dataset_name)
+
+
+def extract_key_frames(
+    video_path,
+    key_frames_output_folder,
+    processor,
+    clip_model,
+    similarity_threshold=0.85,
+    stddev_threshold=10,
+):
+    """
+    1개의 비디오 파일에서 키 프레임들을 추출하여 key_frames_output_folder에 저장하는 함수
+
+    Args:
+        video_path (str): 비디오 파일 경로
+        key_frames_output_folder (str): 키 프레임 저장 폴더 경로
+        processor (CLIPProcessor): CLIP Processor
+        clip_model (CLIP): CLIP 모델
+        similarity_threshold (float): 이전 프레임과의 유사도 임계값
+        stddev_threshold (int): 단색 프레임 판단 임계값 (default: 10)
+
+    Returns:
+        None
+    """
+
+    def is_solid_color(frame, stddev_threshold=10):
+        """프레임이 단색인지 판단 (표준 편차 기준)"""
+        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        _, stddev = cv2.meanStdDev(gray_frame)
+        return stddev[0][0] < stddev_threshold
+
+    def generate_clip_embedding(frame):
+        """프레임에 대한 CLIP 임베딩 생성"""
+        inputs = processor(images=frame, return_tensors="pt").to("cuda")
+        with torch.no_grad():
+            embedding = clip_model.get_image_features(**inputs)
+        return embedding
+
+    os.makedirs(key_frames_output_folder, exist_ok=True)
+
+    # 비디오 열기
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        print(f"[ERROR] 비디오를 열 수 없습니다: {video_path}")
+        return
+
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    if fps <= 0:
+        print(f"[ERROR] 유효하지 않은 FPS입니다 (FPS <= 0): {video_path}")
+        cap.release()
+        return
+
+    frame_count = 0
+    saved_count = 0
+    video_id = os.path.splitext(os.path.basename(video_path))[0]
+    prev_embedding = None
+    buffer_frame = None
+    buffer_timestamp = None
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            # 마지막 버퍼 프레임을 키 프레임으로 저장
+            if buffer_frame is not None and not is_solid_color(
+                buffer_frame, stddev_threshold
+            ):
+                key_frame_filename = f"{video_id}_{buffer_timestamp}.jpg"
+                key_frame_path = os.path.join(
+                    key_frames_output_folder, key_frame_filename
+                )
+                cv2.imwrite(key_frame_path, buffer_frame)
+                saved_count += 1
+            break
+
+        # 단색 프레임 건너뛰기
+        if is_solid_color(frame, stddev_threshold):
+            frame_count += 1
+            continue
+
+        # 현재 프레임의 CLIP 임베딩 생성
+        current_embedding = generate_clip_embedding(frame)
+
+        if prev_embedding is None:
+            # 첫번째 프레임
+            buffer_frame = frame
+            buffer_timestamp = f"{frame_count / fps:.3f}"
+            prev_embedding = current_embedding
+        else:
+            # 이전 프레임과 비교
+            similarity = F.cosine_similarity(
+                prev_embedding, current_embedding, dim=1
+            ).item()
+            if similarity >= similarity_threshold:
+                # 유사하면 버퍼를 현재 프레임으로 업데이트
+                buffer_frame = frame
+                buffer_timestamp = f"{frame_count / fps:.3f}"
+                prev_embedding = current_embedding
+            else:
+                # 다르면 버퍼를 키 프레임으로 저장 후, 버퍼를 현재 프레임으로 업데이트
+                if buffer_frame is not None:
+                    key_frame_filename = f"{video_id}_{buffer_timestamp}.jpg"
+                    key_frame_path = os.path.join(
+                        key_frames_output_folder, key_frame_filename
+                    )
+                    cv2.imwrite(key_frame_path, buffer_frame)
+                    saved_count += 1
+
+                buffer_frame = frame
+                buffer_timestamp = f"{frame_count / fps:.3f}"
+                prev_embedding = current_embedding
+
+        frame_count += 1
+
+    cap.release()
+    print(f"[INFO] {video_id}: Extracted {saved_count} key frames.")
 
 
 if __name__ == "__main__":
