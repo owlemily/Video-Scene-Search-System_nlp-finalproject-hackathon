@@ -168,6 +168,7 @@ level4-nlp-finalproject-hackathon-nlp-01-lv3
 |-- output # 모든 Scene에 대한 캡션 결과를 담는 저장경로
 |   `-- scene_output_v25.json
 |-- requirements.txt
+|-- preprocessing.ipynb # 전처리 과정을 볼 수 있는 노트북 파일 - 쭉 실행시키면 데이터 준비완료
 |-- scene_caption_pipeline.py # Scene caption 전과정을 적어놓은 코드
 |-- scene_info.json # 오디오 정보를 포함한 씬 정보들 모음
 |-- scenes # scene(mp4) 파일들이 모여있는 폴더
