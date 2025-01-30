@@ -40,7 +40,7 @@ class DescriptionGenerator:
         self.input_size = input_size
         self.model_path = model_path
 
-        self.generation_config = dict(max_new_tokens=1024, do_sample=False)
+        self.generation_config = dict(do_sample=False)
 
         # Load tokenizer and model
         self.tokenizer = AutoTokenizer.from_pretrained(
@@ -231,7 +231,7 @@ class DescriptionGenerator:
         pixel_values = torch.stack(pixel_values)
         return pixel_values
 
-    def describe_scene(self, video_path, question, num_segments=32):
+    def describe_scene(self, video_path, question, num_segments=32, max_new_tokens=256):
         """
         비디오에 대한 질문을 입력하면, 분할된 프레임 타일 텐서와 함께 모델에게 질의하여 답변을 생성합니다.
         """
@@ -246,6 +246,8 @@ class DescriptionGenerator:
             [f"Frame{i + 1}: <image>\n" for i in range(len(num_patches_list))]
         )
         query = video_prefix + question
+
+        self.generation_config[max_new_tokens] = max_new_tokens
 
         # 모델과 대화(chat) 방식으로 질의
         response = self.model.chat(

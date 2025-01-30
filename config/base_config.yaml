@@ -52,9 +52,9 @@ scene_caption:
   # scene_folder: 추출된 씬 이미지 저장 경로 (예: "./scenes") - Video 폴더에서 각 비디오의 Scene들을 timestamp_txt_file에 따라 쪼개서 저장하는 경로
   # output_folder: 캡셔닝 진행 후 결과파일이 저장될 폴더경로 (예: "./scenes_output")
   # scene_output_filename: 씬 캡셔닝 결과 파일명 (예: "scene_output_p1_v1.json")
-  scene_folder: "./scenes_evalCaption"
+  scene_folder: "./scenes"
   output_folder: "./scenes_output"
-  scene_output_filename: "scene_output_evalCaption_p1_v1.json"
+  scene_output_filename: "scene_output_p1_v1.json"
 
   # model: 사용할 씬 캡셔닝 모델 ("OpenGVLab/InternVideo2_5_Chat_8B" 또는 "lmms-lab/LLaVA-Video-7B-Qwen2" 또는 "OpenGVLab/InternVideo2-Chat-8B")
   model: "OpenGVLab/InternVideo2_5_Chat_8B"
@@ -73,8 +73,8 @@ scene_caption:
     # scene_info_with_audio_scripts_file에 파일이 지정될 경우, 이미 번역된 대사들이 담긴 JSON 파일을 사용하여 캡셔닝을 수행합니다.
     # scene_info_with_audio_scripts_file이 null일 경우, 즉석에서 저장된 mono 오디오를 사용하여 whisper 모델로 대사를 추출하고 캡셔닝을 수행합니다.
     use_audio: False
-    mono_audio_folder: "./mono_audio_evalCaption"
-    scene_info_with_audio_scripts_file: "./scene_info_with_audio_scripts_evalCaption.json"
+    mono_audio_folder: "./mono_audio"
+    scene_info_with_audio_scripts_file: "./scene_info_with_audio_scripts.json"
   
 
 

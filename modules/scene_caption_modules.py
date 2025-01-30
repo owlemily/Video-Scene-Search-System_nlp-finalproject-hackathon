@@ -65,7 +65,8 @@ def single_scene_caption_InternVideo2(
     tokenizer,
     scene_path,
     prompt,
-    generation_config,
+    max_new_tokens,
+    max_num_frames,
     use_audio_for_prompt,
     mono_audio_folder,
     scene_info_json_file_path=None,  # 오디오 스크립트 정보 포함
@@ -78,7 +79,8 @@ def single_scene_caption_InternVideo2(
         tokenizer (transformers.tokenization_utils_base.PreTrainedTokenizer): tokenizer
         scene_path (str): scene 경로
         prompt (dict): prompt 정보
-        generation_config (dict): 생성 설정
+        max_new_tokens (int): 최대 토큰 수
+        max_num_frames (int): 최대 프레임 수
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
@@ -91,7 +93,7 @@ def single_scene_caption_InternVideo2(
     """
     translator = Translator()
 
-    scene_tensor = load_video(scene_path, num_segments=8, return_msg=False)
+    scene_tensor = load_video(scene_path, num_segments=max_num_frames, return_msg=False)
     scene_tensor = scene_tensor.to(model.device)
 
     # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start}_{end}_{i + 1:03d})
@@ -113,6 +115,11 @@ def single_scene_caption_InternVideo2(
         prompt += f"\n[script]: {audio_text}"
 
     chat_history = []
+    generation_config = {
+        "max_new_tokens": max_new_tokens,
+        "do_sample": False,
+        "num_beams": 1,
+    }
     transformers_logger.setLevel(logging.ERROR)  # 경고 메시지 무시 (해당 구간만 적용)
     response, chat_history = model.chat(
         tokenizer,
@@ -144,9 +151,10 @@ def single_scene_caption_LlavaVideo(
     model,
     tokenizer,
     image_processor,
-    max_frames_num,
     scene_path,
     prompt,
+    max_new_tokens,
+    max_num_frames,
     use_audio_for_prompt,
     mono_audio_folder,
     scene_info_json_file_path=None,  # 오디오 스크립트 정보 포함
@@ -158,9 +166,10 @@ def single_scene_caption_LlavaVideo(
         model (torch.nn.Module): 모델
         tokenizer (transformers.tokenization_utils_base.PreTrainedTokenizer): tokenizer
         image_processor: 이미지 처리기 (lmms-lab/LLaVA-Video-7B-Qwen2에 쓰임)
-        max_frames_num (int): 최대 프레임 수
         scene_path (str): scene 경로
         prompt (dict): prompt 정보
+        max_new_tokens (int): 최대 토큰 수
+        max_num_frames (int): 최대 프레임 수
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
@@ -192,7 +201,7 @@ def single_scene_caption_LlavaVideo(
         prompt += f"\n[script]: {audio_text}"
 
     video, input_ids = get_video_and_input_ids(
-        scene_path, tokenizer, model, image_processor, max_frames_num, prompt
+        scene_path, tokenizer, model, image_processor, max_num_frames, prompt
     )
 
     attention_mask = (input_ids != tokenizer.pad_token_id).long().to("cuda")
@@ -204,7 +213,7 @@ def single_scene_caption_LlavaVideo(
         modalities=["video"],
         do_sample=False,
         temperature=0,
-        max_new_tokens=4096,
+        max_new_tokens=max_new_tokens,
     )
     response = tokenizer.batch_decode(cont, skip_special_tokens=True)[0].strip()
 
@@ -226,6 +235,8 @@ def single_scene_caption_InternVideo2_5_Chat(
     generator,
     scene_path,
     prompt,
+    max_new_tokens,
+    max_num_frames,
     use_audio_for_prompt,
     mono_audio_folder,
     scene_info_json_file_path=None,  # 오디오 스크립트 정보 포함
@@ -237,6 +248,8 @@ def single_scene_caption_InternVideo2_5_Chat(
         generator (DescriptionGenerator): 모델
         scene_path (str): scene 경로
         prompt (dict): prompt 정보
+        max_new_tokens (int): 최대 토큰 수
+        max_num_frames (int): 최대 프레임 수
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
@@ -268,7 +281,9 @@ def single_scene_caption_InternVideo2_5_Chat(
         prompt += f"\n[script]: {audio_text}"
 
     # transformers_logger.setLevel(logging.ERROR)  # 경고 메시지 무시 (해당 구간만 적용)
-    response = generator.describe_scene(scene_path, prompt, num_segments=32)
+    response = generator.describe_scene(
+        scene_path, prompt, num_segments=max_num_frames, max_new_tokens=max_new_tokens
+    )
     # transformers_logger.setLevel(logging.WARNING)  # 복구
 
     translated_description = translator.translate(response, src="en", dest="ko").text
@@ -292,7 +307,8 @@ def single_scene_caption(
     image_processor,
     scene_path,
     prompt,
-    generation_config,
+    max_new_tokens,
+    max_num_frames,
     use_audio_for_prompt,
     mono_audio_folder,
     scene_info_json_file_path=None,
@@ -307,7 +323,8 @@ def single_scene_caption(
         image_processor: 이미지 처리기 (lmms-lab/LLaVA-Video-7B-Qwen2에 쓰임)
         scene_path (str): scene 경로
         prompt (dict): prompt 정보
-        generation_config (dict): 생성 설정
+        max_new_tokens (int): 최대 토큰 수
+        max_num_frames (int): 최대 프레임 수
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
@@ -324,20 +341,21 @@ def single_scene_caption(
             tokenizer,
             scene_path,
             prompt,
-            generation_config,
+            max_new_tokens,
+            max_num_frames,
             use_audio_for_prompt,
             mono_audio_folder,
             scene_info_json_file_path,
         )
     elif model_path == "lmms-lab/LLaVA-Video-7B-Qwen2":
-        max_frames_num = 64
         return single_scene_caption_LlavaVideo(
             model,
             tokenizer,
             image_processor,
-            max_frames_num,
             scene_path,
             prompt,
+            max_new_tokens,
+            max_num_frames,
             use_audio_for_prompt,
             mono_audio_folder,
             scene_info_json_file_path,
@@ -347,6 +365,8 @@ def single_scene_caption(
             model,
             scene_path,
             prompt,
+            max_new_tokens,
+            max_num_frames,
             use_audio_for_prompt,
             mono_audio_folder,
             scene_info_json_file_path,
@@ -357,7 +377,8 @@ def scene_caption(
     model_path,
     scene_folder,
     prompt,
-    generation_config,
+    max_new_tokens,
+    max_num_frames,
     use_audio_for_prompt,
     mono_audio_folder,
     scene_info_json_file_path,
@@ -370,7 +391,8 @@ def scene_caption(
         model_path (str): 모델 경로
         scene_folder (str): scene 폴더 경로
         prompt (dict): prompt 정보
-        generation_config (dict): 생성 설정
+        max_new_tokens (int): 최대 토큰 수
+        max_num_frames (int): 최대 프레임 수
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
@@ -387,7 +409,8 @@ def scene_caption(
     final_json_data = {
         "model_path": model_path,
         "prompt": prompt,
-        "generation_config": generation_config,
+        "max_new_tokens": max_new_tokens,
+        "max_num_frames": max_num_frames,
         "scenes": [],
     }
 
@@ -404,7 +427,8 @@ def scene_caption(
             image_processor,
             scene_path,
             prompt,
-            generation_config,
+            max_new_tokens,
+            max_num_frames,
             use_audio_for_prompt,
             mono_audio_folder,
             scene_info_json_file_path,
@@ -419,23 +443,3 @@ def scene_caption(
 
 if __name__ == "__main__":
     model, tokenizer = initialize_model()
-
-    print(
-        single_scene_caption_InternVideo2(
-            model,
-            tokenizer,
-            "../scenes/5qlG1ODkRWw_95.262_100.892_024.mp4",
-            "describe the video",
-            {
-                "do_sample": False,
-                "temperature": 0.5,
-                "top_p": 0.9,
-                "top_k": 50,
-                "max_new_tokens": 256,
-                "num_beams": 1,
-            },
-            True,
-            "../mono_audio",
-            "../scene_info.json",
-        )
-    )
