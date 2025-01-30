@@ -94,7 +94,7 @@ def single_scene_caption_InternVideo2(
     scene_tensor = load_video(scene_path, num_segments=8, return_msg=False)
     scene_tensor = scene_tensor.to(model.device)
 
-    # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start:.3f}_{end:.3f}_{i + 1:03d})
+    # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start}_{end}_{i + 1:03d})
     scene_name = os.path.basename(scene_path)[: -len(".mp4")]
     video_id, start, end, scene_id = scene_name.split("_")
 
@@ -173,7 +173,7 @@ def single_scene_caption_LlavaVideo(
     """
     translator = Translator()
 
-    # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start:.3f}_{end:.3f}_{i + 1:03d})
+    # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start}_{end}_{i + 1:03d})
     scene_name = os.path.basename(scene_path)[: -len(".mp4")]
     video_id, start, end, scene_id = scene_name.split("_")
 
@@ -249,7 +249,7 @@ def single_scene_caption_InternVideo2_5_Chat(
     """
     translator = Translator()
 
-    # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start:.3f}_{end:.3f}_{i + 1:03d})
+    # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start}_{end}_{i + 1:03d})
     scene_name = os.path.basename(scene_path)[: -len(".mp4")]
     video_id, start, end, scene_id = scene_name.split("_")
 
@@ -384,7 +384,12 @@ def scene_caption(
     """
     model, tokenizer, image_processor = initialize_model(model_path)
 
-    final_json_data = []
+    final_json_data = {
+        "model_path": model_path,
+        "prompt": prompt,
+        "generation_config": generation_config,
+        "scenes": [],
+    }
 
     # scene_names를 video_id, start 순으로 정렬
     scene_names = os.listdir(scene_folder)
@@ -404,7 +409,7 @@ def scene_caption(
             mono_audio_folder,
             scene_info_json_file_path,
         )
-        final_json_data.append(result)
+        final_json_data["scenes"].append(result)
 
     with open(output_scene_caption_json_path, "w", encoding="utf-8") as json_file:
         json.dump(final_json_data, json_file, ensure_ascii=False, indent=4)
