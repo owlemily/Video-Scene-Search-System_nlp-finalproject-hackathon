@@ -125,3 +125,5 @@ video_timestamps.txt
 *.mp4
 *.jpg
 *.json
+key_frames/
+*.txt
