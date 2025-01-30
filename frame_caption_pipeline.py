@@ -14,22 +14,28 @@ from modules.utils import load_config
 
 if __name__ == "__main__":
     # config 파일 로드
-    config = load_config("./config/fcs_config.yaml")
-
-    video_folder = config["extract_frames"]["video_folder"]
-    frame_rate = config["extract_frames"]["frame_rate"]
-    frames_folder = config["data"]["frames_folder"]
-    datasets_folder = config["data"]["datasets_folder"]
-    datasets_name = config["data"]["datasets_name"]
+    config = load_config("./config/base_config.yaml")
 
     device = config["general"]["device"]
-    output_folder = config["data"]["output_folder"]
-    model_name = config["model"]["model_name"]
-    caption_prompt = config["generation"]["prompt"]
-    max_new_tokens = config["generation"]["max_new_tokens"]
-    batch_size = config["generation"]["batch_size"]
-    use_datasets = config["generation"]["use_datasets"]
-    frame_output_filename = config["data"]["frame_output_filename"]
+    video_folder = config["general"]["video_folder"]
+
+    frames_folder = config["frame_caption"]["frames_folder"]
+    frame_rate = config["frame_caption"]["frame_rate"]
+
+    output_folder = config["frame_caption"]["output_folder"]
+    frame_output_filename = config["frame_caption"]["frame_output_filename"]
+
+    model_name = config["frame_caption"]["model"]
+
+    use_datasets = config["frame_caption"]["use_datasets"]
+    datasets_folder = config["frame_caption"]["datasets_folder"]
+    datasets_name = config["frame_caption"]["datasets_name"]
+
+    caption_prompt = config["frame_caption"]["prompt"]
+    max_new_tokens = config["frame_caption"]["max_new_tokens"]
+    batch_size = config["frame_caption"]["batch_size"]
+ 
+ 
 
     # 비디오 폴더로부터 프레임 추출하여 frames 폴더에 저장
     extract_frames_from_folder(video_folder, frames_folder, frame_rate)

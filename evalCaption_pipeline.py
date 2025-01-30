@@ -15,20 +15,24 @@ if __name__ == "__main__":
     # config 파일 로드
     config = load_config("./config/evalCaption.yaml")
 
-    video_folder = config["extract_frames"]["video_folder"]
-    frame_rate = config["extract_frames"]["frame_rate"]
-    frames_folder = config["data"]["frames_folder"]
-    datasets_folder = config["data"]["datasets_folder"]
-    datasets_name = config["data"]["datasets_name"]
-
     device = config["general"]["device"]
-    output_folder = config["data"]["output_folder"]
-    model_name = config["model"]["model_name"]
-    caption_prompt = config["generation"]["prompt"]
-    max_new_tokens = config["generation"]["max_new_tokens"]
-    batch_size = config["generation"]["batch_size"]
-    use_datasets = config["generation"]["use_datasets"]
-    frame_output_filename = config["data"]["frame_output_filename"]
+    video_folder = config["general"]["video_folder"]
+
+    frames_folder = config["frame_caption"]["frames_folder"]
+    frame_rate = config["frame_caption"]["frame_rate"]
+
+    output_folder = config["frame_caption"]["output_folder"]
+    frame_output_filename = config["frame_caption"]["frame_output_filename"]
+
+    model_name = config["frame_caption"]["model"]
+
+    use_datasets = config["frame_caption"]["use_datasets"]
+    datasets_folder = config["frame_caption"]["datasets_folder"]
+    datasets_name = config["frame_caption"]["datasets_name"]
+
+    caption_prompt = config["frame_caption"]["prompt"]
+    max_new_tokens = config["frame_caption"]["max_new_tokens"]
+    batch_size = config["frame_caption"]["batch_size"]
 
     # frames 폴더들의 이미지들로 데이터셋 생성 후 저장 (datasets 폴더에 저장)
     create_and_save_dataset(frames_folder, datasets_folder, datasets_name)

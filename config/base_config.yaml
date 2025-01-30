@@ -12,14 +12,14 @@ frame_caption:
   # frame_rate: 초당 추출할 프레임 수 (FPS) (예: 4)
   # frame_rate는 비디오 폴더에서 frames_folder에 프레임 이미지를 추출할 때 사용되는 프레임 수입니다.
   # frame_rate를 사용하지 않고, 모든 프레임을 전후로 비교해 키프레임을 추출하여 key_frames_folder에 저장할 수도 있습니다.
-  frames_folder: "./frames_evalCaption"
+  frames_folder: "./frames"
   key_frames_folder: "./key_frames"
   frame_rate: 4
 
   # output_folder: 캡셔닝 진행 후 결과파일이 저장될 폴더경로 (예: "./frames_output")
   # frame_output_filename: 캡셔닝 진행 후 결과파일명 (예: "frame_output_test_p1_v1.json")
   output_folder: "./frames_output"
-  frame_output_filename: "frame_output_p1_v1_evalCaption.json"
+  frame_output_filename: "frame_output_p1_v1.json"
 
   # model: 사용할 캡셔닝 모델 ("OpenGVLab/InternVL2_5-4B" 또는 "unsloth/Qwen2-VL-7B-Instruct-bnb-4bit")
   model: "OpenGVLab/InternVL2_5-4B"
@@ -29,7 +29,7 @@ frame_caption:
   # datasets_name: 데이터셋 이름 (예: "dataset_v1") - datasets 폴더에 저장할 데이터셋 이름 ("datasets_folder/datasets_name" 경로에 저장됨)
   use_datasets: True
   datasets_folder: "./frames_datasets"
-  datasets_name: "dataset_evalCaption"
+  datasets_name: "dataset_v1"
 
   # prompt: 캡셔닝 모델 프롬프트 (예: "<image>\nDescribe this image in detail.") - 앞에 무조건 "<image>\n"을 붙여주시고, 뒤에 프롬프트 작성해주세요.
   # max_new_tokens: 생성할 최대 토큰 수 (예: 128)
@@ -38,4 +38,3 @@ frame_caption:
   prompt: "<image>\nDescribe this image in detail."
   max_new_tokens: 128 
   batch_size: 1
-
