@@ -12,12 +12,6 @@ if "checks" not in st.session_state:
     st.session_state.checks = {}
 if "file_name" not in st.session_state:
     st.session_state.file_name = "scene_evaluation"
-if "model_name" not in st.session_state:
-    st.session_state.model_name = ""
-if "prompt" not in st.session_state:
-    st.session_state.prompt = ""
-if "generation_config" not in st.session_state:
-    st.session_state.generation_config = ""
 if "evaluator_name" not in st.session_state:
     st.session_state.evaluator_name = ""
 if "prompt_number" not in st.session_state:
@@ -58,12 +52,6 @@ if "uploaded_json_file" not in st.session_state:
     uploaded_file = st.file_uploader("Upload a JSON file", type="json")
     if uploaded_file:
         st.session_state.uploaded_json_file = load_json(uploaded_file)
-
-        st.session_state.model_name = st.session_state.uploaded_json_file["model_path"]
-        st.session_state.prompt = st.session_state.uploaded_json_file["prompt"]
-        st.session_state.generation_config = st.session_state.uploaded_json_file[
-            "generation_config"
-        ]
 
         for idx, item in enumerate(st.session_state.uploaded_json_file["scenes"]):
             if idx not in st.session_state.checks:
@@ -119,9 +107,11 @@ if "uploaded_json_file" in st.session_state:
 
     # Evaluation questions
     st.markdown("### Evaluation")
-    st.text(f"Model: {st.session_state.model_name}")
-    st.text(f"Prompt: {st.session_state.prompt}")
-    st.text(f"Generation Config: {st.session_state.generation_config}")
+    st.text(f"Model: {st.session_state.uploaded_json_file['model_path']}")
+    st.text(f"Prompt: {st.session_state.uploaded_json_file['prompt']}")
+    st.text(
+        f"Generation Config: {st.session_state.uploaded_json_file['generation_config']}"
+    )
     current_checks = st.session_state.checks[current_index]
 
     questions = [
@@ -173,7 +163,7 @@ if "uploaded_json_file" in st.session_state:
             "평가자 이름을 적어주세요", value=st.session_state.evaluator_name
         )
         st.session_state.prompt_number = st.text_input(
-            "프롬프트 번호를 적어주세요", value=st.session_state.version_number
+            "프롬프트 번호를 적어주세요", value=st.session_state.prompt_number
         )
         st.session_state.version_number = st.text_input(
             "버전 번호를 적어주세요", value=st.session_state.version_number
