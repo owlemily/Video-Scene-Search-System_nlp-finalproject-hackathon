@@ -32,6 +32,7 @@ def save_results(checks, total_scores, file_name):
         "prompt": st.session_state.uploaded_json_file["prompt"],
         "generation_config": st.session_state.uploaded_json_file["generation_config"],
         "evaluator_name": st.session_state.evaluator_name,
+        "prompt_number": st.session_state.prompt_number,
         "version_number": st.session_state.version_number,
     }
     output_folder = "./output"
