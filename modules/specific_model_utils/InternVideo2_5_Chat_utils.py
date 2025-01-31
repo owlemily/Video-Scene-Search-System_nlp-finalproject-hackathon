@@ -247,7 +247,7 @@ class DescriptionGenerator:
         )
         query = video_prefix + question
 
-        self.generation_config[max_new_tokens] = max_new_tokens
+        self.generation_config["max_new_tokens"] = max_new_tokens
 
         # 모델과 대화(chat) 방식으로 질의
         response = self.model.chat(
