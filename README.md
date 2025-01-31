@@ -28,7 +28,7 @@ pip install -r requirements.txt
 ```
 
 ## 사용할 수 있는 모델 종류
-- OpenGVLab/InternVide/usr/bin/ffmpego2-Chat-8B
+- OpenGVLab/InternVideo2-Chat-8B
 - lmms-lab/LLaVA-Video-7B-Qwen2
 - OpenGVLab/InternVideo2_5_Chat_8B
 
