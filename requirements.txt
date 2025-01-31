@@ -5,4 +5,5 @@ pandas
 matplotlib
 PyYAML
 opencv-python-headless
+faiss-cpu
 git+https://github.com/openai/CLIP.git

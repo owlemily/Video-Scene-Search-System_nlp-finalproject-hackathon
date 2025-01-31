@@ -1,0 +1,7 @@
+model_type: "pretrain"  # or "coco" depending on your use case
+frame_folder: "datasets/frames_22"
+output_file: "output/blip_image_embeddings.pt"
+image_extensions:
+  - ".jpg"
+  - ".jpeg"
+  - ".png"

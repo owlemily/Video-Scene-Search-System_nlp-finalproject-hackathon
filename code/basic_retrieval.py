@@ -34,15 +34,19 @@ class BGERetrieval:
         # Load and process text data from JSON
         self.type = self.config["type"]
         self.json_file = self.config["json_file"]
-        self.data_info = self.load_json(self.json_file)
+        data_json = self.load_json(self.json_file)
 
+        # 새로운 JSON 포맷에 맞춰서 frames 또는 scenes 추출
         if self.type == "frame":
+            # frames 리스트를 바로 data_info로 사용
+            self.data_info = data_json["frames"]
+            # 텍스트 목록: 각 frame의 "caption" 사용
             self.texts = [desc["caption"] for desc in self.data_info]
         elif self.type == "scene":
-            self.texts = [
-                desc["scene_description"]
-                for desc in self.data_info["video_scenes_info"]
-            ]
+            # scenes 리스트를 바로 data_info로 사용
+            self.data_info = data_json["scenes"]
+            # 텍스트 목록: 각 scene의 "caption" 사용
+            self.texts = [desc["caption"] for desc in self.data_info]
         else:
             raise ValueError(
                 "Invalid type specified in the config file. Supported types: 'frame', 'scene'."
@@ -113,13 +117,17 @@ class BGERetrieval:
             inputs = {key: val.to(self.device) for key, val in inputs.items()}
             with torch.no_grad():
                 outputs = self.model(**inputs)
-                embeddings = outputs.last_hidden_state[:, 0, :]  # CLS token
+                # 예: T5 계열 혹은 BERT 계열 모델에서 CLS 토큰에 해당하는 부분을 사용
+                # 일반적으로 BERT 계열: outputs.last_hidden_state[:, 0, :]
+                # T5 계열: 인코더 출력의 첫 토큰 등 모델별 차이 고려
+                embeddings = outputs.last_hidden_state[:, 0, :]
                 embeddings = embeddings / embeddings.norm(
                     dim=-1, keepdim=True
                 )  # Normalize
                 all_embeddings.append(
                     embeddings.cpu()
                 )  # Move to CPU to save GPU memory
+
         return torch.cat(all_embeddings, dim=0).to(
             self.device
         )  # Move back to GPU if needed
@@ -131,8 +139,7 @@ class BGERetrieval:
         :param file_path: Path to save the embeddings.
         """
         torch.save(
-            {"data_info": self.data_info, "features": self.embeddings},
-            file_path,
+            {"data_info": self.data_info, "features": self.embeddings}, file_path
         )
         print(f"Embeddings saved to {file_path}")
 
@@ -142,7 +149,8 @@ class BGERetrieval:
 
         :param file_path: Path to load the embeddings from.
         """
-        data = torch.load(file_path, weights_only=True)
+        # 일반적인 torch.load에는 weights_only 인자가 없으므로 제거
+        data = torch.load(file_path)
         self.data_info = data["data_info"]
         self.embeddings = data["features"]
         print(f"Embeddings loaded from {file_path}")
@@ -182,8 +190,9 @@ class BGERetrieval:
         # Compile results
         results = []
         for rank, idx in enumerate(top_indices, 1):
+            info = self.data_info[idx]
             if self.type == "frame":
-                info = self.data_info[idx]
+                # frame일 경우
                 results.append(
                     {
                         "rank": rank,
@@ -195,13 +204,13 @@ class BGERetrieval:
                     }
                 )
             elif self.type == "scene":
-                info = self.data_info["video_scenes_info"][idx]
+                # scene일 경우
                 results.append(
                     {
                         "rank": rank,
                         "scene_start_time": info["start_time"],
                         "scene_end_time": info["end_time"],
-                        "scene_description": info["scene_description"],
+                        "scene_description": info["caption"],
                         "scene_id": info["scene_id"],
                         "score": float(scores_np[idx]),
                     }
@@ -215,7 +224,7 @@ class BGERetrieval:
 # ================================
 if __name__ == "__main__":
     # Initialize the retriever with the configuration
-    text_config_path = "config/frame_description_config.yaml"
+    text_config_path = "config/scene_description_config.yaml"
     text_retriever = BGERetrieval(config_path=text_config_path)
 
     text_query = "Reindeer"  # Example query
@@ -228,9 +237,11 @@ if __name__ == "__main__":
     for res in text_results:
         if "frame_timestamp" in res:
             print(
-                f"Rank {res['rank']}: Timestamp={res['frame_timestamp']}, Image={res['frame_image_path']}, Scene_id={res['scene_id']}, Score={res['score']:.4f}"
+                f"Rank {res['rank']}: Timestamp={res['frame_timestamp']}, "
+                f"Image={res['frame_image_path']}, Scene_id={res['scene_id']}, Score={res['score']:.4f}"
             )
         elif "scene_start_time" in res:
             print(
-                f"Rank {res['rank']}: Start={res['scene_start_time']}, End={res['scene_end_time']}, Score={res['score']:.4f}"
+                f"Rank {res['rank']}: Start={res['scene_start_time']}, "
+                f"End={res['scene_end_time']}, Scene_id={res['scene_id']}, Score={res['score']:.4f}"
             )
