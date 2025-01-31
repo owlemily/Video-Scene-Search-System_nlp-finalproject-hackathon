@@ -1,8 +1,11 @@
 # 공통적으로 사용되는 설정
 # device: 사용할 디바이스 ("cuda" 또는 "cpu")
 # video_folder: 원본 비디오 파일 저장 경로 (예: "./video")
+# translator_name: 번역기 이름 ("deepl" 또는 "googletrans") - 번역기를 사용할 때 사용되는 번역기 이름입니다.
 general:
+  device: "cuda"
   video_folder: "./video"
+  translator_name: "deepl"
 
 # Frame Captioning을 할 때 사용되는 설정
 frame_caption:

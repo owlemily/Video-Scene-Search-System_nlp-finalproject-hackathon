@@ -14,6 +14,7 @@ import json
 import logging
 import os
 
+import deepl
 import torch
 from googletrans import Translator
 from tqdm import tqdm
@@ -26,6 +27,7 @@ from .specific_model_utils.LlavaVideo_utils import (
     get_video_and_input_ids,
     load_llava_video_model,
 )
+from .utils import translate_caption
 
 transformers_logger = logging.getLogger("transformers")
 
@@ -69,7 +71,8 @@ def single_scene_caption_InternVideo2(
     max_num_frames,
     use_audio_for_prompt,
     mono_audio_folder,
-    scene_info_json_file_path=None,  # 오디오 스크립트 정보 포함
+    scene_info_json_file_path,  # 오디오 스크립트 정보 포함
+    translator,
 ):
     """
     1개의 scene에 대한 캡션을 InternVideo2 모델을 사용하여 생성하는 함수
@@ -84,6 +87,7 @@ def single_scene_caption_InternVideo2(
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
 
         만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 None이면, whisper 모델을 사용하여 오디오 스크립트 추출
         만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 있으면, 해당 경로에서 오디오 스크립트 추출
@@ -91,8 +95,6 @@ def single_scene_caption_InternVideo2(
     Returns:
         result (dict): 캡션 결과
     """
-    translator = Translator()
-
     scene_tensor = load_video(scene_path, num_segments=max_num_frames, return_msg=False)
     scene_tensor = scene_tensor.to(model.device)
 
@@ -133,7 +135,7 @@ def single_scene_caption_InternVideo2(
     )
     transformers_logger.setLevel(logging.WARNING)  # 복구
 
-    translated_description = translator.translate(response, src="en", dest="ko").text
+    translated_description = translate_caption(response, translator, target_lang="ko")
 
     result = {
         "video_id": video_id,
@@ -157,7 +159,8 @@ def single_scene_caption_LlavaVideo(
     max_num_frames,
     use_audio_for_prompt,
     mono_audio_folder,
-    scene_info_json_file_path=None,  # 오디오 스크립트 정보 포함
+    scene_info_json_file_path,  # 오디오 스크립트 정보 포함
+    translator,
 ):
     """
     1개의 scene에 대한 캡션을 LlavaVideo 모델을 사용하여 생성하는 함수
@@ -173,6 +176,7 @@ def single_scene_caption_LlavaVideo(
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
 
         만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 None이면, whisper 모델을 사용하여 오디오 스크립트 추출
         만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 있으면, 해당 경로에서 오디오 스크립트 추출
@@ -180,8 +184,6 @@ def single_scene_caption_LlavaVideo(
     Returns:
         result (dict): 캡션 결과
     """
-    translator = Translator()
-
     # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start}_{end}_{i + 1:03d})
     scene_name = os.path.basename(scene_path)[: -len(".mp4")]
     video_id, start, end, scene_id = scene_name.rsplit("_", 3)
@@ -217,7 +219,7 @@ def single_scene_caption_LlavaVideo(
     )
     response = tokenizer.batch_decode(cont, skip_special_tokens=True)[0].strip()
 
-    translated_description = translator.translate(response, src="en", dest="ko").text
+    translated_description = translate_caption(response, translator, target_lang="ko")
 
     result = {
         "video_id": video_id,
@@ -239,7 +241,8 @@ def single_scene_caption_InternVideo2_5_Chat(
     max_num_frames,
     use_audio_for_prompt,
     mono_audio_folder,
-    scene_info_json_file_path=None,  # 오디오 스크립트 정보 포함
+    scene_info_json_file_path,  # 오디오 스크립트 정보 포함
+    translator,
 ):
     """
     1개의 scene에 대한 캡션을 InternVideo2_5_Chat 모델을 사용하여 생성하는 함수
@@ -253,6 +256,7 @@ def single_scene_caption_InternVideo2_5_Chat(
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
 
         만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 None이면, whisper 모델을 사용하여 오디오 스크립트 추출
         만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 있으면, 해당 경로에서 오디오 스크립트 추출
@@ -260,8 +264,6 @@ def single_scene_caption_InternVideo2_5_Chat(
     Returns:
         result (dict): 캡션 결과
     """
-    translator = Translator()
-
     # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start}_{end}_{i + 1:03d})
     scene_name = os.path.basename(scene_path)[: -len(".mp4")]
     video_id, start, end, scene_id = scene_name.rsplit("_", 3)
@@ -286,7 +288,7 @@ def single_scene_caption_InternVideo2_5_Chat(
     )
     # transformers_logger.setLevel(logging.WARNING)  # 복구
 
-    translated_description = translator.translate(response, src="en", dest="ko").text
+    translated_description = translate_caption(response, translator, target_lang="ko")
 
     result = {
         "video_id": video_id,
@@ -311,7 +313,8 @@ def single_scene_caption(
     max_num_frames,
     use_audio_for_prompt,
     mono_audio_folder,
-    scene_info_json_file_path=None,
+    scene_info_json_file_path,
+    translator,
 ):
     """
     1개의 scene에 대한 캡션을 생성하는 함수 - 모델 통일
@@ -328,6 +331,7 @@ def single_scene_caption(
         use_audio_for_prompt (bool): VideoLM으로 추론할 때, 오디오자막을 프롬프트에 넣어줄지 여부
         mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
 
         만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 None이면, whisper 모델을 사용하여 오디오 스크립트 추출
         만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 있으면, 해당 경로에서 오디오 스크립트 추출
@@ -346,6 +350,7 @@ def single_scene_caption(
             use_audio_for_prompt,
             mono_audio_folder,
             scene_info_json_file_path,
+            translator,
         )
     elif model_path == "lmms-lab/LLaVA-Video-7B-Qwen2":
         return single_scene_caption_LlavaVideo(
@@ -359,6 +364,7 @@ def single_scene_caption(
             use_audio_for_prompt,
             mono_audio_folder,
             scene_info_json_file_path,
+            translator,
         )
     elif model_path == "OpenGVLab/InternVideo2_5_Chat_8B":
         return single_scene_caption_InternVideo2_5_Chat(
@@ -370,6 +376,7 @@ def single_scene_caption(
             use_audio_for_prompt,
             mono_audio_folder,
             scene_info_json_file_path,
+            translator,
         )
 
 
@@ -383,6 +390,7 @@ def scene_caption(
     mono_audio_folder,
     scene_info_json_file_path,
     output_scene_caption_json_path,
+    translator_name,
 ):
     """
     scene_folder 내의 모든 scene에 대한 캡션을 생성하는 함수
@@ -397,6 +405,7 @@ def scene_caption(
         mono_audio_folder (str): 모노 오디오 폴더 경로
         scene_info_json_file_path (str): scene 정보 json 파일 경로 (해당 Json에는 오디오 스크립트 정보 포함되어 있음)
         output_scene_caption_json_path (str): 캡션 결과를 저장할 json 파일 경로
+        translator_name (str): 번역기 이름 ("googletrans" 또는 "deepl")
 
         만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 None이면, whisper 모델을 사용하여 오디오 스크립트 추출
         만약, use_audio_for_prompt가 True이고 scene_info_json_file_path가 있으면, 해당 경로에서 오디오 스크립트 추출
@@ -405,6 +414,14 @@ def scene_caption(
         None
     """
     model, tokenizer, image_processor = initialize_model(model_path)
+
+    if translator_name == "googletrans":
+        translator = Translator()
+    elif translator_name == "deepl":
+        auth_key = os.environ.get("DEEPL_API_KEY")
+        translator = deepl.Translator(auth_key)
+    else:
+        raise ValueError("지원하지 않는 번역기입니다.")
 
     final_json_data = {
         "model_path": model_path,
@@ -432,6 +449,7 @@ def scene_caption(
             use_audio_for_prompt,
             mono_audio_folder,
             scene_info_json_file_path,
+            translator,
         )
         final_json_data["scenes"].append(result)
 

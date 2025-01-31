@@ -23,6 +23,7 @@ if __name__ == "__main__":
     config = load_config("./config/evalSceneCaption.yaml")
 
     video_folder = config["general"]["video_folder"]
+    translator_name = config["general"]["translator_name"]
 
     timestamp_file = config["scene_caption"]["timestamp_file"]
     scene_folder = config["scene_caption"]["scene_folder"]
@@ -66,4 +67,5 @@ if __name__ == "__main__":
         mono_audio_folder,
         scene_info_with_audio_scripts_file,
         scene_caption_output_path,
+        translator_name,
     )

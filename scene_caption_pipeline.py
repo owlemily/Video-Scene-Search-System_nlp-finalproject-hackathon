@@ -28,6 +28,7 @@ if __name__ == "__main__":
     config = load_config("./config/base_config.yaml")
 
     video_folder = config["general"]["video_folder"]
+    translator_name = config["general"]["translator_name"]
 
     PySceneDetect_threshold = config["scene_caption"]["PySceneDetect_threshold"]
     PySceneDetect_min_scene_len = config["scene_caption"]["PySceneDetect_min_scene_len"]
@@ -85,4 +86,5 @@ if __name__ == "__main__":
         mono_audio_folder,
         scene_info_with_audio_scripts_file,
         scene_caption_output_path,
+        translator_name,
     )
