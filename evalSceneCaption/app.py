@@ -30,7 +30,8 @@ def save_results(checks, total_scores, file_name):
         "total_scores": total_scores,
         "model_name": st.session_state.uploaded_json_file["model_path"],
         "prompt": st.session_state.uploaded_json_file["prompt"],
-        "generation_config": st.session_state.uploaded_json_file["generation_config"],
+        "max_new_tokens": st.session_state.uploaded_json_file["max_new_tokens"],
+        "max_num_frames": st.session_state.uploaded_json_file["max_num_frames"],
         "evaluator_name": st.session_state.evaluator_name,
         "prompt_number": st.session_state.prompt_number,
         "version_number": st.session_state.version_number,
@@ -110,9 +111,8 @@ if "uploaded_json_file" in st.session_state:
     st.markdown("### Evaluation")
     st.text(f"Model: {st.session_state.uploaded_json_file['model_path']}")
     st.text(f"Prompt: {st.session_state.uploaded_json_file['prompt']}")
-    st.text(
-        f"Generation Config: {st.session_state.uploaded_json_file['generation_config']}"
-    )
+    st.text(f"Max New Tokens: {st.session_state.uploaded_json_file['max_new_tokens']}")
+    st.text(f"Max Num Frames: {st.session_state.uploaded_json_file['max_num_frames']}")
     current_checks = st.session_state.checks[current_index]
 
     questions = [
