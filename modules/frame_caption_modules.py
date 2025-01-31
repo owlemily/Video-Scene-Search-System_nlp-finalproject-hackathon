@@ -3,15 +3,14 @@ frame_caption_modules.py
 
 함수 목록:
 1. load_model
-2. translate_caption
-3. dynamic_preprocess
-4. generate_caption_ForGeneralModel
-5. generate_caption_ForUnslothModel
-6. generate_caption
-7. generate_caption_UsingDataset_ForGeneralModel
-8. generate_caption_UsingDataset_ForUnslothModel
-9. generate_caption_UsingDatasets
-10. frame_caption - 메인 함수. config 설정에 따라 프레임별 캡션 생성
+2. dynamic_preprocess
+3. generate_caption_ForGeneralModel
+4. generate_caption_ForUnslothModel
+5. generate_caption
+6. generate_caption_UsingDataset_ForGeneralModel
+7. generate_caption_UsingDataset_ForUnslothModel
+8. generate_caption_UsingDatasets
+9. frame_caption - 메인 함수. config 설정에 따라 프레임별 캡션 생성
 """
 
 import json
@@ -24,11 +23,12 @@ from PIL import Image
 from torchvision import transforms as T
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
-
-# from .frame_utils import get_video_id_and_timestamp
-# from .specific_model_utils.unsloth_vision_utils import Custom_UnslothVisionDataCollator
-
 import deepl
+
+from .utils import translate_caption
+from .frame_utils import get_video_id_and_timestamp
+from .specific_model_utils.unsloth_vision_utils import Custom_UnslothVisionDataCollator
+
 
 # GPU 설정
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -76,30 +76,6 @@ def load_model(model_name, device):
     return model, tokenizer
 
 
-def translate_caption(caption, translator, target_lang="ko"):
-    """
-    caption을 입력으로 받아 번역된 caption_ko를 반환하는 함수
-
-    Args:
-        caption (str): 번역할 캡션
-        translator (googletrans.Translator or deepl.Translator): 번역기 객체
-        target_lang (str): 번역할 언어 코드 (default: "ko")
-
-    Returns:
-        str: 번역된 캡션
-    """
-    try:
-        if isinstance(translator, Translator):  # googletrans 사용
-            return translator.translate(caption, dest=target_lang).text
-        elif isinstance(translator, deepl.Translator):  # DeepL 사용
-            return translator.translate_text(caption, target_lang=target_lang).text
-        else:
-            raise ValueError("지원되지 않는 번역기 객체입니다.")
-    except Exception as e:
-        print(f"번역 실패: {caption}. 오류: {e}")
-        return ""
-
-
 def dynamic_preprocess(image, image_size=448, use_thumbnail=False):
     """
     이미지를 입력으로 받아 전처리된 이미지를 반환하는 함수 (unsloth 모델이 아닌 일반 모델 추론에 사용됩니다)
@@ -140,7 +116,7 @@ def generate_caption_ForGeneralModel(
         tokenizer (transformers.PreTrainedTokenizer): 토크나이저
         image (PIL.Image): 이미지
         prompt (str): 프롬프트
-        translator (googletrans.Translator): 번역기
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
         device (str): 디바이스
         max_new_tokens (int): 최대 토큰 길이
 
@@ -170,7 +146,7 @@ def generate_caption_ForUnslothModel(
         tokenizer (transformers.PreTrainedTokenizer): 토크나이저
         image (PIL.Image): 이미지
         prompt (str): 프롬프트
-        translator (googletrans.Translator): 번역기
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
         device (str): 디바이스
         max_new_tokens (int): 최대 토큰 길이
 
@@ -211,7 +187,7 @@ def generate_caption(
         tokenizer (transformers.PreTrainedTokenizer): 토크나이저
         image (PIL.Image): 이미지
         prompt (str): 프롬프트
-        translator (googletrans.Translator): 번역기
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
         device (str): 디바이스
         max_new_tokens (int): 최대 토큰 길이
         model_name (str): 모델 이름
@@ -240,7 +216,7 @@ def generate_caption_UsingDataset_ForGeneralModel(
         tokenizer (transformers.PreTrainedTokenizer): 토크나이저
         dataset (Dataset): Huggingface Dataset
         prompt (str): 프롬프트
-        translator (googletrans.Translator): 번역기
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
         batch_size (int): 배치 크기
         max_new_tokens (int): 최대 토큰 길이
         device (str): 디바이스
@@ -304,7 +280,7 @@ def generate_caption_UsingDataset_ForUnslothModel(
         tokenizer (transformers.PreTrainedTokenizer): 토크나이저
         dataset (Dataset): Huggingface Dataset
         prompt (str): 프롬프트
-        translator (googletrans.Translator): 번역기
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
         batch_size (int): 배치 크기
         max_new_tokens (int): 최대 토큰 길이
 
@@ -386,7 +362,7 @@ def generate_caption_UsingDataset(
         tokenizer (transformers.PreTrainedTokenizer): 토크나이저
         dataset (Dataset): Huggingface Dataset
         prompt (str): 프롬프트
-        translator (googletrans.Translator): 번역기
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
         batch_size (int): 배치 크기
         max_new_tokens (int): 최대 토큰
         device (str): 디바이스
@@ -539,11 +515,3 @@ if __name__ == "__main__":
         translator_name="deepl"
     )
 
-    # translate_caption 함수 테스트 - DeepL 사용
-    auth_key = os.environ.get("DEEPL_API_KEY")
-    translator = deepl.Translator(auth_key)
-    print(translate_caption("Hello, world!", translator, target_lang="ko"))
-
-    # translate_caption 함수 테스트 - Googletrans 사용
-    translator = Translator()
-    print(translate_caption("Hello, world!", translator, target_lang="ko"))
