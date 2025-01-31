@@ -42,15 +42,41 @@ class RankFusionSystem:
         self.w_scene = w_scene
         self.w_clip = w_clip
 
+    def normalize_scores(self, results):
+        """
+        주어진 결과 리스트에서 score 값을 정규화(Z-score 변환)하는 함수
+        """
+        if not results:
+            return results  
+    
+        scores = [d['score'] for d in results]
+        min_score = min(scores)
+        max_score = max(scores)
+    
+        if max_score == min_score:
+            normalized_scores = [0.5] * len(scores)
+        else:
+            normalized_scores = [(x - min_score) / (max_score - min_score) for x in scores]
+
+        for i, d in enumerate(results):
+            d['score'] = normalized_scores[i]
+
+        return results
+
     def retrieve_all(self, user_query: str, top_k: int = 100):
         """
-        동일한 쿼리에 대해 3가지 Retrieval 결과를 전부 얻어온다.
+        동일한 쿼리에 대해 3가지 Retrieval 결과를 전부 얻어온 후 각각 정규화한다.
         Returns:
             tuple: (frame_results, scene_results, clip_results)
         """
         frame_results = self.frame_retriever.retrieve(user_query, top_k=top_k)
         scene_results = self.scene_retriever.retrieve(user_query, top_k=top_k)
         clip_results = self.clip_retriever.retrieve(user_query, top_k=top_k)
+        
+        frame_results = self.normalize_scores(frame_results)
+        scene_results = self.normalize_scores(scene_results)
+        clip_results = self.normalize_scores(clip_results)
+        
         return frame_results, scene_results, clip_results
 
     def fuse_results(
