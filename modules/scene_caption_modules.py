@@ -98,7 +98,7 @@ def single_scene_caption_InternVideo2(
 
     # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start}_{end}_{i + 1:03d})
     scene_name = os.path.basename(scene_path)[: -len(".mp4")]
-    video_id, start, end, scene_id = scene_name.split("_")
+    video_id, start, end, scene_id = scene_name.rsplit("_", 3)
 
     if use_audio_for_prompt:
         mono_audio_path = os.path.join(mono_audio_folder, scene_name + ".wav")
@@ -184,7 +184,7 @@ def single_scene_caption_LlavaVideo(
 
     # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start}_{end}_{i + 1:03d})
     scene_name = os.path.basename(scene_path)[: -len(".mp4")]
-    video_id, start, end, scene_id = scene_name.split("_")
+    video_id, start, end, scene_id = scene_name.rsplit("_", 3)
 
     if use_audio_for_prompt:
         mono_audio_path = os.path.join(mono_audio_folder, scene_name + ".wav")
@@ -264,7 +264,7 @@ def single_scene_caption_InternVideo2_5_Chat(
 
     # scene_name 추출 (audio_name이랑 같음 - {video_id}_{start}_{end}_{i + 1:03d})
     scene_name = os.path.basename(scene_path)[: -len(".mp4")]
-    video_id, start, end, scene_id = scene_name.split("_")
+    video_id, start, end, scene_id = scene_name.rsplit("_", 3)
 
     if use_audio_for_prompt:
         mono_audio_path = os.path.join(mono_audio_folder, scene_name + ".wav")
@@ -416,7 +416,7 @@ def scene_caption(
 
     # scene_names를 video_id, start 순으로 정렬
     scene_names = os.listdir(scene_folder)
-    scene_names.sort(key=lambda x: (x.split("_")[0], float(x.split("_")[1])))
+    scene_names.sort(key=lambda x: (x.rsplit("_", 3)[0], float(x.rsplit("_", 3)[1])))
 
     for scene_name in tqdm(scene_names):
         scene_path = os.path.join(scene_folder, scene_name)
