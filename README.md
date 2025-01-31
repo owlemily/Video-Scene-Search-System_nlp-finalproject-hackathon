@@ -27,6 +27,17 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+## DeepL 사용을 위한 API 키 설정
+DeepL API 키를 발급받아 아래와 같이 환경변수로 추가해줍니다.
+```bash
+export DEEPL_API_KEY="your_api_key_here"
+```
+영구적으로 설정하기 위해서는 '~/.bashrc'에 저장합니다.
+```bash
+echo 'export DEEPL_API_KEY="your_api_key_here"' >> ~/.bashrc
+source ~/.bashrc
+```
+
 ## 사용할 수 있는 모델 종류
 - OpenGVLab/InternVideo2-Chat-8B
 - lmms-lab/LLaVA-Video-7B-Qwen2
