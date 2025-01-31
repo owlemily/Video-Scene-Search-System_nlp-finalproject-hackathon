@@ -18,6 +18,7 @@ if __name__ == "__main__":
 
     device = config["general"]["device"]
     video_folder = config["general"]["video_folder"]
+    translator_name = config["general"]["translator_name"]
 
     frames_folder = config["frame_caption"]["frames_folder"]
     frame_rate = config["frame_caption"]["frame_rate"]
@@ -56,4 +57,5 @@ if __name__ == "__main__":
         batch_size,
         use_datasets,
         frame_output_filename,
+        translator_name,
     )

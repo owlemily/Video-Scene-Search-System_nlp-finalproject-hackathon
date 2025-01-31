@@ -10,7 +10,7 @@ frame_caption_modules.py
 6. generate_caption
 7. generate_caption_UsingDataset_ForGeneralModel
 8. generate_caption_UsingDataset_ForUnslothModel
-9. generate_caption_UsingDataset
+9. generate_caption_UsingDatasets
 10. frame_caption - 메인 함수. config 설정에 따라 프레임별 캡션 생성
 """
 
@@ -25,8 +25,10 @@ from torchvision import transforms as T
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
 
-from .frame_utils import get_video_id_and_timestamp
-from .specific_model_utils.unsloth_vision_utils import Custom_UnslothVisionDataCollator
+# from .frame_utils import get_video_id_and_timestamp
+# from .specific_model_utils.unsloth_vision_utils import Custom_UnslothVisionDataCollator
+
+import deepl
 
 # GPU 설정
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -80,14 +82,19 @@ def translate_caption(caption, translator, target_lang="ko"):
 
     Args:
         caption (str): 번역할 캡션
-        translator (googletrans.Translator): 번역기 객체
+        translator (googletrans.Translator or deepl.Translator): 번역기 객체
         target_lang (str): 번역할 언어 코드 (default: "ko")
 
     Returns:
         str: 번역된 캡션
     """
     try:
-        return translator.translate(caption, dest=target_lang).text
+        if isinstance(translator, Translator):  # googletrans 사용
+            return translator.translate(caption, dest=target_lang).text
+        elif isinstance(translator, deepl.Translator):  # DeepL 사용
+            return translator.translate_text(caption, target_lang=target_lang).text
+        else:
+            raise ValueError("지원되지 않는 번역기 객체입니다.")
     except Exception as e:
         print(f"번역 실패: {caption}. 오류: {e}")
         return ""
@@ -417,6 +424,7 @@ def frame_caption(
     batch_size,
     use_datasets,
     frame_output_filename,
+    translator_name
 ):
     """
     프레임 폴더 또는 데이터셋으로부터 캡션을 생성하고 Json 파일로 저장하는 함수
@@ -433,12 +441,20 @@ def frame_caption(
         batch_size (int): 배치 크기
         use_datasets (bool): 데이터셋 사용 여부
         frame_output_filename (str): 결과 파일 이름
+        translator_name (str): 번역기 이름 ("googletrans" 또는 "deepl")
 
     Returns:
         None
     """
     model, tokenizer = load_model(model_name, device)
-    translator = Translator()
+    
+    if translator_name == "googletrans":
+        translator = Translator()
+    elif translator_name == "deepl":
+        auth_key = os.environ.get("DEEPL_API_KEY")
+        translator = deepl.Translator(auth_key)
+    else:
+        raise ValueError("지원하지 않는 번역기입니다.")
 
     if use_datasets:
         dataset_path = os.path.join(datasets_folder, datasets_name)
@@ -520,4 +536,14 @@ if __name__ == "__main__":
         batch_size=6,
         use_datasets=True,
         frame_output_filename="frame_captions_test.json",
+        translator_name="deepl"
     )
+
+    # translate_caption 함수 테스트 - DeepL 사용
+    auth_key = os.environ.get("DEEPL_API_KEY")
+    translator = deepl.Translator(auth_key)
+    print(translate_caption("Hello, world!", translator, target_lang="ko"))
+
+    # translate_caption 함수 테스트 - Googletrans 사용
+    translator = Translator()
+    print(translate_caption("Hello, world!", translator, target_lang="ko"))
