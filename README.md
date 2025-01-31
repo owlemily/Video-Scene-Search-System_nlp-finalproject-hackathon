@@ -48,7 +48,12 @@ python scene_caption_pipeline.py
 ```
 
 ## 이미 구축된 Scene 모음(mp4)들에 대해 Caption을 다는 Pipeline 함수 실행법
-evalSceneCaption.yaml에서 model, prompt, use_audio 등을 적절히 수정하고 파이썬 파일을 실행합니다.  
+1. 쉘스크립트로 evalSceneCaption 씬(mp4) 모음을 다운받습니다.
+```bash
+chmod + x download_evalSceneCaption_scenes.sh 
+./download_evalSceneCaption_scenes.sh 
+```
+2. evalSceneCaption.yaml에서 model, prompt, use_audio 등을 적절히 수정하고 파이썬 파일을 실행합니다.  
 config에서는 'scene_caption' 부분만 설정하시면 됩니다.
 ```bash
 python evalSceneCaption_pipeline.py
