@@ -4,6 +4,7 @@ Pillow
 pandas
 matplotlib
 PyYAML
+salesforce-lavis
 opencv-python-headless
 faiss-cpu
 git+https://github.com/openai/CLIP.git
