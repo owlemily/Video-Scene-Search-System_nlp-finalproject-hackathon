@@ -1,4 +1,0 @@
-model_name: "BAAI/bge-large-en"
-type: "frame"
-json_file: "description/frames_with_scene_id.json"
-output_file: "output/frame_description_vectors.pt"
