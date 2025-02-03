@@ -424,8 +424,8 @@ class Rankfusion:
     scene_retriever, clip_retriever, blip_retriever의 retrieval 결과를 각각의 가중치 (weight_scene, weight_clip, weight_blip)
     로 결합하여 최종 랭크 퓨전을 수행합니다.
 
-    특히, 이미지 파일명 (예: "efqjl_jfdk_95.720625.jpg" 또는 "efqjl_jfdk_extra_95.720625.jpg") 에서
-    video_id와 timestamp를 추출한 후, scene_retriever가 반환한 scene 정보 (scene_start_time, scene_end_time, score)를 참고하여
+    특히, 이미지 파일명 (예: "efqjl_jfdk_95.720625.jpg") 에서 video_id와 timestamp를 추출한 후,
+    scene_retriever가 반환한 scene 정보 (scene_start_time, scene_end_time, score)를 참고하여
     해당 이미지 프레임이 속한 scene의 점수를 fusion에 포함합니다.
     """
 
@@ -438,14 +438,6 @@ class Rankfusion:
         weight_blip: float = 0.33,
         weight_scene: float = 0.34,
     ):
-        """
-        :param scene_retriever: BGE 기반 scene 검색 인스턴스
-        :param clip_retriever: CLIP 기반 이미지 검색 인스턴스
-        :param blip_retriever: BLIP 기반 이미지 검색 인스턴스
-        :param weight_clip: CLIP 결과에 부여할 가중치
-        :param weight_blip: BLIP 결과에 부여할 가중치
-        :param weight_scene: Scene 결과에 부여할 가중치
-        """
         self.scene_retriever = scene_retriever
         self.clip_retriever = clip_retriever
         self.blip_retriever = blip_retriever
@@ -454,19 +446,13 @@ class Rankfusion:
         self.weight_scene = weight_scene
 
     def normalize_scores(self, results):
-        """
-        주어진 결과 리스트에서 score 값을 0~1 사이로 정규화(Min-Max)하는 함수.
-        (Z-score 등 다른 방법도 가능)
-        """
         if not results:
             return results
 
         scores = [d["score"] for d in results]
         min_score = min(scores)
         max_score = max(scores)
-
         if max_score == min_score:
-            # 모든 score가 동일한 경우 0.5로 설정
             normalized_scores = [0.5] * len(scores)
         else:
             normalized_scores = [
@@ -475,38 +461,72 @@ class Rankfusion:
 
         for i, d in enumerate(results):
             d["score"] = normalized_scores[i]
-
         return results
 
+    def _build_scene_lookup_table(self, image_filenames, scenes_by_video):
+        """
+        이미지 파일명 리스트에 대해, 각 이미지가 속한 scene의 점수를 미리 계산하여 룩업 테이블을 생성합니다.
+        :param image_filenames: 이미지 파일명들의 집합 (set 혹은 list)
+        :param scenes_by_video: video_id를 키로 갖는 scene 리스트 딕셔너리
+        :return: { image_filename: scene_score, ... }
+        """
+        scene_lookup = {}
+        import os
+
+        for img in image_filenames:
+            base = os.path.basename(img)
+            name, ext = os.path.splitext(base)
+            parts = name.split("_")
+            # 마지막 토큰은 timestamp로 간주합니다.
+            try:
+                timestamp = float(parts[-1])
+            except ValueError as e:
+                print(f"[Rankfusion] Timestamp parsing error for {img}: {e}")
+                timestamp = None
+
+            # video_id는 마지막 토큰을 제외한 모든 토큰을 결합하여 추출합니다.
+            video_id_extracted = "_".join(parts[:-1])
+
+            scene_score = 0.0
+            # video_id를 먼저 찾고, 해당 video_id에 속하는 scene 목록에서 timestamp 범위에 포함되는 scene을 찾음
+            if timestamp is not None and video_id_extracted in scenes_by_video:
+                candidate_scenes = []
+                for scene in scenes_by_video[video_id_extracted]:
+                    try:
+                        start_time = float(scene["scene_start_time"])
+                        end_time = float(scene["scene_end_time"])
+                    except Exception as e:
+                        print(f"[Rankfusion] Scene time parsing error: {e}")
+                        continue
+                    if start_time <= timestamp <= end_time:
+                        candidate_scenes.append(scene)
+                if candidate_scenes:
+                    scene_score = max(s["score"] for s in candidate_scenes)
+            scene_lookup[img] = scene_score
+
+        return scene_lookup
+
     def retrieve(
-        self,
-        query: str,
-        top_k: int = 10,
-        union_top_n: int = None,  # None이면 전체 이미지 수를 사용
+        self, query: str, top_k: int = 10, union_top_n: int = None
     ) -> list[dict]:
         """
         :param query: 검색할 텍스트 쿼리
         :param top_k: 최종 반환할 결과 수
         :param union_top_n: CLIP, BLIP retrieval 시 union으로 고려할 상위 결과 수 (None이면 전체)
-        :return: 각 결과 dict에는 image_filename, clip_score, blip_score, scene_score, fusion_score, rank 등이 포함됨
+        :return: 결과 dict에는 image_filename, clip_score, blip_score, scene_score, fusion_score, rank 등이 포함됨
         """
-        import os
-
-        # 만약 union_top_n이 None이면, 현재 로드된 모든 이미지 개수를 사용
         if union_top_n is None:
             union_top_n = max(
                 len(self.clip_retriever.image_filenames),
                 len(self.blip_retriever.image_filenames),
             )
 
-        # 1. CLIP, BLIP retrieval 결과 (union_top_n으로 검색)
         clip_results = self.clip_retriever.retrieve(query, top_k=union_top_n)
-        clip_results = self.normalize_scores(clip_results)
+        # clip_results = self.normalize_scores(clip_results)
 
         blip_results = self.blip_retriever.retrieve(query, top_k=union_top_n)
-        blip_results = self.normalize_scores(blip_results)
+        # blip_results = self.normalize_scores(blip_results)
 
-        # 각 retrieval 결과에서 이미지 파일명과 점수를 딕셔너리로 정리 (없으면 0)
         clip_score_dict = {
             res["image_filename"]: res.get("score", 0.0) for res in clip_results
         }
@@ -514,64 +534,36 @@ class Rankfusion:
             res["image_filename"]: res.get("score", 0.0) for res in blip_results
         }
 
-        # 2. Scene retrieval 결과: scene_retriever는 전체 scene에 대해 query 유사도 점수를 반환함.
+        # 1. Scene retrieval 결과 (전체 scene에 대해 검색)
         scene_results = self.scene_retriever.retrieve(
             query, top_k=len(self.scene_retriever.data_info)
         )
-        scene_results = self.normalize_scores(scene_results)
+        # scene_results = self.normalize_scores(scene_results)
 
-        # scene 정보를 video_id별로 그룹핑
+        # 2. scene 정보를 video_id별로 그룹핑
+        # video_id가 언더스코어를 포함할 수 있으므로, scene_id에서 마지막 3개의 토큰(시작시간, 종료시간, 시퀀스 번호)을 제거하고 나머지를 video_id로 사용합니다.
         scenes_by_video = {}
         for scene in scene_results:
-            # scene_id 예시: "myvideo_12.34_15.20_001"
-            # video_id 추출 시, 필요에 따라 rsplit 파라미터 조정
-            parts = scene["scene_id"].rsplit("_", 4)
+            parts = scene["scene_id"].rsplit("_", 3)
             video_id = parts[0]
             if video_id not in scenes_by_video:
                 scenes_by_video[video_id] = []
             scenes_by_video[video_id].append(scene)
 
-        # 3. CLIP, BLIP retrieval 결과의 union
+        # 3. CLIP, BLIP 결과의 union
         all_images = set(list(clip_score_dict.keys()) + list(blip_score_dict.keys()))
+        scene_lookup = self._build_scene_lookup_table(all_images, scenes_by_video)
+
         fused_results = []
         for img in all_images:
             clip_score = clip_score_dict.get(img, 0.0)
             blip_score = blip_score_dict.get(img, 0.0)
-            scene_score = 0.0  # 초기값
-
-            # 파일명에서 video_id와 timestamp를 추출
-            # 파일명 예: "efqjl_jfdk_95.720625.jpg"
-            base = os.path.basename(img)
-            try:
-                video_id_part, ts_with_ext = base.rsplit("_", 1)
-                video_id_extracted = video_id_part
-                timestamp_str, _ = os.path.splitext(ts_with_ext)
-                timestamp = float(timestamp_str)
-            except Exception as e:
-                print(f"[Rankfusion] 파일명 {img} 파싱 에러: {e}")
-                timestamp = None
-                video_id_extracted = None
-
-            # scene_score 찾기
-            if timestamp is not None and video_id_extracted in scenes_by_video:
-                candidate_scenes = [
-                    s
-                    for s in scenes_by_video[video_id_extracted]
-                    if float(s["scene_start_time"])
-                    <= timestamp
-                    <= float(s["scene_end_time"])
-                ]
-                if candidate_scenes:
-                    # 해당 프레임이 속하는 scene들 중 최대 점수를 사용
-                    scene_score = max(s["score"] for s in candidate_scenes)
-
-            # 최종 fusion score 계산
+            scene_score = scene_lookup.get(img, 0.0)
             fusion_score = (
                 self.weight_clip * clip_score
                 + self.weight_blip * blip_score
                 + self.weight_scene * scene_score
             )
-
             fused_results.append(
                 {
                     "image_filename": img,
@@ -582,7 +574,6 @@ class Rankfusion:
                 }
             )
 
-        # fusion score 내림차순 정렬 및 rank 부여
         fused_results = sorted(
             fused_results, key=lambda x: x["fusion_score"], reverse=True
         )
@@ -594,48 +585,34 @@ class Rankfusion:
     def select_diverse_results_by_clustering(
         self, fused_results: list[dict], desired_num: int = 5, top_n: int = 100
     ) -> list[dict]:
-        """
-        BLIP 임베딩을 기반으로 클러스터링 후, 다양한(results) 대표 이미지를 뽑아냅니다.
-        :param fused_results: 이미 scene, clip, blip를 합산하여 rankfusion된 결과 리스트
-        :param desired_num: 뽑고자 하는 다양성 대표 결과 수 (클러스터 수)
-        :param top_n: 우선적으로 상위 top_n 후보를 대상으로 클러스터링을 수행
-        :return: 클러스터링 후, 각 클러스터 내에서 가장 fusion_score 높은 이미지를 뽑아낸 결과 리스트
-        """
         import numpy as np
         from sklearn.cluster import KMeans
 
-        # 1. 우선 fused_results 상위 top_n만 후보로 선정
         candidates = fused_results[:top_n]
-
-        # 2. BLIP 임베딩 딕셔너리 생성
-        blip_embedding_dict = {
+        # 여기서는 CLIP 임베딩 기반으로 diversity 선택 (필요에 따라 BLIP 임베딩 등으로 변경 가능)
+        clip_embedding_dict = {
             fname: emb.cpu().numpy()
             for fname, emb in zip(
-                self.blip_retriever.image_filenames,
-                self.blip_retriever.image_embeddings,
+                self.clip_retriever.image_filenames,
+                self.clip_retriever.image_embeddings,
             )
         }
 
-        # 3. 후보들의 BLIP 임베딩을 모아서 KMeans 클러스터링
         features = []
         valid_candidates = []
         for res in candidates:
             fname = res["image_filename"]
-            if fname in blip_embedding_dict:
-                features.append(blip_embedding_dict[fname])
+            if fname in clip_embedding_dict:
+                features.append(clip_embedding_dict[fname])
                 valid_candidates.append(res)
 
         if not features:
-            # 후보들의 임베딩을 찾을 수 없는 경우
             return []
 
         features = np.stack(features, axis=0)
-
-        # 4. k-means 클러스터링
         kmeans = KMeans(n_clusters=desired_num, random_state=0)
         labels = kmeans.fit_predict(features)
 
-        # 5. 각 클러스터 내에서 fusion_score가 가장 높은 결과 선택
         diverse_results = []
         for cluster_id in range(desired_num):
             cluster_candidates = [
@@ -647,12 +624,9 @@ class Rankfusion:
                 continue
             best_candidate = max(cluster_candidates, key=lambda x: x["fusion_score"])
             diverse_results.append(best_candidate)
-
-        # 6. 클러스터링 결과를 최종 점수 순으로 정렬 (선택 사항)
         diverse_results = sorted(
             diverse_results, key=lambda x: x["fusion_score"], reverse=True
         )
-
         return diverse_results
 
 
