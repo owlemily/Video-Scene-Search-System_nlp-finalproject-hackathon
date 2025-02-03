@@ -1,110 +1,94 @@
-import csv
 import os
 
-from rankfusion_retrieval_pipeline import RankFusionSystem
+# -----------------------------------------------------------------------------
+# 1. RetrievalScoreFusion 인스턴스 생성 (이미 이전에 구현한 클래스를 활용)
+# -----------------------------------------------------------------------------
+# 예시: config 파일 경로 및 가중치 값은 상황에 맞게 수정하세요.
+from code.video_retrieval import BGERetrieval, BLIPRetrieval, CLIPRetrieval, Rankfusion
 
+import pandas as pd
 
-def run_rank_fusion_for_csv(
-    csv_input_path="benchmark_en.csv",
-    csv_output_path="benchmark_fused.csv",
-    frame_config_path="config/frame_description_config.yaml",
-    scene_config_path="config/scene_description_config.yaml",
-    clip_config_path="config/clip_config.yaml",
-    blip_config_path="config/blip_config.yaml",  # BLIP config 추가
-    top_k=5,
-    w_frame=0.3,
-    w_scene=0.4,
-    w_clip=0.3,
-    w_blip=0.0,  # BLIP 가중치 추가
-):
-    """
-    CSV에서 한 줄씩 (query) 꺼내서 rank_fusion을 수행한 뒤,
-    결과를 새로운 CSV로 저장합니다.
-    """
-    # -- (1) RankFusionSystem 객체 생성 --
-    rank_fusion_system = RankFusionSystem(
-        frame_text_config_path=frame_config_path,
-        scene_text_config_path=scene_config_path,
-        clip_config_path=clip_config_path,
-        blip_config_path=blip_config_path,  # 추가
-        w_frame=w_frame,
-        w_scene=w_scene,
-        w_clip=w_clip,
-        w_blip=w_blip,  # 추가
+config_file = "config/video_retrieval_config.yaml"
+
+# 개별 리트리버 생성
+clip_retriever = CLIPRetrieval(config_path=config_file)
+blip_retriever = BLIPRetrieval(config_path=config_file)
+scene_retriever = BGERetrieval(config_path=config_file)
+
+# Rankfusion 객체 생성 (각 retrieval 결과의 가중치는 상황에 따라 조절)
+rankfusion = Rankfusion(
+    scene_retriever=scene_retriever,
+    clip_retriever=clip_retriever,
+    blip_retriever=blip_retriever,
+    weight_clip=0.95,
+    weight_blip=0.99,
+    weight_scene=0.65,
+)
+
+# -----------------------------------------------------------------------------
+# 2. benchmark_en.csv 파일 읽기
+#    CSV 파일 컬럼: index,query,type,video,start,end
+# -----------------------------------------------------------------------------
+benchmark_df = pd.read_csv("dev/benchmark_en.csv")
+
+# -----------------------------------------------------------------------------
+# 3. 각 benchmark 쿼리에 대해 RetrievalScoreFusion 수행 및 결과 CSV 데이터 생성
+#    최종 CSV 컬럼: "query_index", "original_query", "rank", "video_id", "start", "end"
+# -----------------------------------------------------------------------------
+output_rows = []
+top_k = 5  # retrieval 결과 상위 몇 개를 평가에 사용할지 (필요에 따라 조정)
+
+for _, row in benchmark_df.iterrows():
+    query_index = row["index"]
+    original_query = row["query"]
+
+    # 최종 Rankfusion 결과 (예: 상위 10개 결과)
+    fusion_results = rankfusion.retrieve(original_query, top_k=1000)
+
+    diverse_results = rankfusion.select_diverse_results_by_clustering(
+        fusion_results, desired_num=10, top_n=100
     )
 
-    # -- (2) 결과 저장할 CSV 준비 --
-    with (
-        open(csv_input_path, "r", encoding="utf-8") as in_f,
-        open(csv_output_path, "w", newline="", encoding="utf-8") as out_f,
-    ):
-        reader = csv.DictReader(in_f)
-        fieldnames = [
-            "query_index",
-            "original_query",
-            "rank",
-            "video_id",
-            "start",
-            "end",
-        ]
-        writer = csv.DictWriter(out_f, fieldnames=fieldnames)
-        writer.writeheader()
+    for res in fusion_results:
+        rank = res["rank"]
+        image_filename = res["image_filename"]
 
-        # -- (3) 입력 CSV의 각 row(= 쿼리)에 대해 Rank Fusion 실행 --
-        for row in reader:
-            query_idx = row["index"]  # CSV 상의 'index' 필드 (ex: 0, 1, 2 ...)
-            original_query = row["query"]  # CSV 상의 'query' 필드
+        # image_filename 예시:
+        # "/data/ephemeral/home/junhan_blip2_streamlit/full_frames/UdZuHy_tbw_99.76633333333332.jpg"
+        # 마지막 언더스코어를 기준으로 분리하여 video_id와 timestamp를 추출합니다.
+        base_name = os.path.basename(
+            image_filename
+        )  # 예: "UdZuHy_tbw_99.76633333333332.jpg"
+        name_without_ext, _ = os.path.splitext(
+            base_name
+        )  # "UdZuHy_tbw_99.76633333333332"
+        # rpartition를 사용하면 마지막 언더스코어를 기준으로 세 부분으로 나눕니다.
+        video_id, sep, timestamp = name_without_ext.rpartition("_")
+        if sep == "":
+            # underscore가 없을 경우 전체를 video_id로, timestamp는 빈 문자열로 처리
+            video_id = name_without_ext
+            timestamp = ""
 
-            # -- (4) Retrieve & Rank Fusion --
-            fused_top_k = rank_fusion_system.retrieve_and_fuse(
-                original_query, top_k=top_k
-            )
+        # retrieval 결과는 프레임 기반이므로, start와 end 모두 timestamp 값을 사용합니다.
+        output_rows.append(
+            {
+                "query_index": query_index,
+                "original_query": original_query,
+                "rank": rank,
+                "video_id": video_id,
+                "start": timestamp,
+                "end": timestamp,
+            }
+        )
 
-            if not fused_top_k:
-                continue  # 결과가 없는 경우 넘어감
+# -----------------------------------------------------------------------------
+# 4. 결과를 DataFrame으로 저장 후 CSV 파일로 출력
+# -----------------------------------------------------------------------------
+output_df = pd.DataFrame(
+    output_rows,
+    columns=["query_index", "original_query", "rank", "video_id", "start", "end"],
+)
+output_csv_path = "dev/retrieval_results.csv"
+output_df.to_csv(output_csv_path, index=False)
 
-            # -- (5) 상위 top_k개의 결과를 CSV에 저장 --
-            for rank, top_item in enumerate(fused_top_k, start=1):
-                fused_filename = top_item["filename"]  # 예: "5qlG1ODkRWw_135.750.jpg"
-
-                # 확장자(.jpg 등) 제거 -> "5qlG1ODkRWw_135.750"
-                file_without_ext = os.path.splitext(fused_filename)[0]
-                # '_'를 기준으로 분리
-                parts = file_without_ext.split("_")
-
-                # 마지막 값이 time_str, 나머지는 video_id
-                time_str = parts[-1]
-                video_id = "_".join(parts[:-1])
-
-                # time_str이 "135.750" 등이라면, start와 end를 동일하게 둠
-                start_time = time_str
-                end_time = time_str
-
-                out_row = {
-                    "query_index": query_idx,
-                    "original_query": original_query,
-                    "rank": rank,
-                    "video_id": video_id,
-                    "start": start_time,
-                    "end": end_time,
-                }
-                writer.writerow(out_row)
-
-    print(f"[INFO] Rank fusion results saved to: {csv_output_path}")
-
-
-if __name__ == "__main__":
-    # 예시 실행
-    run_rank_fusion_for_csv(
-        csv_input_path="dev/benchmark_en.csv",
-        csv_output_path="benchmark_fused.csv",
-        frame_config_path="config/frame_description_config.yaml",
-        scene_config_path="config/scene_description_config.yaml",
-        clip_config_path="config/clip_config.yaml",
-        blip_config_path="config/blip_config.yaml",  # BLIP 설정 파일
-        top_k=5,
-        w_frame=0,
-        w_scene=0,
-        w_clip=1,
-        w_blip=1,
-    )
+print(f"Retrieval 평가 CSV 파일이 {output_csv_path}에 저장되었습니다.")
