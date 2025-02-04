@@ -254,11 +254,13 @@ class BLIPRetrieval(BaseRetrieval):
 
 
 ###############################################################################
-# RetrievalScoreFusion: CLIP과 BLIP의 결과를 rank fusion 방식으로 앙상블
+# RetrievalScoreFusion: CLIP과 BLIP의 결과를 rank fusion 방식으로 앙상블 및
+# 클러스터링 기반 다양성 선택 기능 내장
 ###############################################################################
 class RetrievalScoreFusion:
     """
-    두 리트리버(CLIP, BLIP)의 점수 결과를 가중합하여 앙상블을 수행합니다.
+    두 리트리버(CLIP, BLIP)의 점수 결과를 가중합하여 앙상블을 수행하고,
+    클러스터링 기반 다양성 선택 기능을 제공합니다.
     """
 
     def __init__(
@@ -284,9 +286,8 @@ class RetrievalScoreFusion:
 
         # 두 시스템에서 나온 모든 이미지를 합집합으로 획득
         all_images = set(clip_score_dict.keys()).union(set(blip_score_dict.keys()))
-        # (필요하다면 이 시점에 CLIP과 BLIP 점수를 서로 다른 범위를 맞추기 위해 정규화 가능)
 
-        # 각 이미지에 대해 CLIP/BILP 점수를 가중합
+        # 각 이미지에 대해 CLIP/BLIP 점수를 가중합
         fused_scores = {}
         for img in all_images:
             score_clip = clip_score_dict.get(img, 0.0)
@@ -297,7 +298,7 @@ class RetrievalScoreFusion:
         # 가중합 점수를 기준으로 내림차순 정렬
         sorted_images = sorted(all_images, key=lambda x: fused_scores[x], reverse=True)
 
-        # 최종 결과 리스트 생성 (CLIP/BILP 점수도 함께 반환)
+        # 최종 결과 리스트 생성 (CLIP/BLIP 점수도 함께 반환)
         fused_results = []
         for rank, img in enumerate(sorted_images, start=1):
             fused_results.append(
@@ -314,53 +315,63 @@ class RetrievalScoreFusion:
 
         return fused_results
 
+    def _get_clip_embedding_dict(self) -> dict:
+        """
+        내부적으로 CLIP 리트리버의 이미지 임베딩을 numpy 배열로 변환하여
+        이미지 파일명을 key로 갖는 딕셔너리를 반환합니다.
+        """
+        embedding_dict = {}
+        for fname, emb in zip(
+            self.clip_retriever.image_filenames, self.clip_retriever.image_embeddings
+        ):
+            embedding_dict[fname] = emb.cpu().numpy()
+        return embedding_dict
 
-###############################################################################
-# Diversity Selection: 클러스터링을 통한 다양성 보장 (대표 이미지 선택)
-###############################################################################
-def select_diverse_results_by_clustering(
-    retrieval_results: list[dict],
-    embedding_dict: dict,
-    desired_num: int = 5,
-    top_n: int = 100,
-) -> list[dict]:
-    """
-    retrieval_results: retrieval 시스템이 반환한 결과 리스트 (예: fusion_score 기준 내림차순 정렬)
-    embedding_dict: 이미지 파일명을 key로, 해당 임베딩(numpy array)을 value로 갖는 dict
-    desired_num: 최종 선택할 결과 수 (예: 5)
-    top_n: diversity 적용을 위한 후보 수 (예: 상위 100개 결과)
-    """
-    # 후보 집합 (상위 top_n 결과)
-    candidates = retrieval_results[:top_n]
+    def select_diverse_results_by_clustering(
+        self,
+        retrieval_results: list[dict],
+        desired_num: int = 5,
+        top_n: int = 100,
+    ) -> list[dict]:
+        """
+        retrieval_results: retrieval 시스템이 반환한 결과 리스트 (예: fusion_score 기준 내림차순 정렬)
+        desired_num: 최종 선택할 결과 수 (예: 5)
+        top_n: diversity 적용을 위한 후보 수 (예: 상위 100개 결과)
+        """
+        # 후보 집합 (상위 top_n 결과)
+        candidates = retrieval_results[:top_n]
 
-    features = []
-    candidate_filenames = []
-    for res in candidates:
-        fname = res["image_filename"]
-        if fname in embedding_dict:
-            features.append(embedding_dict[fname])
-            candidate_filenames.append(fname)
-    if len(features) == 0:
-        return []
+        # 내부적으로 CLIP 임베딩 dict 생성
+        embedding_dict = self._get_clip_embedding_dict()
 
-    features = np.stack(features, axis=0)
+        features = []
+        candidate_filenames = []
+        for res in candidates:
+            fname = res["image_filename"]
+            if fname in embedding_dict:
+                features.append(embedding_dict[fname])
+                candidate_filenames.append(fname)
+        if len(features) == 0:
+            return []
 
-    # 클러스터 수를 desired_num으로 설정하여 KMeans 클러스터링 수행
-    kmeans = KMeans(n_clusters=desired_num, random_state=0).fit(features)
-    labels = kmeans.labels_
+        features = np.stack(features, axis=0)
 
-    diverse_results = []
-    # 각 클러스터별로 최고 fusion_score를 가진 후보 선택
-    for cluster_id in range(desired_num):
-        cluster_candidates = [
-            candidates[i] for i, label in enumerate(labels) if label == cluster_id
-        ]
-        if not cluster_candidates:
-            continue
-        best_candidate = max(cluster_candidates, key=lambda x: x["fusion_score"])
-        diverse_results.append(best_candidate)
+        # 클러스터 수를 desired_num으로 설정하여 KMeans 클러스터링 수행
+        kmeans = KMeans(n_clusters=desired_num, random_state=0).fit(features)
+        labels = kmeans.labels_
 
-    return diverse_results
+        diverse_results = []
+        # 각 클러스터별로 최고 fusion_score를 가진 후보 선택
+        for cluster_id in range(desired_num):
+            cluster_candidates = [
+                candidates[i] for i, label in enumerate(labels) if label == cluster_id
+            ]
+            if not cluster_candidates:
+                continue
+            best_candidate = max(cluster_candidates, key=lambda x: x["fusion_score"])
+            diverse_results.append(best_candidate)
+
+        return diverse_results
 
 
 ###############################################################################
@@ -390,19 +401,11 @@ if __name__ == "__main__":
             f"BLIP: {res['blip_score']:.4f}, Fusion: {res['fusion_score']:.4f})"
         )
 
-    # diversity를 위해 CLIP의 이미지 임베딩을 활용하여 이미지 파일명 -> 임베딩 dict 생성
-    clip_embedding_dict = {}
-    # clip_retriever.image_embeddings는 torch.Tensor이므로 numpy 배열로 변환
-    for fname, emb in zip(
-        clip_retriever.image_filenames, clip_retriever.image_embeddings
-    ):
-        clip_embedding_dict[fname] = emb.cpu().numpy()
-
-    # 클러스터링 기반 다양성 선택: 최종 top 5 결과 추출
-    diverse_results = select_diverse_results_by_clustering(
-        ensemble_results, clip_embedding_dict, desired_num=10, top_n=300
+    # 클러스터링 기반 다양성 선택: 최종 desired_num 결과 추출
+    diverse_results = ensemble_retriever.select_diverse_results_by_clustering(
+        ensemble_results, desired_num=10, top_n=300
     )
-    print("\n=== 클러스터링 기반 Diversity 적용 후 최종 Top 5 결과 ===")
+    print("\n=== 클러스터링 기반 Diversity 적용 후 최종 결과 ===")
     for res in diverse_results:
         print(
             f"Rank {res['rank']}: {res['image_filename']} (CLIP: {res['clip_score']:.4f}, "
