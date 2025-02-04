@@ -257,7 +257,7 @@ class BLIPRetrieval(BaseRetrieval):
 # RetrievalScoreFusion: CLIP과 BLIP의 결과를 rank fusion 방식으로 앙상블 및
 # 클러스터링 기반 다양성 선택 기능 내장
 ###############################################################################
-class RetrievalScoreFusion:
+class ImageRetrievalEnsemble:
     """
     두 리트리버(CLIP, BLIP)의 점수 결과를 가중합하여 앙상블을 수행하고,
     클러스터링 기반 다양성 선택 기능을 제공합니다.
@@ -385,7 +385,7 @@ if __name__ == "__main__":
     blip_retriever = BLIPRetrieval(config_path=config_file)
 
     # 앙상블 검색: 두 리트리버의 결과에 대해 가중치 부여 후 rank fusion 수행
-    ensemble_retriever = RetrievalScoreFusion(
+    ensemble_retriever = ImageRetrievalEnsemble(
         clip_retriever,
         blip_retriever,
         weight_clip=0.4,

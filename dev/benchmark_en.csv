@@ -95,14 +95,14 @@ index,query,type,video,start,end
 94,Boy asks man if he is a crusader and man says yes,3,zjwBNUXCA-M,99.5,100.5
 95,"forest, trees, wild boar",5,zjwBNUXCA-M,5.5,7
 96,"forest, male, bow, arrow",5,zjwBNUXCA-M,0,5
-97,"There is a grandfather and a child, and the child smiles brightly while holding a canned food.",1,ncFDuKdgNE,130.5,132.5
-98,"There are canned food, books, picture frames, etc. in the box.",1,ncFDuKdgNE,100,107
-99,A man force-feeds another man canned spinach,2,ncFDuKdgNE,15,17.5
-100,A man in a white uniform does a back tumble,2,ncFDuKdgNE,124,126
-101,A woman says a man is her hero,3,ncFDuKdgNE,92.5,94
-102,A man holds a can and asks if he doesn't like spinach,3,ncFDuKdgNE,8,11
-103,"Box, book, 2 cans, picture frame, pipe",5,ncFDuKdgNE,100,107
-104,"grandfather, child, canned food",5,ncFDuKdgNE,130.5,132.5
+97,"There is a grandfather and a child, and the child smiles brightly while holding a canned food.",1,-ncFDuKdgNE,130.5,132.5
+98,"There are canned food, books, picture frames, etc. in the box.",1,-ncFDuKdgNE,100,107
+99,A man force-feeds another man canned spinach,2,-ncFDuKdgNE,15,17.5
+100,A man in a white uniform does a back tumble,2,-ncFDuKdgNE,124,126
+101,A woman says a man is her hero,3,-ncFDuKdgNE,92.5,94
+102,A man holds a can and asks if he doesn't like spinach,3,-ncFDuKdgNE,8,11
+103,"Box, book, 2 cans, picture frame, pipe",5,-ncFDuKdgNE,100,107
+104,"grandfather, child, canned food",5,-ncFDuKdgNE,130.5,132.5
 105,"In the background of a narrow street lined with shops, a large number of police or military personnel are marching in a line with shields and equipment.",1,tBDHJCVi7_0,25,27.5
 106,"A man is lying on the floor, bleeding, and his helmet is next to him.",1,tBDHJCVi7_0,45.5,45.5
 107,A tank fires at a building in the middle of a city street.,2,tBDHJCVi7_0,55.5,57

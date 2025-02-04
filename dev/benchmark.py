@@ -2,13 +2,13 @@ import os
 
 # -----------------------------------------------------------------------------
 # 1. Retrieval 모듈 import
-#    - 사용되는 Retrieval 클래스: BGERetrieval, BLIPRetrieval, CLIPRetrieval, Rankfusion
+#    - 사용되는 Retrieval 클래스: SCENERetrieval, BLIPRetrieval, CLIPRetrieval, Rankfusion
 # -----------------------------------------------------------------------------
 from code.video_retrieval import (
-    BGERetrieval,
     BLIPRetrieval,
     CLIPRetrieval,
     Rankfusion,
+    SCENERetrieval,
 )
 
 import pandas as pd
@@ -53,9 +53,10 @@ def retrieve_and_save_results(
     # -----------------------------
     # 1. 개별 리트리버 및 랭크퓨전 객체 생성
     # -----------------------------
+    scene_retriever = SCENERetrieval(config_path=config_file)
+    # scrtip_retriever = SCRIPTRetrieval(config_path=config_file)
     clip_retriever = CLIPRetrieval(config_path=config_file)
     blip_retriever = BLIPRetrieval(config_path=config_file)
-    scene_retriever = BGERetrieval(config_path=config_file)
 
     # Rankfusion(Ensemble) 객체 생성
     ensemble_retriever = Rankfusion(
@@ -66,6 +67,13 @@ def retrieve_and_save_results(
         weight_blip=weight_blip,
         weight_scene=weight_scene,
     )
+
+    # ensemble_retriever = ImageRetrievalEnsemble(
+    #     clip_retriever=clip_retriever,
+    #     blip_retriever=blip_retriever,
+    #     weight_clip=weight_clip,
+    #     weight_blip=weight_blip,
+    # )
 
     # -----------------------------
     # 2. benchmark CSV 불러오기
@@ -264,7 +272,7 @@ def main():
         output_csv_path=output_csv_path,
         weight_clip=0.4,
         weight_blip=0.6,
-        weight_scene=0.0,
+        weight_scene=0,
         top_k=1000,
         union_top_n=1000,
         desired_num_diverse=10,
