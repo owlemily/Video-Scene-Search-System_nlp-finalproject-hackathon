@@ -61,7 +61,7 @@ class BGERetrieval:
         self.model = AutoModel.from_pretrained(self.model_name).to(self.device)
         self.model.eval()
 
-        # JSON 파일 읽기 및 scene index 구축 (클래스 내부 메서드 사용)
+        # JSON 파일 읽기 및 scene index 구축
         self.json_file = self.config["json_file"]
         self.scene_index = self._build_scene_index_from_json(self.json_file)
         # 원본 scene 정보 전체 (retrieval 결과 구성 시 사용)
@@ -70,12 +70,13 @@ class BGERetrieval:
         self.data_info = data.get("scenes", [])
         self.texts = [scene["caption"] for scene in self.data_info]
 
-        # 임베딩 파일 경로 및 존재시 로드, 없으면 생성
+        # 임베딩 파일 경로 및 존재 시 로드, 없으면 생성
         self.embedding_file = self.config["output_file"]
         os.makedirs(os.path.dirname(self.embedding_file), exist_ok=True)
         if os.path.exists(self.embedding_file):
             self._load_embeddings(self.embedding_file)
         else:
+            # 초기 대량 텍스트 인코딩이므로 tqdm 표시
             self.embeddings = self._encode_texts(self.texts)
             self._save_embeddings(self.embedding_file)
 
@@ -111,7 +112,7 @@ class BGERetrieval:
                 print(f"scene 파싱 오류: {e}")
                 continue
 
-            # 초기 score는 0.0으로 설정 (추후 BGE retrieval 결과로 업데이트)
+            # 초기 score는 0.0으로 설정
             scene_entry = {
                 "scene_id": scene.get("scene_id"),
                 "start_time": start_time,
@@ -123,16 +124,28 @@ class BGERetrieval:
                 scene_index[video_id] = {"starts": [], "scenes": []}
             scene_index[video_id]["starts"].append(start_time)
             scene_index[video_id]["scenes"].append(scene_entry)
+
+        # start_time 기준 정렬
         for vid in scene_index:
             combined = list(zip(scene_index[vid]["starts"], scene_index[vid]["scenes"]))
             combined.sort(key=lambda x: x[0])
             scene_index[vid]["starts"] = [item[0] for item in combined]
             scene_index[vid]["scenes"] = [item[1] for item in combined]
+
         return scene_index
 
-    def _encode_texts(self, texts: list, batch_size: int = 1024) -> torch.Tensor:
+    def _encode_texts(
+        self, texts: list, batch_size: int = 1024, disable: bool = False
+    ) -> torch.Tensor:
+        """
+        texts 리스트를 배치 단위로 BGE 모델 임베딩하고 L2-normalize합니다.
+        show_progress=True 일 때만 tqdm 진행 표시를 합니다.
+        """
         all_embeds = []
-        for i in tqdm(range(0, len(texts), batch_size), desc="Encoding scene texts"):
+
+        for i in tqdm(
+            range(0, len(texts), batch_size), desc="Encoding texts", disable=disable
+        ):
             batch = texts[i : i + batch_size]
             inputs = self.tokenizer(
                 batch,
@@ -142,11 +155,16 @@ class BGERetrieval:
                 max_length=512,
             )
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
+
             with torch.no_grad():
                 outputs = self.model(**inputs)
+                # 일반적으로 CLS 토큰(첫 번째 토큰) 벡터를 사용
                 embeds = outputs.last_hidden_state[:, 0, :]
+                # L2 Normalization
                 embeds = embeds / embeds.norm(dim=-1, keepdim=True)
-                all_embeds.append(embeds.cpu())
+
+            all_embeds.append(embeds.cpu())
+
         return torch.cat(all_embeds, dim=0).to(self.device)
 
     def _save_embeddings(self, file_path: str) -> None:
@@ -171,15 +189,18 @@ class BGERetrieval:
     def retrieve(self, user_query: str, top_k: int = 5) -> list:
         """
         사용자 쿼리에 대해 scene retrieval을 수행합니다.
-        반환 결과는 각 scene의 업데이트된 score와 정보를 담은 리스트입니다.
+        top_k만큼의 상위 결과를 반환합니다.
         """
-        query_vec = self._encode_texts([user_query])
+        # Query 인코딩 시에는 tqdm 표시 없이
+        query_vec = self._encode_texts([user_query], disable=True)
+
         scores = self._compute_similarity(query_vec, self.embeddings)
         scores_np = scores.cpu().numpy()
         score_mapping = {
             self.data_info[i]["scene_id"]: float(score)
             for i, score in enumerate(scores_np)
         }
+
         top_idxs = scores_np.argsort()[-top_k:][::-1]
         results = []
         for rank, idx in enumerate(top_idxs, start=1):
@@ -568,7 +589,7 @@ if __name__ == "__main__":
         weight_scene=0.2,
     )
 
-    fusion_results = rankfusion.retrieve(text_query, top_k=1000)
+    fusion_results = rankfusion.retrieve(text_query, top_k=1000, union_top_n=1000)
     print("\n=== Rankfusion 결과 (상위 10) ===")
     for res in fusion_results[:10]:
         print(
