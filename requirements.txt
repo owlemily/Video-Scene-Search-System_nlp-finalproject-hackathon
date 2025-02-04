@@ -8,7 +8,6 @@ torchaudio==2.5.0
 opencv-python-headless
 Pillow
 googletrans==3.1.0a0
-moviepy==2.0.0.dev2
 scenedetect[opencv-headless]
 tqdm
 openai-whisper
@@ -26,7 +25,6 @@ git+https://github.com/LLaVA-VL/LLaVA-NeXT.git
 
 av
 imageio
-opencv-python
 
 pydub
 librosa

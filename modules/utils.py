@@ -6,10 +6,15 @@ utils.py
 2. translate_caption
 """
 
+<<<<<<< HEAD
 import os
 
 import deepl
 import yaml
+=======
+import yaml
+import deepl
+>>>>>>> feat-2/refactor-frame-description
 from googletrans import Translator
 
 
@@ -22,6 +27,7 @@ def load_config(config_path):
     Returns:
         config (dict): 로드된 설정 파일
     """
+<<<<<<< HEAD
     if not os.path.exists(config_path):
         raise FileNotFoundError(
             f"[ERROR] config_path가 존재하지 않습니다: {config_path}"
@@ -32,6 +38,11 @@ def load_config(config_path):
     except yaml.YAMLError as e:
         raise ValueError(f"[ERROR] 유효하지 않은 config 파일입니다: {config_path}\n{e}")
 
+=======
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
+    return config
+>>>>>>> feat-2/refactor-frame-description
 
 def translate_caption(caption, translator, target_lang="ko"):
     """
@@ -69,4 +80,8 @@ if __name__ == "__main__":
 
     # translate_caption 함수 테스트 - Googletrans 사용
     translator = Translator()
+<<<<<<< HEAD
     print(translate_caption("Hello, world!", translator, target_lang="ko"))
+=======
+    print(translate_caption("Hello, world!", translator, target_lang="ko"))
+>>>>>>> feat-2/refactor-frame-description

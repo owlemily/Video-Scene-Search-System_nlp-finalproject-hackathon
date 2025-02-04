@@ -11,7 +11,11 @@ if "current_index" not in st.session_state:
 if "checks" not in st.session_state:
     st.session_state.checks = {}
 if "file_name" not in st.session_state:
+<<<<<<< HEAD:evalSceneCaption/app.py
     st.session_state.file_name = "scene_evaluation"
+=======
+    st.session_state.file_name = "evaluation_results"
+>>>>>>> feat-2/refactor-frame-description:evalCaption/app.py
 if "evaluator_name" not in st.session_state:
     st.session_state.evaluator_name = ""
 if "prompt_number" not in st.session_state:
@@ -31,7 +35,10 @@ def save_results(checks, total_scores, file_name):
         "model_name": st.session_state.uploaded_json_file["model_path"],
         "prompt": st.session_state.uploaded_json_file["prompt"],
         "max_new_tokens": st.session_state.uploaded_json_file["max_new_tokens"],
+<<<<<<< HEAD:evalSceneCaption/app.py
         "max_num_frames": st.session_state.uploaded_json_file["max_num_frames"],
+=======
+>>>>>>> feat-2/refactor-frame-description:evalCaption/app.py
         "evaluator_name": st.session_state.evaluator_name,
         "prompt_number": st.session_state.prompt_number,
         "version_number": st.session_state.version_number,
@@ -55,7 +62,11 @@ if "uploaded_json_file" not in st.session_state:
     if uploaded_file:
         st.session_state.uploaded_json_file = load_json(uploaded_file)
 
+<<<<<<< HEAD:evalSceneCaption/app.py
         for idx, item in enumerate(st.session_state.uploaded_json_file["scenes"]):
+=======
+        for idx, item in enumerate(st.session_state.uploaded_json_file["frames"]):
+>>>>>>> feat-2/refactor-frame-description:evalCaption/app.py
             if idx not in st.session_state.checks:
                 st.session_state.checks[idx] = {
                     "video_id": item["video_id"],
@@ -72,7 +83,11 @@ if "uploaded_json_file" not in st.session_state:
         st.rerun()
 
 if "uploaded_json_file" in st.session_state:
+<<<<<<< HEAD:evalSceneCaption/app.py
     data = st.session_state.uploaded_json_file["scenes"]
+=======
+    data = st.session_state.uploaded_json_file["frames"]
+>>>>>>> feat-2/refactor-frame-description:evalCaption/app.py
 
     # Navigation buttons
     col1, col2 = st.columns([1, 1])
@@ -112,7 +127,10 @@ if "uploaded_json_file" in st.session_state:
     st.text(f"Model: {st.session_state.uploaded_json_file['model_path']}")
     st.text(f"Prompt: {st.session_state.uploaded_json_file['prompt']}")
     st.text(f"Max New Tokens: {st.session_state.uploaded_json_file['max_new_tokens']}")
+<<<<<<< HEAD:evalSceneCaption/app.py
     st.text(f"Max Num Frames: {st.session_state.uploaded_json_file['max_num_frames']}")
+=======
+>>>>>>> feat-2/refactor-frame-description:evalCaption/app.py
     current_checks = st.session_state.checks[current_index]
 
     questions = [

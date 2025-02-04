@@ -1,0 +1,43 @@
+# 공통적으로 사용되는 설정
+# device: 사용할 디바이스 ("cuda" 또는 "cpu")
+# video_folder: 원본 비디오 파일 저장 경로 (예: "./video")
+# translator_name: 번역기 이름 ("deepl" 또는 "googletrans") - 번역기를 사용할 때 사용되는 번역기 이름입니다.
+general:
+  device: "cuda"
+  video_folder: "./video"
+  translator_name: "deepl"
+
+# Frame Captioning을 할 때 사용되는 설정
+frame_caption:
+  # frames_folder: 프레임 이미지 저장 경로 (예: "./frames") - Video 폴더에서 프레임 이미지를 추출하여 저장하는 폴더이자, 이 폴더의 이미지를 이용하여 캡셔닝을 수행
+  # key_frames_folder: 키프레임 이미지를 저장할 폴더경로 (예: "./key_frames")
+  # frame_rate: 초당 추출할 프레임 수 (FPS) (예: 4)
+  # frame_rate는 비디오 폴더에서 frames_folder에 프레임 이미지를 추출할 때 사용되는 프레임 수입니다.
+  # frame_rate를 사용하지 않고, 모든 프레임을 전후로 비교해 키프레임을 추출하여 key_frames_folder에 저장할 수도 있습니다.
+  frames_folder: "./frames_evalCaption"
+  key_frames_folder: "./key_frames"
+  frame_rate: 4
+
+  # output_folder: 캡셔닝 진행 후 결과파일이 저장될 폴더경로 (예: "./frames_output")
+  # frame_output_filename: 캡셔닝 진행 후 결과파일명 (예: "frame_output_test_p1_v1.json")
+  output_folder: "./frames_output"
+  frame_output_filename: "frame_output_p1_v1_evalCaption.json"
+
+  # model: 사용할 캡셔닝 모델 ("OpenGVLab/InternVL2_5-4B" 또는 "unsloth/Qwen2-VL-7B-Instruct-bnb-4bit")
+  model: "OpenGVLab/InternVL2_5-4B"
+
+  # use_datasets: 데이터셋 사용 여부 (True 또는 False) - False일 시, 밑의 설정 무시
+  # datasets_folder: 데이터셋 저장 경로 (예: "./frames_datasets") - frames 폴더에서 이미지 1개씩 가져와서 추론하지 않고, 속도향상을 위해 데이터셋으로 만들어 저장해둘 폴더경로 (옵션임)
+  # datasets_name: 데이터셋 이름 (예: "dataset_v1") - datasets 폴더에 저장할 데이터셋 이름 ("datasets_folder/datasets_name" 경로에 저장됨)
+  use_datasets: True
+  datasets_folder: "./frames_datasets"
+  datasets_name: "dataset_evalCaption"
+
+  # prompt: 캡셔닝 모델 프롬프트 (예: "<image>\nDescribe this image in detail.") - 앞에 무조건 "<image>\n"을 붙여주시고, 뒤에 프롬프트 작성해주세요.
+  # max_new_tokens: 생성할 최대 토큰 수 (예: 128)
+  # batch_size: 배치 크기 (예: 1) - unsloth 모델은 6~8, OpenGVLab 모델은 1로 설정하면 됩니다. (확실히 실험은 안해봐서 한번 조정해서 해보세요)
+  # batch_size는 use_datasets가 True일 때만 사용됩니다.
+  prompt: "<image>\nDescribe this image in detail."
+  max_new_tokens: 128 
+  batch_size: 1
+

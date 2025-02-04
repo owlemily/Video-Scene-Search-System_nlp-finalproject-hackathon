@@ -47,6 +47,22 @@ source ~/.bashrc
 1. https://huggingface.co/OpenGVLab/InternVideo2-Chat-8B 에서 동의하고 사용권한 확보  
 2. https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3 에서 동의하고 사용권한 확보
 3. 그 후에, Hugging Face Token으로 로그인을 합니다.
+- OpenGVLab/InternVL2_5-4B
+- unsloth/Qwen2-VL-7B-Instruct-bnb-4bit
+
+## 22개 동영상에 대한 Frame Caption 생성하는 Pipeline 함수 실행법
+비디오들에 대해 Frame으로 모두 나눠 저장하고, 데이터셋을 만들어, 추론까지 진행하는 과정입니다.
+base_config.yaml에서 model, prompt를 적절히 수정하고 파이썬 파일을 실행합니다.  
+config 파일에서 'frame_caption' 부분만 조정하시면 됩니다.
+```bash
+python frame_caption_pipeline.py
+```
+
+## EvalCaption 테스트셋 다운하는 법 + 해당 테스트셋에 대해 추론하는 Pipeline 함수 실행법
+1. 쉘스크립트를 이용해 79개 이미지를 다운받습니다.
+2. 파이썬 파일을 실행해 Pipeline을 진행합니다. (여기서는 프레임 추출 후 저장 과정은 포함되어있지 않습니다.)  
+이 때, evalCaption.yaml에서 적절히 모델, 프롬프트, max_new_tokens를 조절해주세요.  
+config 파일에서 'frame_caption' 부분만 조정하시면 됩니다.
 ```bash
 huggingface-cli login
 ```
@@ -158,11 +174,13 @@ scene_caption:
     scene_info_with_audio_scripts_file: "./scene_info_with_audio_scripts.json"
 ```
 
+
 # 파일구조
 ```bash
 level4-nlp-finalproject-hackathon-nlp-01-lv3
 |-- README.md
 |-- modules # pipeline에서 사용되는 모듈들
+|-- modules
 |   |-- __init__.py
 |   |-- audio_utils.py
 |   |-- scene_caption_modules.py
