@@ -771,6 +771,50 @@ class Rankfusion:
 
         return diverse_results
 
+    def select_diverse_results(
+        self,
+        retrieval_results: list[dict],
+        desired_num: int = 10,
+        similarity_threshold: float = 0.9,
+    ) -> list[dict]:
+        """
+        retrieval_results: retrieval 시스템이 반환한 결과 리스트 (예: fusion_score 기준 내림차순 정렬)
+        desired_num: 최종 선택할 결과 수 (예: 10)
+        similarity_threshold: 두 이미지 간 코사인 유사도가 이 값보다 높으면 너무 유사하다고 판단 (0~1 사이 값)
+
+        CLIP 임베딩(이미 정규화된 벡터)을 사용하여, 이미 선택된 이미지와의 코사인 유사도가 similarity_threshold를 초과하면 후보에서 제외합니다.
+        """
+        # CLIP 임베딩 dict 생성 (이미 캐싱되어 있다면 캐싱값 사용)
+        embedding_dict = self._get_clip_embedding_dict()
+
+        # fusion_score 기준 내림차순 정렬 (만약 retrieval_results가 이미 정렬되어 있다면 이 단계는 생략 가능)
+        sorted_results = sorted(
+            retrieval_results, key=lambda x: x["fusion_score"], reverse=True
+        )
+
+        selected_results = []
+        for res in sorted_results:
+            candidate_fname = res["image_filename"]
+            # 후보 이미지의 임베딩
+            candidate_emb = embedding_dict.get(candidate_fname)
+            if candidate_emb is None:
+                continue
+
+            too_similar = False
+            for sel in selected_results:
+                sel_emb = embedding_dict.get(sel["image_filename"])
+                # 이미 정규화된 벡터이므로 내적이 코사인 유사도
+                similarity = np.dot(candidate_emb, sel_emb)
+                if similarity > similarity_threshold:
+                    too_similar = True
+                    break
+            if not too_similar:
+                selected_results.append(res)
+            if len(selected_results) >= desired_num:
+                break
+
+        return selected_results
+
 
 ##############################################
 # 메인 실행 (Usage Example)
@@ -791,9 +835,9 @@ if __name__ == "__main__":
         script_retriever=script_retriever,
         clip_retriever=clip_retriever,
         blip_retriever=blip_retriever,
-        weight_clip=0.4,
-        weight_blip=0.6,
-        weight_scene=0,
+        weight_clip=1,
+        weight_blip=1,
+        weight_scene=1,
         weight_script=0,
     )
 
