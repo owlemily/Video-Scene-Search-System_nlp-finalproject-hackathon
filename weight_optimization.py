@@ -5,31 +5,36 @@ import yaml
 import pandas as pd
 import numpy as np
 from bayes_opt import BayesianOptimization
-from code.video_retrieval import BGERetrieval, CLIPRetrieval, BLIPRetrieval, Rankfusion
+from code.video_retrieval import SCENERetrieval, SCRIPTRetrieval, CLIPRetrieval, BLIPRetrieval, Rankfusion
 
 with open("config/optimization_config.yaml", "r", encoding="utf-8") as file:
     CONFIG = yaml.safe_load(file)
 
-scene_retriever = BGERetrieval(config_path="config/video_retrieval_config.yaml")
-clip_retriever = CLIPRetrieval(config_path="config/video_retrieval_config.yaml")
-blip_retriever = BLIPRetrieval(config_path="config/video_retrieval_config.yaml")
+use_w_scene = CONFIG["weights"]["use_w_scene"]
+use_w_script = CONFIG["weights"]["use_w_script"]
+use_w_clip = CONFIG["weights"]["use_w_clip"]
+use_w_blip = CONFIG["weights"]["use_w_blip"]
 
+initial_weights = {
+    "w_scene": CONFIG["weights"]["initial_w_scene"],
+    "w_script": CONFIG["weights"]["initial_w_script"],
+    "w_clip": CONFIG["weights"]["initial_w_clip"],
+    "w_blip": CONFIG["weights"]["initial_w_blip"],
+}
+
+scene_retriever = SCENERetrieval(config_path="config/video_retrieval_config.yaml") if use_w_scene else None
+script_retriever = SCRIPTRetrieval(config_path="config/video_retrieval_config.yaml") if use_w_script else None
+clip_retriever = CLIPRetrieval(config_path="config/video_retrieval_config.yaml") if use_w_clip else None
+blip_retriever = BLIPRetrieval(config_path="config/video_retrieval_config.yaml") if use_w_blip else None
 
 def extract_video_id_and_time(filename):
-    """
-    파일명에서 비디오 ID와 시간을 추출 (디렉토리 경로 제외)
-    """
     filename = os.path.basename(filename)
     match = re.match(r"(.+?)_(\d+\.\d+)\.jpg", filename)
     if match:
         return match.group(1), float(match.group(2))
     return None, None
 
-
 def evaluate_results(result_csv_path, ground_truth_csv_path, output_score_csv_path, top_k=5):
-    """
-    Retrieve & re-rank된 결과를 Ground Truth와 비교하여 정확도를 평가하는 함수.
-    """
     result_data = pd.read_csv(result_csv_path)
     ground_truth_data = pd.read_csv(ground_truth_csv_path)
 
@@ -71,19 +76,26 @@ def evaluate_results(result_csv_path, ground_truth_csv_path, output_score_csv_pa
     print(f"정확도: {correct_ratio:.2f}%")
     return correct_ratio
 
-
 optimization_results = []
 
+pbounds = {}
+if use_w_scene:
+    pbounds["w_scene"] = (0, 1)
+if use_w_script:
+    pbounds["w_script"] = (0, 1)
+if use_w_clip:
+    pbounds["w_clip"] = (0, 1)
+if use_w_blip:
+    pbounds["w_blip"] = (0, 1)
 
-def objective(w_scene, w_clip, w_blip):
-    """
-    가중치 최적화 수행
-    """
+def objective(w_scene, w_script, w_clip, w_blip):
     rankfusion = Rankfusion(
         scene_retriever=scene_retriever,
+        script_retriever=script_retriever,
         clip_retriever=clip_retriever,
         blip_retriever=blip_retriever,
         weight_scene=w_scene,
+        weight_script=w_script,
         weight_clip=w_clip,
         weight_blip=w_blip,
     )
@@ -95,7 +107,7 @@ def objective(w_scene, w_clip, w_blip):
     ground_truth_data = pd.read_csv(ground_truth_csv_path)
     all_results = []
 
-    print(f"=== Running with Weights: Scene={w_scene}, Clip={w_clip}, Blip={w_blip} ===")
+    print(f"=== Running with Weights: Scene={w_scene}, Script={w_script}, Clip={w_clip}, Blip={w_blip} ===")
 
     for _, row in ground_truth_data.iterrows():
         user_query = row["query"]
@@ -113,37 +125,22 @@ def objective(w_scene, w_clip, w_blip):
     results_df.to_csv(result_csv_path, index=False, encoding="utf-8-sig")
     correct_ratio = evaluate_results(result_csv_path, ground_truth_csv_path, output_score_csv_path, top_k=5)
 
-    optimization_results.append([w_scene, w_clip, w_blip, correct_ratio])
+    optimization_results.append([w_scene, w_script, w_clip, w_blip, correct_ratio])
     print(f"=== Results: Correct Ratio: {correct_ratio:.2f}% ===")
     return correct_ratio
 
-
-pbounds = {"w_scene": (0, 1), "w_clip": (0, 1), "w_blip": (0, 1)}
-
-init_points = CONFIG["bayesian_optimization"]["init_points"]
-n_iter = CONFIG["bayesian_optimization"]["n_iter"]
-
-initial_weights = CONFIG["weights"]
-
 optimizer = BayesianOptimization(f=objective, pbounds=pbounds, random_state=42)
 
-optimizer.probe(
-    params={"w_scene": initial_weights["w_scene"], 
-            "w_clip": initial_weights["w_clip"], 
-            "w_blip": initial_weights["w_blip"]},
-    lazy=True
-)
+optimizer.probe(params={key: initial_weights[key] for key in pbounds.keys()}, lazy=True)
 
-optimizer.maximize(init_points=max(init_points - 1, 0), n_iter=n_iter)
-
+optimizer.maximize(init_points=max(CONFIG["bayesian_optimization"]["init_points"] - 1, 0), n_iter=CONFIG["bayesian_optimization"]["n_iter"])
 
 def save_optimization_results():
     output_csv_path = CONFIG["paths"]["weights_output_csv"]
     with open(output_csv_path, mode="w", newline="", encoding="utf-8-sig") as file:
         writer = csv.writer(file)
-        writer.writerow(["w_scene", "w_clip", "w_blip", "correct_ratio"])
+        writer.writerow(list(pbounds.keys()) + ["correct_ratio"])
         writer.writerows(optimization_results)
     print(f"가중치 최적화 결과 저장 완료: {output_csv_path}")
-
 
 save_optimization_results()
