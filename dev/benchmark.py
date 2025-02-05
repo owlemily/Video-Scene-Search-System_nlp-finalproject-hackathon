@@ -9,6 +9,7 @@ from code.video_retrieval import (
     CLIPRetrieval,
     Rankfusion,
     SCENERetrieval,
+    SCRIPTRetrieval,
 )
 
 import pandas as pd
@@ -39,6 +40,7 @@ def retrieve_and_save_results(
     weight_clip: float = 0.4,
     weight_blip: float = 0.5,
     weight_scene: float = 0.1,
+    weight_script: float = 0,
     top_k: int = 1000,
     union_top_n: int = 1000,
     desired_num_diverse: int = 10,
@@ -54,18 +56,20 @@ def retrieve_and_save_results(
     # 1. 개별 리트리버 및 랭크퓨전 객체 생성
     # -----------------------------
     scene_retriever = SCENERetrieval(config_path=config_file)
-    # scrtip_retriever = SCRIPTRetrieval(config_path=config_file)
+    script_retriever = SCRIPTRetrieval(config_path=config_file)
     clip_retriever = CLIPRetrieval(config_path=config_file)
     blip_retriever = BLIPRetrieval(config_path=config_file)
 
     # Rankfusion(Ensemble) 객체 생성
     ensemble_retriever = Rankfusion(
         scene_retriever=scene_retriever,
+        script_retriever=script_retriever,
         clip_retriever=clip_retriever,
         blip_retriever=blip_retriever,
         weight_clip=weight_clip,
         weight_blip=weight_blip,
         weight_scene=weight_scene,
+        weight_script=weight_script,
     )
 
     # ensemble_retriever = ImageRetrievalEnsemble(
@@ -270,9 +274,10 @@ def main():
         config_file=config_file,
         benchmark_csv_path=benchmark_csv_path,
         output_csv_path=output_csv_path,
-        weight_clip=0.4,
-        weight_blip=0.6,
-        weight_scene=0,
+        weight_clip=1,
+        weight_blip=1,
+        weight_scene=1,
+        weight_script=0,
         top_k=1000,
         union_top_n=1000,
         desired_num_diverse=10,
