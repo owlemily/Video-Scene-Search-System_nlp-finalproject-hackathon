@@ -123,8 +123,18 @@ pbounds = {"w_scene": (0, 1), "w_clip": (0, 1), "w_blip": (0, 1)}
 init_points = CONFIG["bayesian_optimization"]["init_points"]
 n_iter = CONFIG["bayesian_optimization"]["n_iter"]
 
+initial_weights = CONFIG["weights"]
+
 optimizer = BayesianOptimization(f=objective, pbounds=pbounds, random_state=42)
-optimizer.maximize(init_points=init_points, n_iter=n_iter)
+
+optimizer.probe(
+    params={"w_scene": initial_weights["w_scene"], 
+            "w_clip": initial_weights["w_clip"], 
+            "w_blip": initial_weights["w_blip"]},
+    lazy=True
+)
+
+optimizer.maximize(init_points=max(init_points - 1, 0), n_iter=n_iter)
 
 
 def save_optimization_results():
