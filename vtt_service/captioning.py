@@ -9,9 +9,9 @@ import os
 
 from qwen_vl_utils import process_vision_info
 from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
-from vtt_service import transcribe_audio, translate_caption
+from vtt_service_utils import transcribe_audio, translate_caption
 
-from .specific_model_utils.LlavaVideo_utils import (
+from specific_model_utils.LlavaVideo_utils import (
     get_video_and_input_ids,
     load_llava_video_model,
 )
@@ -167,7 +167,7 @@ def single_frame_caption_Qwen2_5_VL(
         generated_ids_trimmed,
         skip_special_tokens=True,
         clean_up_tokenization_spaces=False,
-    )
+    )[0]
 
     translated_description = translate_caption(response, translator, target_lang="ko")
 

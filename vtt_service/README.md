@@ -15,7 +15,7 @@ cd level4-nlp-finalproject-hackathon-nlp-01-lv3/vtt_service
 chmod +x init.sh
 
 python -m venv .venv
-source .venb/bin/activate
+source .venv/bin/activate
 
 pip install -r requirements.txt
 ```

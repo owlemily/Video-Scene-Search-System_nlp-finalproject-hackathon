@@ -6,6 +6,8 @@ LlavaVideo 모델을 사용하는데 필요한 함수들을 적어두었습니�
 저 2개의 코드들만 보셔도 됩니다.
 
 Llava-Video에서는 model, tokenizer, image_processor를 반환해서 이를 추론할 때 사용합니다.
+- InternVideo2는 model, tokenizer만 반환했었음
+- InternVideo2_5_Chat에서는 Generator만 반환함
 
 함수 목록:
 1. load_video
@@ -44,7 +46,7 @@ def load_video(video_path, max_frames_num, fps=1, force_sample=False):
         frame_idx = uniform_sampled_frames.tolist()
         frame_time = [i / vr.get_avg_fps() for i in frame_idx]
     frame_time = ",".join([f"{i:.2f}s" for i in frame_time])
-    spare_frames = vr.get_batch(frame_idx).numpy()
+    spare_frames = vr.get_batch(frame_idx).asnumpy()
     # import pdb;pdb.set_trace()
     return spare_frames, frame_time, video_time
 
