@@ -6,12 +6,16 @@ import clip
 import numpy as np
 import torch
 import yaml
+import spacy
 from lavis.models import load_model_and_preprocess
 from PIL import Image
 from sklearn.cluster import KMeans
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
+from rank_bm25 import BM25Okapi
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 ##############################################
@@ -318,6 +322,123 @@ class SCRIPTRetrieval(BGERetrieval):
             )
         return results
 
+
+##############################################
+# SCRIPTSPARSERetrieval: JSON의 script 정보("scripts" 리스트, 각 항목의 요약은 "summary") 기반 sparse retrieval
+##############################################
+nlp = spacy.load("en_core_web_sm")
+
+class SCRIPTSPARSERetrieval:
+    def __init__(self, config_path: str = "config/merged_config.yaml"):
+        # 설정 파일 로드
+        self.config = self._load_config(config_path)["bge-script"]
+        self.json_file = self.config["json_file"]
+
+        # JSON 파일에서 script 데이터 로드
+        with open(self.json_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        self.data_info = data.get("scripts", [])
+
+        # script 전용 인덱스 구축 (dense에서 사용하던 구조 그대로 유지)
+        self.script_index = self._build_script_index_from_json(self.json_file)
+
+        # script summary에서 명사만 추출한 후 벡터화
+        self.texts = [self._extract_nouns(item["summary"]) for item in self.data_info]
+        self.vectorizer = TfidfVectorizer(stop_words="english")
+        self.tfidf_matrix = self.vectorizer.fit_transform(self.texts)
+
+    def _load_config(self, config_path: str) -> dict:
+        """설정 파일 로드"""
+        with open(config_path, "r", encoding="utf-8") as f:
+            return yaml.safe_load(f)
+
+    def _extract_nouns(self, text: str) -> str:
+        """
+        주어진 텍스트에서 명사(NOUN, PROPN)만 추출하여 반환
+        """
+        doc = nlp(text)
+        nouns = [token.text.lower() for token in doc if token.pos_ in {"NOUN", "PROPN"} and not token.is_stop]
+        return " ".join(nouns)
+
+    def _build_script_index_from_json(self, json_file: str) -> dict:
+        """
+        JSON 파일 내의 script 정보를 읽어, video_name과 start 기준으로 정렬된 index를 구축
+        (기존 dense 방식의 `_build_script_index_from_json` 유지)
+        """
+        with open(json_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        scripts = data.get("scripts", [])
+        script_index = {}
+        for script in scripts:
+            video_name = script.get("video_name")
+            if video_name and video_name.endswith(".mp4"):
+                video_name = video_name[:-4]
+            if not video_name:
+                continue
+            try:
+                start_time = float(script["start"])
+                end_time = float(script["end"])
+            except Exception as e:
+                print(f"script 파싱 오류: {e}")
+                continue
+
+            # 고유 식별자로 video_name과 start_time 결합
+            identifier = f"{video_name}_{start_time}"
+            script_entry = {
+                "identifier": identifier,
+                "video_name": video_name,
+                "start": start_time,
+                "end": end_time,
+                "summary": script.get("summary"),
+                "score": 0.0,
+            }
+            if video_name not in script_index:
+                script_index[video_name] = {"start": [], "scripts": []}
+            script_index[video_name]["start"].append(start_time)
+            script_index[video_name]["scripts"].append(script_entry)
+
+        # start_time 기준 정렬
+        for vid in script_index:
+            combined = list(zip(script_index[vid]["start"], script_index[vid]["scripts"]))
+            combined.sort(key=lambda x: x[0])
+            script_index[vid]["start"] = [item[0] for item in combined]
+            script_index[vid]["scripts"] = [item[1] for item in combined]
+
+        return script_index
+
+    def retrieve(self, user_query: str, top_k: int = 5) -> list:
+        """
+        사용자 쿼리에서 명사만 추출한 후 TF-IDF 벡터화하여 sparse retrieval 수행
+        (기존 dense 방식 제거 후 sparse 방식 적용)
+        """
+        query_nouns = self._extract_nouns(user_query)
+        query_vec = self.vectorizer.transform([query_nouns])
+        scores = cosine_similarity(query_vec, self.tfidf_matrix).flatten()
+        top_idxs = scores.argsort()[-top_k:][::-1]
+
+        # 각 script 항목의 고유 식별자로 score 매핑
+        score_mapping = {
+            f"{self.data_info[i]['video_name']}_{self.data_info[i]['start']}": float(scores[i])
+            for i in range(len(scores))
+        }
+
+        results = []
+        for rank, idx in enumerate(top_idxs, start=1):
+            info = self.data_info[idx]
+            identifier = f"{info['video_name']}_{info['start']}"
+            results.append(
+                {
+                    "rank": rank,
+                    "video_id": info.get("video_name"),
+                    "script_start_time": info["start"],
+                    "script_end_time": info["end"],
+                    "script_summary": info["summary"],
+                    "script_id": identifier,
+                    "score": score_mapping[identifier],
+                }
+            )
+        return results
+    
 
 ##############################################
 # ImageRetrieval: 이미지 임베딩 관련 공통 기능
