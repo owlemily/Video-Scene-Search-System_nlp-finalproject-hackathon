@@ -77,7 +77,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 만약, conda를 사용할 경우에는 ffmpeg 경로를 확인해주세요!
+### 만약, conda를 사용할 경우에는 ffmpeg 경로를 확인해주세요!
 ```bash
 which ffmpeg
 /opt/conda/bin/ffmpeg
