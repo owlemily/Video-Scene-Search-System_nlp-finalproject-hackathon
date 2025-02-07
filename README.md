@@ -116,6 +116,11 @@ conda remove ffmpeg
   - **설명**: 여러 개의 비디오 구간에 대해 일괄적으로 캡셔닝 작업을 진행할 수 있습니다.
   - **주의**: 텍스트 파일에 공백으로 구분된 정확한 형식의 정보가 있어야 올바른 배치 처리가 가능합니다.
 
+**TXT file Example**
+```txt
+qwkd2lnjnd 1 23
+clqkn13_4lw 24.6 46
+```
 ---
 
 ### 2. Frame Captioning (프레임 캡셔닝)
@@ -134,6 +139,12 @@ conda remove ffmpeg
 > - 씬 캡셔닝의 경우, 텍스트 파일의 각 줄은 `video_id start end` 형식을 따라야 합니다.  
 > - 프레임 캡셔닝의 경우, 텍스트 파일의 각 줄은 `video_id timestamp` 형식을 따라야 합니다.  
 > - 입력 형식이 올바르지 않을 경우 오류 메시지가 출력되며 해당 항목은 건너뛰게 됩니다.
+
+**TXT file Example**
+```txt
+qwkd2lnjnd 1
+clqkn13_4lw 24.6
+```
 
 ---
 
