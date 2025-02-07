@@ -9,9 +9,9 @@ import os
 
 from qwen_vl_utils import process_vision_info
 from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
-from vtt_service_utils import transcribe_audio, translate_caption
 
-from specific_model_utils.LlavaVideo_utils import (
+from .vtt_service_utils import transcribe_audio, translate_caption
+from .LlavaVideo_utils import (
     get_video_and_input_ids,
     load_llava_video_model,
 )

@@ -5,8 +5,8 @@ import torch
 import deepl
 import streamlit as st
 from googletrans import Translator
-from vtt_service_utils import load_config, save_frame_at_time, convert_to_mono, trim_video_segment_and_save
-from captioning import initialize_llava_video_model, single_scene_caption_LlavaVideo, load_qwen2_5_VL_model, single_frame_caption_Qwen2_5_VL
+from utils.vtt_service_utils import load_config, save_frame_at_time, convert_to_mono, trim_video_segment_and_save
+from utils.captioning import initialize_llava_video_model, single_scene_caption_LlavaVideo, load_qwen2_5_VL_model, single_frame_caption_Qwen2_5_VL
 
 video_input_folder = "./video_input_folder"
 temp_save_folder = "./temp_save_folder"
