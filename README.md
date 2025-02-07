@@ -65,6 +65,30 @@ V100 환경(램 32GB)라는 제약조건을 지키기 위해, OOM 문제가 발�
      set DEEPL_API_KEY=your_deepl_api_key_here
      ```
 
+
+vtt_service 폴더 내부의 init.sh와 requirements.txt를 이용하여 환경을 설치합니다.
+```bash
+
+bash init.sh 
+
+python -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+## 만약, conda를 사용할 경우에는 ffmpeg 경로를 확인해주세요!
+```bash
+which ffmpeg
+/opt/conda/bin/ffmpeg
+```
+위와 같이 ffmpeg 경로가 conda라면, conda에서 삭제해줍니다. (저희 V100 초기환경에서는 삭제가 필요합니다.)
+### Conda에서 지우기
+```bash
+conda remove ffmpeg
+```
+
+
 ---
 
 ## 실행 방법
@@ -130,28 +154,7 @@ V100 환경(램 32GB)라는 제약조건을 지키기 위해, OOM 문제가 발�
 
 ---
 
-# 환경 설치
-vtt_service 폴더 내부의 init.sh와 requirements.txt를 이용하여 환경을 설치합니다.
-```bash
 
-bash init.sh 
-
-python -m venv .venv
-source .venv/bin/activate
-
-pip install -r requirements.txt
-```
-
-## 만약, conda를 사용할 경우에는 ffmpeg 경로를 확인해주세요!
-```bash
-which ffmpeg
-/opt/conda/bin/ffmpeg
-```
-위와 같이 ffmpeg 경로가 conda라면, conda에서 삭제해줍니다. (저희 V100 초기환경에서는 삭제가 필요합니다.)
-### Conda에서 지우기
-```bash
-conda remove ffmpeg
-```
 
 ## 라이선스
 
