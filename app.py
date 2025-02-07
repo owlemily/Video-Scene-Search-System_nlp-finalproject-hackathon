@@ -83,9 +83,9 @@ if page == "Scene Captioning":
     
     # 단일 입력 방식
     if input_mode == "Single Scene Input":
-        video_id = st.text_input("Video ID", "")
-        start = st.text_input("Start Time", "")
-        end = st.text_input("End Time", "")
+        video_id = st.text_input("Video ID", "s2wBtcmE5W8")
+        start = st.text_input("Start Time", "2.34")
+        end = st.text_input("End Time", "5.67")
         
         if st.button("Generate Caption for Single Scene"):
             with st.spinner("멋진 캡션을 위한 영상 모델을 준비 중입니다..."):

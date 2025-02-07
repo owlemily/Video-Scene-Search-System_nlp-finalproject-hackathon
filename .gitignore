@@ -127,3 +127,6 @@ video_timestamps.txt
 *.json
 key_frames/
 *.txt
+
+video_input_folder/
+myenv/
