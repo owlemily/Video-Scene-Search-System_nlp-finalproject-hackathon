@@ -117,3 +117,9 @@ datasets/
 embeddings/
 dev/
 description/
+frames_1500_fps10/
+downloaded_videos.zip
+extract_frame.py
+Dockerfile
+docker.sh
+video_1500
