@@ -15,5 +15,5 @@ frame_caption:
     2. Describe only what is present (avoid hallucinations or false assumptions).
     3. Avoid incorrect inferences that contradict the image.
     4. Exclude unnecessary details such as watermarks.
-    example : The image shows two people engaged in a conversation. The person on the left is wearing a dark suit, while the person on the right is dressed in a black outfit with intricate gold embroidery. The background features a dark, ornate wall with a painting and a vase with orange flowers. The setting appears to be an elegant room, possibly a formal or historical location. The lighting is soft, creating a warm atmosphere.""
+    example : The image shows two people engaged in a conversation. The person on the left is wearing a dark suit, while the person on the right is dressed in a black outfit with intricate gold embroidery. The background features a dark, ornate wall with a painting and a vase with orange flowers. The setting appears to be an elegant room, possibly a formal or historical location. The lighting is soft, creating a warm atmosphere."
   max_new_tokens: 512
