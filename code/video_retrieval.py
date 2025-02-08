@@ -66,7 +66,7 @@ class BGERetrieval:
                 f"'{config_section}' 설정이 {config_path}에 존재하지 않습니다."
             )
         self.config = full_config[config_section]
-        self.device = "cuda:1" if torch.cuda.is_available() else "cpu"
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         # BGE 모델 및 토크나이저 로드
         self.model_name = self.config["model_name"]
@@ -452,7 +452,7 @@ class ImageRetrieval:
                 f"'{config_section}' 설정이 {config_path}에 존재하지 않습니다."
             )
         self.config = full_config[config_section]
-        self.device = "cuda:1" if torch.cuda.is_available() else "cpu"
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.image_folder = self.config["image_folder"]
         self.embedding_file = self.config["embedding_file"]
         self.image_extensions = tuple(self.config["image_extensions"])

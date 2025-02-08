@@ -1,8 +1,8 @@
 import os
 import cv2
+import deepl
 import subprocess
 import streamlit as st
-import shutil  # 임시 파일 삭제용
 from code.video_retrieval import SCENERetrieval, SCRIPTRetrieval, BLIPRetrieval, CLIPRetrieval, Rankfusion
 
 # googletrans 라이브러리 임포트
@@ -11,14 +11,17 @@ from googletrans import Translator
 # ----------------------------------
 # 0. 쿼리 번역 함수 정의 (googletrans 이용)
 # ----------------------------------
-def translate_query(query: str) -> str:
-    """
-    입력된 쿼리를 영어로 번역합니다.
-    원본 언어는 자동 감지(src='auto')하고, 대상은 영어(dest='en')로 지정합니다.
-    """
-    translator = Translator()
-    result = translator.translate(query, src='auto', dest='en')
-    return result.text
+def translate_query(query: str, translator, target_lang="en") -> str:
+    try:
+        if isinstance(translator, Translator):  # googletrans 사용
+            return translator.translate(query, dest=target_lang).text
+        elif isinstance(translator, deepl.Translator):  # DeepL 사용
+            return translator.translate_text(query, target_lang=target_lang).text
+        else:
+            raise ValueError("지원되지 않는 번역기 객체입니다.")
+    except Exception as e:
+        print(f"번역 실패: {query}. 오류: {e}")
+        return ""
 
 # ----------------------------------
 # 1. 임베딩 및 Retrieval 객체 캐싱 (한 번만 로드)
@@ -41,8 +44,8 @@ def load_retrievers(config_path):
         script_retriever=script_retriever,
         clip_retriever=clip_retriever,
         blip_retriever=blip_retriever,
-        weight_clip=0.4,
-        weight_blip=0.6,
+        weight_clip=0.35,
+        weight_blip=0.21,
         weight_scene=0,
         weight_script=0,
     )
@@ -129,11 +132,20 @@ def trim_video_segment_and_save(video_path, start, end, output_scene_folder):
 
     return output_scene_path
 
+translator_name = "googletrans"
+
+# 번역기 설정
+if translator_name == "googletrans":
+    translator = Translator()
+elif translator_name == "deepl":
+    auth_key = os.environ.get("DEEPL_API_KEY")
+    translator = deepl.Translator(auth_key)
+
 # ----------------------------------
 # 3. 경로 설정 및 기본 폴더 생성
 # ----------------------------------
 # 동영상 및 임시 저장 폴더 경로 설정 (필요에 따라 수정)
-video_folder = "video_1500"        # 예: 동영상 파일들이 저장된 폴더
+video_folder = "/data/ephemeral/home/vtt/video_input_folder"        # 예: 동영상 파일들이 저장된 폴더
 temp_save_folder = "temp_save_folder"        # 추출한 프레임 이미지 저장 폴더
 temp_scene_folder = "temp_scene_folder"      # 잘라낸 scene 영상 저장 폴더
 
@@ -144,7 +156,7 @@ os.makedirs(temp_scene_folder, exist_ok=True)
 # 4. Streamlit UI: 쿼리 입력 및 검색 결과 출력
 # ----------------------------------
 
-st.title("Video Retrieval with Rankfusion")
+st.title("Video Search")
 st.markdown("아래 칸에 쿼리를 입력하고 **검색** 버튼을 누르면, Rankfusion을 통해 결과(이미지 및 scene)를 보여줍니다.")
 
 # 4-1. 임베딩 로딩 (한 번만 로드)
@@ -162,7 +174,7 @@ if st.button("검색"):
         st.error("쿼리를 입력하세요.")
     else:
         # 입력 쿼리를 영어로 번역 (원하는 경우, 예: 한국어 쿼리를 영어로 번역)
-        translated_query = translate_query(query)
+        translated_query = translate_query(query, translator)
         st.write("번역된 쿼리:", translated_query)
 
         # (1) Fusion 검색 수행: fusion_results에 각 모달리티 점수가 합쳐진 결과들이 들어감.

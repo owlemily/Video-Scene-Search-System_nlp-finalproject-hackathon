@@ -116,7 +116,7 @@ __MACOSX/
 datasets/
 embeddings/
 dev/
-description/
+# description/
 frames_1500_fps10/
 downloaded_videos.zip
 extract_frame.py
