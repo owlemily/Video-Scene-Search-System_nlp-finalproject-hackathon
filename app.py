@@ -3,6 +3,7 @@ import cv2
 import deepl
 import subprocess
 import streamlit as st
+# import torch
 from code.video_retrieval import SCENERetrieval, SCRIPTRetrieval, BLIPRetrieval, CLIPRetrieval, Rankfusion
 
 # googletrans 라이브러리 임포트
@@ -44,9 +45,9 @@ def load_retrievers(config_path):
         script_retriever=script_retriever,
         clip_retriever=clip_retriever,
         blip_retriever=blip_retriever,
-        weight_clip=0.35,
-        weight_blip=0.21,
-        weight_scene=0,
+        weight_clip=1.5, # 0.35 + 0.77,
+        weight_blip=0.21 + 0.77,
+        weight_scene=0.5,
         weight_script=0,
     )
     return {"rankfusion": rankfusion}
@@ -178,16 +179,16 @@ if st.button("검색"):
         st.write("번역된 쿼리:", translated_query)
 
         # (1) Fusion 검색 수행: fusion_results에 각 모달리티 점수가 합쳐진 결과들이 들어감.
-        fusion_results = rankfusion.retrieve(query=translated_query, top_k=1000, union_top_n=10000)
+        fusion_results = rankfusion.retrieve(query=translated_query, top_k=1000, union_top_n=50000)
 
         # (2) Diverse 결과 선택 (예시로 10개 중 상위 100 내에서 클러스터링)
         diverse_results = rankfusion.select_diverse_results_by_clustering(
-            fusion_results, desired_num=10, top_n=100
+            fusion_results, desired_num=10, top_n=500
         )
 
         st.subheader("클러스터링 기반 Diversity 최종 결과 (Top 5)")
         # diverse_results 상위 5개에 대해 결과 처리
-        for res in diverse_results[:5]:
+        for res in diverse_results[:10]:
             st.markdown(f"### Rank {res['rank']} – {res['image_filename']}")
             
             # 파일명에서 video_id와 timestamp 추출 (base.rsplit("_", 1) 고정)
@@ -278,7 +279,7 @@ if st.button("검색"):
         # Fusion 검색 결과 (요약): 기본에는 감추고, 버튼(Expander) 클릭 시 표시
         # ------------------------------
         with st.expander("=== Fusion 검색 결과 (요약) 보기 ===", expanded=False):
-            for res in fusion_results[:30]:
+            for res in diverse_results[:30]:
                 scene_id = res.get("scene_info", {}).get("scene_id") if res.get("scene_info") else None
                 st.write(
                     f"Rank {res['rank']}: {res['image_filename']} | "

@@ -101,11 +101,11 @@ def retrieve_and_save_results(
         )
 
         # (2) TopN 결과에서 클러스터링을 통해 diverse 결과 선택
-        # diverse_results = ensemble_retriever.select_diverse_results_by_clustering(
-        #     ensemble_results,
-        #     desired_num=desired_num_diverse,
-        #     top_n=top_n_for_clustering,
-        # )
+        diverse_results = ensemble_retriever.select_diverse_results_by_clustering(
+            ensemble_results,
+            desired_num=desired_num_diverse,
+            top_n=top_n_for_clustering,
+        )
 
         # (3) CSV 레코드 생성
         for res in ensemble_results:
@@ -274,14 +274,14 @@ def main():
         config_file=config_file,
         benchmark_csv_path=benchmark_csv_path,
         output_csv_path=output_csv_path,
-        weight_clip=3,
-        weight_blip=3,
-        weight_scene=1,
+        weight_clip=1.5,
+        weight_blip=0.98,
+        weight_scene=0.5,
         weight_script=0,
         top_k=1000,
-        union_top_n=10000,
-        desired_num_diverse=5,
-        top_n_for_clustering=50,
+        union_top_n=50000,
+        desired_num_diverse=10,
+        top_n_for_clustering=500,
     )
 
     # -------------------------------------------------------------------------
@@ -291,7 +291,7 @@ def main():
         result_csv_path=output_csv_path,
         ground_truth_csv_path=benchmark_csv_path,
         output_score_csv_path="dev/eval.csv",
-        top_k=1,
+        top_k=5,
     )
 
 
