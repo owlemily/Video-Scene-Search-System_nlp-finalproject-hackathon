@@ -8,7 +8,8 @@ torchaudio==2.5.0
 
 opencv-python-headless
 Pillow
-googletrans==3.1.0a0
+# googletrans==3.1.0a0
+googletrans==4.0.0-rc1
 scenedetect[opencv-headless]
 tqdm
 openai-whisper

@@ -6,6 +6,7 @@
 """
 
 import os
+import whisper
 
 from qwen_vl_utils import process_vision_info
 from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
@@ -27,6 +28,10 @@ def initialize_llava_video_model():
     tokenizer, model, image_processor, _ = load_llava_video_model()
     return tokenizer, model, image_processor
 
+def initialize_whisper():
+    whisper_model = whisper.load_model("large-v3")
+    return whisper_model 
+
 
 def single_scene_caption_LlavaVideo(
     model,
@@ -38,7 +43,7 @@ def single_scene_caption_LlavaVideo(
     max_num_frames,
     enable_audio_text,
     whisper_model,
-    mono_audio_folder,
+    mono_audio_path,
     translator,
 ):
     """
@@ -61,16 +66,16 @@ def single_scene_caption_LlavaVideo(
         response, translated_description (str, str): 생성된 영어 캡션, 번역된 캡션
     """
     # scene_name 추출 (audio_name이랑 같음)
-    audio_name = scene_name = os.path.basename(scene_path)[: -len(".mp4")]
-
-    mono_audio_path = os.path.join(mono_audio_folder, audio_name + ".wav")
+    # audio_name = scene_name = os.path.basename(scene_path)[: -len(".mp4")]
 
     if enable_audio_text:
         # STT 모델인 Whisper을 사용하여 오디오 텍스트 추출
         audio_text = transcribe_audio(mono_audio_path, whisper_model)
 
         # 프롬프트에 오디오 텍스트를 넣어주어 오디오를 반영하여 캡션 생성
-        prompt += f"\n[script]: {audio_text}"
+        prompt += f"\n[line]: {audio_text}[EOS]"
+
+        print(prompt)
 
     video, input_ids = get_video_and_input_ids(
         scene_path, tokenizer, model, image_processor, max_num_frames, prompt

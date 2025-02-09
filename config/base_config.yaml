@@ -2,9 +2,24 @@ general:
   translator_name: "googletrans"
 
 scene_caption:
-  prompt: "Analyze the provided video, and describe in detail the movements and actions of objects and backgrounds.\n\n** Instructions **  \n1. Describe the movement and behaviour of all objects in the video. It clearly distinguishes who does what among the many characters. \n2. **Describe the movement of other objects** in scenes such as vehicles, animals, and inanimate objects. \n3. When describing actions, refer to the **camera's point of view** (e.g. move to the left with the knife). \n4. If the subject is expressing emotions (e.g., fear, excitement, aggression), describe the subject's facial expressions and body language. **If no emotions are detected, focus on the details of the movements.**\n5. If the subjects interact with each other (e.g., fighting, talking, helping), clearly describe the subjects' actions and the nature of the interaction. \n6. Do not speculate or guess about content not covered in the video (avoid hallucinations).\n\n**Example:**\nA woman with white hair and a purple dress is talking to a snowman in front of a bonfire. She is looking at the snowman melting because of the fire. The snowman is trying to pull up his face, which is dripping down, so that it doesn't collapse."
+  prompt: |
+    Analyze the provided video and write a detailed description based on the given [line].
+
+    ** Instructions **
+
+    1. Do not guess or speculate about anything not covered in the video (avoid hallucinations). Describe only facts.
+    2. When describing the movements and actions of all objects in the video, clearly distinguish who is doing what among the characters.
+    3. When describing the movement of objects (vehicles, animals, objects, etc.), make sure it matches the script, but do not guess what is not in the video.
+    4. When describing movement, **consider the camera angle**, and if emotions are expressed, describe facial expressions and gestures (e.g. ‘move to the left with a knife’).
+    5. If the subject is expressing an emotion (e.g., fear, excitement, aggression), describe it through facial expressions, gestures, and dialogue. If no emotion is detected, focus on the details of the movement.
+    6. If there is interaction between the characters (e.g., fighting, dialogue), clearly describe the characters' actions and situations(e.g. singing, shouting, snarling, cheering, swaring) with the script in mind.
+
+    ** Example **
+
+    A woman with white hair and a purple dress is talking to a snowman in front of a bonfire. She is watching the snowman melt because of the fire. The snowman is trying to lift his face so that it doesn't collapse.
+
   max_new_tokens: 512
-  max_num_frames: 48
+  max_num_frames: 50
   audio:
     use_audio: False
     mono_audio_folder: "./mono_audio"

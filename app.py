@@ -6,9 +6,9 @@ import deepl
 import streamlit as st
 from googletrans import Translator
 from utils.vtt_service_utils import load_config, save_frame_at_time, convert_to_mono, trim_video_segment_and_save
-from utils.captioning import initialize_llava_video_model, single_scene_caption_LlavaVideo, load_qwen2_5_VL_model, single_frame_caption_Qwen2_5_VL
+from utils.captioning import initialize_llava_video_model, initialize_whisper, single_scene_caption_LlavaVideo, load_qwen2_5_VL_model, single_frame_caption_Qwen2_5_VL
 
-video_input_folder = "./video_input_folder"
+input_video_folder = "../input_video_folder"
 temp_save_folder = "./temp_save_folder"
 
 config = load_config("./config/base_config.yaml")
@@ -44,6 +44,8 @@ def clear_gpu_memory():
         del st.session_state["frame_model"]
     if "frame_processor" in st.session_state:
         del st.session_state["frame_processor"]
+    if "whisper" in st.session_state:
+        del st.session_state["whisper"]
     
     gc.collect()
     torch.cuda.empty_cache()
@@ -54,6 +56,7 @@ def load_scene_model():
     if "scene_model" not in st.session_state:
         with st.spinner("멋진 영상 캡션을 위해 모델을 불러오는 중입니다..."):
             st.session_state["scene_tokenizer"], st.session_state["scene_model"], st.session_state["scene_processor"] = initialize_llava_video_model()
+            st.session_state["whisper"] = initialize_whisper()
 
 
 def load_frame_model():
@@ -91,7 +94,7 @@ if page == "Scene Captioning":
             with st.spinner("멋진 캡션을 위한 영상 모델을 준비 중입니다..."):
                 load_scene_model()  # 필요할 때만 모델 로드
             
-            video_path = os.path.join(video_input_folder, f"{video_id}.mp4")
+            video_path = os.path.join(input_video_folder, f"{video_id}.mp4")
             if not os.path.exists(video_path):
                 st.error(f"비디오 파일을 찾을 수 없습니다: {video_path}")
             else:
@@ -122,9 +125,9 @@ if page == "Scene Captioning":
                         prompt=prompt,
                         max_new_tokens=max_new_tokens,
                         max_num_frames=max_num_frames,
-                        enable_audio_text=False,
-                        whisper_model=None,
-                        mono_audio_folder=mono_audio_folder,
+                        enable_audio_text=True,
+                        whisper_model=st.session_state["whisper"],
+                        mono_audio_path=temp_mono_audio_path,
                         translator=translator,
                     )
                 st.subheader("Generated Caption:")
@@ -158,7 +161,7 @@ if page == "Scene Captioning":
                     continue
                 
                 video_id, start, end = parts
-                video_path = os.path.join(video_input_folder, f"{video_id}.mp4")
+                video_path = os.path.join(input_video_folder, f"{video_id}.mp4")
                 if not os.path.exists(video_path):
                     st.error(f"video_id '{video_id}'에 해당하는 비디오 파일이 존재하지 않습니다: {video_path}")
                     continue
@@ -195,9 +198,9 @@ if page == "Scene Captioning":
                             prompt=prompt,
                             max_new_tokens=max_new_tokens,
                             max_num_frames=max_num_frames,
-                            enable_audio_text=False,
-                            whisper_model=None,
-                            mono_audio_folder=mono_audio_folder,
+                            enable_audio_text=True,
+                            whisper_model=st.session_state["whisper"],
+                            mono_audio_path=temp_mono_audio_path,
                             translator=translator,
                         )
                         results[f"{video_id}_{start}_{end}"] = caption
@@ -236,7 +239,7 @@ elif page == "Frame Captioning":
             else:
                 with st.spinner("프레임 캡셔닝을 위해 준비 중입니다..."):
                     load_frame_model()  # 필요할 때만 모델 로드
-                    video_path = os.path.join(video_input_folder, f"{video_id}.mp4")
+                    video_path = os.path.join(input_video_folder, f"{video_id}.mp4")
                     if not os.path.exists(video_path):
                         st.error(f"비디오 파일을 찾을 수 없습니다: {video_path}")
                     else:
@@ -298,7 +301,7 @@ elif page == "Frame Captioning":
                     st.error(f"video_id '{video_id}'의 timestamp가 숫자가 아닙니다: {timestamp_str}")
                     continue
                 
-                video_path = os.path.join(video_input_folder, f"{video_id}.mp4")
+                video_path = os.path.join(input_video_folder, f"{video_id}.mp4")
                 if not os.path.exists(video_path):
                     st.error(f"video_id '{video_id}'에 해당하는 비디오 파일이 존재하지 않습니다: {video_path}")
                     continue
