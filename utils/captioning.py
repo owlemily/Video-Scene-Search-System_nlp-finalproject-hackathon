@@ -73,7 +73,7 @@ def single_scene_caption_LlavaVideo(
         audio_text = transcribe_audio(mono_audio_path, whisper_model)
 
         # 프롬프트에 오디오 텍스트를 넣어주어 오디오를 반영하여 캡션 생성
-        prompt += f"\n[line]: {audio_text}[EOS]"
+        prompt += f"\n[SCRIPT]: {audio_text}[EOS]"
 
         print(prompt)
 

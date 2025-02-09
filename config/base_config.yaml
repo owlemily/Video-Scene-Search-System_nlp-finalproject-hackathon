@@ -3,7 +3,7 @@ general:
 
 scene_caption:
   prompt: |
-    Analyze the provided video and write a detailed description based on the given [line].
+    Analyze the provided video and write a detailed description based on the given [SCRIPT].
 
     ** Instructions **
 
