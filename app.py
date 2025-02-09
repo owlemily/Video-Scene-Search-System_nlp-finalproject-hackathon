@@ -9,6 +9,7 @@ from utils.vtt_service_utils import load_config, save_frame_at_time, convert_to_
 from utils.captioning import initialize_llava_video_model, initialize_whisper, single_scene_caption_LlavaVideo, load_qwen2_5_VL_model, single_frame_caption_Qwen2_5_VL
 
 input_video_folder = "../input_video_folder"
+extra_video_folder = "../extra_video_folder"
 temp_save_folder = "./temp_save_folder"
 
 config = load_config("./config/base_config.yaml")
@@ -30,6 +31,18 @@ if translator_name == "googletrans":
 elif translator_name == "deepl":
     auth_key = os.environ.get("DEEPL_API_KEY")
     translator = deepl.Translator(auth_key)
+
+
+def get_video_path(video_id):
+    """
+    주어진 video_id에 대해 input_video_folder와 extra_video_folder를 순차적으로 확인합니다.
+    존재하는 비디오 파일의 경로를 반환하며, 없으면 None을 반환합니다.
+    """
+    for folder in [input_video_folder, extra_video_folder]:
+        video_path = os.path.join(folder, f"{video_id}.mp4")
+        if os.path.exists(video_path):
+            return video_path
+    return None
 
 
 def clear_gpu_memory():
@@ -94,10 +107,14 @@ if page == "Scene Captioning":
             with st.spinner("멋진 캡션을 위한 영상 모델을 준비 중입니다..."):
                 load_scene_model()  # 필요할 때만 모델 로드
             
-            video_path = os.path.join(input_video_folder, f"{video_id}.mp4")
-            if not os.path.exists(video_path):
-                st.error(f"비디오 파일을 찾을 수 없습니다: {video_path}")
+            video_path = get_video_path(video_id)
+            if video_path is None:
+                st.error(f"비디오 파일을 찾을 수 없습니다: {video_id}.mp4 (input/extra 폴더 모두 확인)")
             else:
+                # 외부 동영상 사용 여부 확인
+                if extra_video_folder in video_path:
+                    st.info("외부동영상이 반영되었습니다!")
+                    
                 with st.spinner(f"{video_id} 영상 구간을 준비 중입니다..."):
                     # 동영상 구간 저장
                     trim_video_segment_and_save(video_path, start, end, temp_save_folder)
@@ -161,10 +178,14 @@ if page == "Scene Captioning":
                     continue
                 
                 video_id, start, end = parts
-                video_path = os.path.join(input_video_folder, f"{video_id}.mp4")
-                if not os.path.exists(video_path):
-                    st.error(f"video_id '{video_id}'에 해당하는 비디오 파일이 존재하지 않습니다: {video_path}")
+                video_path = get_video_path(video_id)
+                if video_path is None:
+                    st.error(f"video_id '{video_id}'에 해당하는 비디오 파일이 존재하지 않습니다 (input/extra 폴더 모두 확인).")
                     continue
+                
+                # 외부 동영상 사용 여부 확인
+                if extra_video_folder in video_path:
+                    st.info(f"{video_id}: 외부동영상이 반영되었습니다!")
                 
                 with st.spinner(f"{video_id} 영상 구간을 준비 중입니다..."):
                     # 동영상 구간 저장
@@ -239,10 +260,14 @@ elif page == "Frame Captioning":
             else:
                 with st.spinner("프레임 캡셔닝을 위해 준비 중입니다..."):
                     load_frame_model()  # 필요할 때만 모델 로드
-                    video_path = os.path.join(input_video_folder, f"{video_id}.mp4")
-                    if not os.path.exists(video_path):
-                        st.error(f"비디오 파일을 찾을 수 없습니다: {video_path}")
+                    video_path = get_video_path(video_id)
+                    if video_path is None:
+                        st.error(f"비디오 파일을 찾을 수 없습니다: {video_id}.mp4 (input/extra 폴더 모두 확인)")
                     else:
+                        # 외부 동영상 사용 여부 확인
+                        if extra_video_folder in video_path:
+                            st.info("외부동영상이 반영되었습니다!")
+                        
                         image_filename = f"{video_id}_{timestamp}.jpg"
                         temp_img_path = os.path.join(temp_save_folder, image_filename)
                         
@@ -301,10 +326,14 @@ elif page == "Frame Captioning":
                     st.error(f"video_id '{video_id}'의 timestamp가 숫자가 아닙니다: {timestamp_str}")
                     continue
                 
-                video_path = os.path.join(input_video_folder, f"{video_id}.mp4")
-                if not os.path.exists(video_path):
-                    st.error(f"video_id '{video_id}'에 해당하는 비디오 파일이 존재하지 않습니다: {video_path}")
+                video_path = get_video_path(video_id)
+                if video_path is None:
+                    st.error(f"video_id '{video_id}'에 해당하는 비디오 파일이 존재하지 않습니다 (input/extra 폴더 모두 확인).")
                     continue
+                
+                # 외부 동영상 사용 여부 확인
+                if extra_video_folder in video_path:
+                    st.info(f"{video_id}: 외부동영상이 반영되었습니다!")
                 
                 image_filename = f"{video_id}_{timestamp}.jpg"
                 temp_img_path = os.path.join(temp_save_folder, image_filename)
