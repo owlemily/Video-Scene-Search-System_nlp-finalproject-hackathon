@@ -2,8 +2,8 @@
 
 bge-scene:
   model_name: "BAAI/bge-large-en"
-  json_file: "description/scene_output_22.json"
-  output_file: "embeddings/scene_description_embeddings_22.pt"
+  json_file: description/output_temp.json # "description/scene_output_22.json"
+  output_file: "embeddings/scene_description_embeddings_temp.pt" # "embeddings/scene_description_embeddings_22.pt"
 
 bge-script:
   model_name: "BAAI/bge-large-en"
