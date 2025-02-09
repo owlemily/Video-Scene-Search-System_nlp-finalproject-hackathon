@@ -44,8 +44,8 @@ def load_retrievers(config_path):
         scene_retriever=scene_retriever,
         clip_retriever=clip_retriever,
         blip_retriever=blip_retriever,
-        weight_clip=1.5, 
-        weight_blip=0.21 + 0.77,
+        weight_clip=2, 
+        weight_blip=1,
         weight_scene=0,
     )
     return {"rankfusion": rankfusion}
@@ -123,12 +123,26 @@ def trim_video_segment_and_save(video_path, start, end, output_scene_folder):
 # 3. 경로 설정 및 기본 폴더 생성
 # ----------------------------------
 video_folder = "/data/ephemeral/home/original_videos"        # 동영상 파일들이 저장된 폴더
-extra_video_folder = "/data/ephemeral/home/external_videos"  # 추가 동영상 파일들이 저장된 폴더
+extra_video_folder = "/data/ephemeral/home/external_videos"     # 추가 동영상 파일들이 저장된 폴더
 temp_frame_folder = "temp_frame_folder"         # 추출한 프레임 이미지 저장 폴더
 temp_scene_folder = "temp_scene_folder"         # 잘라낸 scene 영상 저장 폴더
 
 os.makedirs(temp_frame_folder, exist_ok=True)
 os.makedirs(temp_scene_folder, exist_ok=True)
+
+def get_video_path(video_id):
+    """
+    주어진 video_id에 대해 video_folder와 extra_video_folder에서 해당 mp4 파일 경로를 반환합니다.
+    두 폴더 모두에 없으면 None을 반환합니다.
+    """
+    video_filename = f"{video_id}.mp4"
+    primary_path = os.path.join(video_folder, video_filename)
+    if os.path.exists(primary_path):
+        return primary_path
+    secondary_path = os.path.join(extra_video_folder, video_filename)
+    if os.path.exists(secondary_path):
+        return secondary_path
+    return None
 
 # ----------------------------------
 # 4. 번역기 설정
@@ -215,9 +229,9 @@ if st.button("검색"):
                 st.error("파일명에 포함된 timestamp 변환에 실패했습니다.")
                 continue
 
-            video_path = os.path.join(video_folder, f"{video_id}.mp4")
-            if not os.path.exists(video_path):
-                st.error(f"동영상 파일을 찾을 수 없습니다: {video_path}")
+            video_path = get_video_path(video_id)
+            if video_path is None:
+                st.error(f"동영상 파일을 찾을 수 없습니다: {video_id}.mp4 in {video_folder} or {extra_video_folder}")
                 continue
 
             # scene 정보가 있으면 scene 영상과 프레임 이미지를 같이 보여줌
@@ -301,7 +315,10 @@ if st.button("검색"):
                     time_sec = float(time_str)
                 except ValueError:
                     continue
-                video_path = os.path.join(video_folder, f"{video_id}.mp4")
+                video_path = get_video_path(video_id)
+                if video_path is None:
+                    st.error(f"동영상 파일을 찾을 수 없습니다: {video_id}.mp4 in {video_folder} or {extra_video_folder}")
+                    continue
                 frame_output_path = os.path.join(temp_frame_folder, f"{video_id}_{time_sec}.jpg")
                 if not os.path.exists(frame_output_path):
                     if not save_frame_at_time(video_path, time_sec, frame_output_path):
@@ -330,14 +347,13 @@ if st.button("검색"):
                     except ValueError:
                         st.error("파일명에 포함된 timestamp 변환에 실패했습니다.")
                         time_sec = None
-                    video_path = os.path.join(video_folder, f"{video_id}.mp4")
-                    if not os.path.exists(video_path):
-                        st.error(f"동영상 파일을 찾을 수 없습니다: {video_path}")
+                    video_path = get_video_path(video_id)
+                    if video_path is None:
+                        st.error(f"동영상 파일을 찾을 수 없습니다: {video_id}.mp4 in {video_folder} or {extra_video_folder}")
                     else:
                         scene_output_path = None
                         if best_res and best_res.get("scene_info") and best_res["scene_info"].get("scene_id"):
                             scene_id = best_res["scene_info"]["scene_id"]
-                            # st.write(f"Scene 정보: {scene_id}")
                             scene_parts = scene_id.split("_")
                             if len(scene_parts) >= 3:
                                 try:
@@ -346,7 +362,6 @@ if st.button("검색"):
                                 except ValueError:
                                     st.error("scene_start 또는 scene_end 값 변환에 실패했습니다.")
                                 else:
-                                    # st.write(f"Scene 구간: {scene_start}초 ~ {scene_end}초")
                                     try:
                                         scene_output_path = trim_video_segment_and_save(
                                             video_path, scene_start, scene_end, temp_scene_folder

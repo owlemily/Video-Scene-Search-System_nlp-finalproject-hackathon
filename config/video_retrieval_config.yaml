@@ -3,6 +3,7 @@
 bge-scene:
   model_name: "BAAI/bge-large-en"
   json_file: description/scene_description_temp.json # "description/scene_output_22.json"
+  external_json_file: "description/external_video_results.json"
   embedding_file: "embeddings/scene_description_embeddings_temp.pt" # "embeddings/scene_description_embeddings_22.pt"
   external_embedding_file: "embeddings/external_scene_embeddings.pt"
 

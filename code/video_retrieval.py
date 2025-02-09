@@ -159,15 +159,27 @@ class SCENERetrieval(BGERetrieval):
             json_key="scenes",
             text_field="caption",
         )
+        # 기본 JSON 파일과 external JSON 파일 모두를 scene index에 포함
         self.scene_index = self._build_scene_index_from_json(self.json_file)
 
     def _build_scene_index_from_json(self, json_file: str) -> dict:
         """
-        JSON 파일 내의 scene 정보를 읽어, video_id별로 start_time 기준으로 정렬된 index를 구성합니다.
+        JSON 파일 내의 scene 정보를 읽어, external_json_file의 scene 정보도 함께
+        video_id별로 start_time 기준으로 정렬된 index를 구성합니다.
         """
+        # 기본 JSON 파일 로드
         with open(json_file, "r", encoding="utf-8") as f:
             data = json.load(f)
         scenes = data.get("scenes", [])
+
+        # external_json_file이 설정되어 있고 파일이 존재하면 추가 로드
+        ext_json_file = self.config.get("external_json_file", None)
+        if ext_json_file and os.path.exists(ext_json_file):
+            with open(ext_json_file, "r", encoding="utf-8") as f:
+                ext_data = json.load(f)
+            ext_scenes = ext_data.get("scenes", [])
+            scenes.extend(ext_scenes)
+
         scene_index = {}
         for scene in scenes:
             video_id = scene.get("video_id")
@@ -193,13 +205,14 @@ class SCENERetrieval(BGERetrieval):
             scene_index[video_id]["starts"].append(start_time)
             scene_index[video_id]["scenes"].append(scene_entry)
 
-        # start_time 기준 정렬
+        # 각 video_id별로 start_time 기준 정렬
         for vid in scene_index:
             combined = list(zip(scene_index[vid]["starts"], scene_index[vid]["scenes"]))
             combined.sort(key=lambda x: x[0])
             scene_index[vid]["starts"] = [item[0] for item in combined]
             scene_index[vid]["scenes"] = [item[1] for item in combined]
         return scene_index
+
 
     def retrieve(self, user_query: str, top_k: int = 5) -> list:
         """
@@ -683,7 +696,7 @@ class Rankfusion:
 # 메인 실행 (Usage Example)
 ##############################################
 if __name__ == "__main__":
-    text_query = "A woman grabs a man from behind and holds a knife to his throat, threatening him."
+    text_query = "Missiles fly from the desert"
     config_path = "config/video_retrieval_config.yaml"  # video 및 image retrieval 설정 파일 (예: merged_config.yaml)
 
     # (1) 초기화: Scene, CLIP, BLIP
@@ -696,13 +709,13 @@ if __name__ == "__main__":
         scene_retriever=scene_retriever,
         clip_retriever=clip_retriever,
         blip_retriever=blip_retriever,
-        weight_clip=3,
-        weight_blip=3,
-        weight_scene=1,
+        weight_clip=2,
+        weight_blip=1,
+        weight_scene=0,
     )
 
     # (3) Fusion 검색
-    fusion_results = rankfusion.retrieve(query=text_query, top_k=1000, union_top_n=100000)
+    fusion_results = rankfusion.retrieve(query=text_query, top_k=1000, union_top_n=50000)
     print("=== Fusion 검색 결과 (요약) ===")
     for res in fusion_results[:30]:
         # scene_info가 결과에 포함되어 있다면 scene_id 추출, 없으면 None 처리
@@ -715,7 +728,7 @@ if __name__ == "__main__":
 
     # (4) Diverse 결과 예시
     diverse_results = rankfusion.select_diverse_results_by_clustering(
-        fusion_results, desired_num=10, top_n=100
+        fusion_results, desired_num=10, top_n=500
     )
     print("\n=== 클러스터링 기반 Diversity 적용 후 최종 결과 ===")
     for res in diverse_results:
