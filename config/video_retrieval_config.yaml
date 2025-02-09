@@ -2,14 +2,9 @@
 
 bge-scene:
   model_name: "BAAI/bge-large-en"
-  json_file: description/output_temp.json # "description/scene_output_22.json"
-  output_file: "embeddings/scene_description_embeddings_temp.pt" # "embeddings/scene_description_embeddings_22.pt"
-
-bge-script:
-  model_name: "BAAI/bge-large-en"
-  json_file: "description/transcription_summary_ver1.json"
-  output_file: "embeddings/script_summary_embeddings_22.pt"
-
+  json_file: description/scene_description_temp.json # "description/scene_output_22.json"
+  embedding_file: "embeddings/scene_description_embeddings_temp.pt" # "embeddings/scene_description_embeddings_22.pt"
+  external_embedding_file: "embeddings/external_scene_embeddings.pt"
 
 #### Image Retrieval ####
 
@@ -24,8 +19,10 @@ clip:
   <<: *common_settings
   model_name: "ViT-L/14@336px"  # ['RN50', 'RN101', 'RN50x4', 'RN50x16', 'RN50x64', 'ViT-B/32', 'ViT-B/16', 'ViT-L/14', 'ViT-L/14@336px']
   embedding_file: "embeddings/clip_image_embeddings_1500.pt"
+  external_embedding_file: "embeddings/external_clip_embeddings.pt"
 
 blip:
   <<: *common_settings
   model_type: "pretrain"  # 또는 "coco" 등 사용 사례에 맞게 지정
   embedding_file: "embeddings/blip_image_embeddings_1500.pt"
+  external_embedding_file: "embeddings/external_blip_embeddings.pt"

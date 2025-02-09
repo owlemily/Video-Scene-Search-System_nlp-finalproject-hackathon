@@ -5,18 +5,13 @@ import os
 import clip
 import numpy as np
 import torch
-import torch.nn as nn
 import yaml
-import spacy
 from lavis.models import load_model_and_preprocess
 from PIL import Image
 from sklearn.cluster import KMeans
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from transformers import AutoModel, AutoTokenizer
-# from rank_bm25 import BM25Okapi
-# from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 
 
 ##############################################
@@ -82,13 +77,22 @@ class BGERetrieval:
         self.texts = [item[text_field] for item in self.data_info]
 
         # 임베딩 파일 저장/로딩
-        self.embedding_file = self.config["output_file"]
+        self.embedding_file = self.config["embedding_file"]
         os.makedirs(os.path.dirname(self.embedding_file), exist_ok=True)
         if os.path.exists(self.embedding_file):
             self._load_embeddings(self.embedding_file)
         else:
             self.embeddings = self._encode_texts(self.texts)
             self._save_embeddings(self.embedding_file)
+
+        # --- 추가: external_embedding_file이 존재하면 외부 임베딩도 불러와 concat ---
+        ext_file = self.config.get("external_embedding_file", None)
+        if ext_file and os.path.exists(ext_file):
+            ext_data = torch.load(ext_file, weights_only=True)
+            self.data_info.extend(ext_data.get("data_info", []))
+            ext_features = ext_data["features"].to(self.device)
+            self.embeddings = torch.cat([self.embeddings, ext_features], dim=0)
+            print(f"[BGE] 외부 임베딩을 {ext_file}에서 불러와 concat 하였습니다.")
 
     def _load_config(self, config_path: str) -> dict:
         with open(config_path, "r", encoding="utf-8") as f:
@@ -130,7 +134,7 @@ class BGERetrieval:
         print(f"[BGE] 임베딩을 {file_path}에 저장했습니다.")
 
     def _load_embeddings(self, file_path: str) -> None:
-        data = torch.load(file_path)
+        data = torch.load(file_path, weights_only=True)
         self.data_info = data["data_info"]
         self.embeddings = data["features"]
         print(f"[BGE] 임베딩을 {file_path}에서 불러왔습니다.")
@@ -141,10 +145,6 @@ class BGERetrieval:
         query_vec = query_vec.to(features.device).float()
         features = features.float()
         return (features @ query_vec.T).squeeze(1)
-
-    # retrieve()는 하위 클래스에서 구체적인 출력 포맷에 맞게 오버라이드합니다.
-    def retrieve(self, user_query: str, top_k: int = 5) -> list:
-        raise NotImplementedError("하위 클래스에서 retrieve() 메서드를 구현하세요.")
 
 
 ##############################################
@@ -232,216 +232,6 @@ class SCENERetrieval(BGERetrieval):
 
 
 ##############################################
-# SCRIPTRetrieval: JSON의 script 정보("scripts" 리스트, 각 항목의 요약은 "summary") 기반 retrieval
-##############################################
-class SCRIPTRetrieval(BGERetrieval):
-    def __init__(self, config_path: str = "config/merged_config.yaml"):
-        # bge-script 섹션, JSON 내 "scripts" 항목, 텍스트 필드는 "summary" 사용
-        super().__init__(
-            config_path,
-            config_section="bge-script",
-            json_key="scripts",
-            text_field="summary",
-        )
-        # script 전용 인덱스 구축 (필요한 경우)
-        self.script_index = self._build_script_index_from_json(self.json_file)
-
-    def _build_script_index_from_json(self, json_file: str) -> dict:
-        """
-        JSON 파일 내의 script 정보를 읽어, video_name과 start 기준으로 정렬된 index를 구성합니다.
-        """
-        with open(json_file, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        scripts = data.get("scripts", [])
-        script_index = {}
-        for script in scripts:
-            video_name = script.get("video_name")
-            if video_name and video_name.endswith(".mp4"):
-                video_name = video_name[:-4]
-            if not video_name:
-                continue
-            try:
-                start_time = float(script["start"])
-                end_time = float(script["end"])
-            except Exception as e:
-                print(f"script 파싱 오류: {e}")
-                continue
-
-            # 고유 식별자로 video_name과 start_time 결합
-            identifier = f"{video_name}_{start_time}"
-            script_entry = {
-                "identifier": identifier,
-                "video_name": video_name,
-                "start": start_time,
-                "end": end_time,
-                "summary": script.get("summary"),
-                "score": 0.0,
-            }
-            if video_name not in script_index:
-                script_index[video_name] = {"start": [], "scripts": []}
-            script_index[video_name]["start"].append(start_time)
-            script_index[video_name]["scripts"].append(script_entry)
-        for vid in script_index:
-            combined = list(
-                zip(script_index[vid]["start"], script_index[vid]["scripts"])
-            )
-            combined.sort(key=lambda x: x[0])
-            script_index[vid]["start"] = [item[0] for item in combined]
-            script_index[vid]["scripts"] = [item[1] for item in combined]
-        return script_index
-
-    def retrieve(self, user_query: str, top_k: int = 5) -> list:
-        """
-        사용자 쿼리에 대해 script 임베딩 유사도를 계산하여 상위 top_k 결과를 반환합니다.
-        고유 식별자는 video_name과 start를 결합한 문자열입니다.
-        """
-        query_vec = self._encode_texts([user_query], disable=True)
-        scores = self._compute_similarity(query_vec, self.embeddings)
-        scores_np = scores.cpu().numpy()
-        # 각 script 항목의 고유 식별자로 score 매핑 생성 (여기서는 start 필드를 사용)
-        score_mapping = {
-            f"{self.data_info[i]['video_name']}_{self.data_info[i]['start']}": float(
-                score
-            )
-            for i, score in enumerate(scores_np)
-        }
-        top_idxs = scores_np.argsort()[-top_k:][::-1]
-        results = []
-        for rank, idx in enumerate(top_idxs, start=1):
-            info = self.data_info[idx]
-            identifier = f"{info['video_name']}_{info['start']}"
-            results.append(
-                {
-                    "rank": rank,
-                    "video_id": info.get("video_name"),
-                    "script_start_time": info["start"],
-                    "script_end_time": info["end"],
-                    "script_summary": info["summary"],
-                    "script_id": identifier,
-                    "score": score_mapping[identifier],
-                }
-            )
-        return results
-
-
-# ##############################################
-# # SCRIPTSPARSERetrieval: JSON의 script 정보("scripts" 리스트, 각 항목의 요약은 "summary") 기반 sparse retrieval
-# ##############################################
-# nlp = spacy.load("en_core_web_sm")
-
-# class SCRIPTSPARSERetrieval:
-#     def __init__(self, config_path: str = "config/merged_config.yaml"):
-#         # 설정 파일 로드
-#         self.config = self._load_config(config_path)["bge-script"]
-#         self.json_file = self.config["json_file"]
-
-#         # JSON 파일에서 script 데이터 로드
-#         with open(self.json_file, "r", encoding="utf-8") as f:
-#             data = json.load(f)
-#         self.data_info = data.get("scripts", [])
-
-#         # script 전용 인덱스 구축 (dense에서 사용하던 구조 그대로 유지)
-#         self.script_index = self._build_script_index_from_json(self.json_file)
-
-#         # script summary에서 명사만 추출한 후 벡터화
-#         self.texts = [self._extract_nouns(item["summary"]) for item in self.data_info]
-#         self.vectorizer = TfidfVectorizer(stop_words="english")
-#         self.tfidf_matrix = self.vectorizer.fit_transform(self.texts)
-
-#     def _load_config(self, config_path: str) -> dict:
-#         """설정 파일 로드"""
-#         with open(config_path, "r", encoding="utf-8") as f:
-#             return yaml.safe_load(f)
-
-#     def _extract_nouns(self, text: str) -> str:
-#         """
-#         주어진 텍스트에서 명사(NOUN, PROPN)만 추출하여 반환
-#         """
-#         doc = nlp(text)
-#         nouns = [token.text.lower() for token in doc if token.pos_ in {"NOUN", "PROPN"} and not token.is_stop]
-#         return " ".join(nouns)
-
-#     def _build_script_index_from_json(self, json_file: str) -> dict:
-#         """
-#         JSON 파일 내의 script 정보를 읽어, video_name과 start 기준으로 정렬된 index를 구축
-#         (기존 dense 방식의 `_build_script_index_from_json` 유지)
-#         """
-#         with open(json_file, "r", encoding="utf-8") as f:
-#             data = json.load(f)
-#         scripts = data.get("scripts", [])
-#         script_index = {}
-#         for script in scripts:
-#             video_name = script.get("video_name")
-#             if video_name and video_name.endswith(".mp4"):
-#                 video_name = video_name[:-4]
-#             if not video_name:
-#                 continue
-#             try:
-#                 start_time = float(script["start"])
-#                 end_time = float(script["end"])
-#             except Exception as e:
-#                 print(f"script 파싱 오류: {e}")
-#                 continue
-
-#             # 고유 식별자로 video_name과 start_time 결합
-#             identifier = f"{video_name}_{start_time}"
-#             script_entry = {
-#                 "identifier": identifier,
-#                 "video_name": video_name,
-#                 "start": start_time,
-#                 "end": end_time,
-#                 "summary": script.get("summary"),
-#                 "score": 0.0,
-#             }
-#             if video_name not in script_index:
-#                 script_index[video_name] = {"start": [], "scripts": []}
-#             script_index[video_name]["start"].append(start_time)
-#             script_index[video_name]["scripts"].append(script_entry)
-
-#         # start_time 기준 정렬
-#         for vid in script_index:
-#             combined = list(zip(script_index[vid]["start"], script_index[vid]["scripts"]))
-#             combined.sort(key=lambda x: x[0])
-#             script_index[vid]["start"] = [item[0] for item in combined]
-#             script_index[vid]["scripts"] = [item[1] for item in combined]
-
-#         return script_index
-
-#     def retrieve(self, user_query: str, top_k: int = 5) -> list:
-#         """
-#         사용자 쿼리에서 명사만 추출한 후 TF-IDF 벡터화하여 sparse retrieval 수행
-#         (기존 dense 방식 제거 후 sparse 방식 적용)
-#         """
-#         query_nouns = self._extract_nouns(user_query)
-#         query_vec = self.vectorizer.transform([query_nouns])
-#         scores = cosine_similarity(query_vec, self.tfidf_matrix).flatten()
-#         top_idxs = scores.argsort()[-top_k:][::-1]
-
-#         # 각 script 항목의 고유 식별자로 score 매핑
-#         score_mapping = {
-#             f"{self.data_info[i]['video_name']}_{self.data_info[i]['start']}": float(scores[i])
-#             for i in range(len(scores))
-#         }
-
-#         results = []
-#         for rank, idx in enumerate(top_idxs, start=1):
-#             info = self.data_info[idx]
-#             identifier = f"{info['video_name']}_{info['start']}"
-#             results.append(
-#                 {
-#                     "rank": rank,
-#                     "video_id": info.get("video_name"),
-#                     "script_start_time": info["start"],
-#                     "script_end_time": info["end"],
-#                     "script_summary": info["summary"],
-#                     "script_id": identifier,
-#                     "score": score_mapping[identifier],
-#                 }
-#             )
-#         return results
-    
-
-##############################################
 # ImageRetrieval: 이미지 임베딩 관련 공통 기능
 ##############################################
 class ImageRetrieval:
@@ -476,6 +266,18 @@ class ImageRetrieval:
             if fname.endswith(self.image_extensions)
         ]
 
+    # --- 추가: external embedding 파일을 불러와 기존 임베딩에 concat ---
+    def _load_external_embeddings(self) -> None:
+        ext_file = self.config.get("external_embedding_file", None)
+        if ext_file and os.path.exists(ext_file):
+            ext_data = torch.load(ext_file, weights_only=True)
+            ext_filenames = ext_data.get("filenames", [])
+            ext_features = ext_data["features"].to(self.image_embeddings.device)
+            self.image_filenames.extend(ext_filenames)
+            self.image_embeddings = torch.cat([self.image_embeddings, ext_features], dim=0)
+            print(f"[ImageRetrieval] 외부 임베딩을 {ext_file}에서 불러와 concat 하였습니다.")
+
+
 
 ##############################################
 # CLIPRetrieval: CLIP을 사용한 이미지 임베딩 및 검색
@@ -491,6 +293,8 @@ class CLIPRetrieval(ImageRetrieval):
             self._load_image_embeddings()
         else:
             self._extract_and_save_image_embeddings()
+        # --- 추가: external 임베딩 로드 및 concat ---
+        self._load_external_embeddings()
 
     def _extract_and_save_image_embeddings(
         self, batch_size: int = 1024, num_workers: int = 4
@@ -516,7 +320,7 @@ class CLIPRetrieval(ImageRetrieval):
         print(f"CLIP 임베딩을 {self.embedding_file}에 저장했습니다.")
 
     def _load_image_embeddings(self) -> None:
-        data = torch.load(self.embedding_file)
+        data = torch.load(self.embedding_file, weights_only=True)
         self.image_filenames = data["filenames"]
         self.image_embeddings = data["features"]
         print(f"CLIP 임베딩을 {self.embedding_file}에서 불러왔습니다.")
@@ -559,6 +363,8 @@ class BLIPRetrieval(ImageRetrieval):
             self._load_image_embeddings()
         else:
             self._extract_and_save_image_embeddings()
+        # --- 추가: external 임베딩 로드 및 concat ---
+        self._load_external_embeddings()
 
     def _extract_and_save_image_embeddings(
         self, batch_size: int = 1024, num_workers: int = 4
@@ -587,7 +393,7 @@ class BLIPRetrieval(ImageRetrieval):
         print(f"BLIP 임베딩을 {self.embedding_file}에 저장했습니다.")
 
     def _load_image_embeddings(self) -> None:
-        data = torch.load(self.embedding_file)
+        data = torch.load(self.embedding_file, weights_only=True)
         self.image_filenames = data["filenames"]
         self.image_embeddings = data["features"]
         print(f"BLIP 임베딩을 {self.embedding_file}에서 불러왔습니다.")
@@ -625,37 +431,30 @@ class Rankfusion:
     Rankfusion은
       1) CLIP,
       2) BLIP,
-      3) Scene retrieval (BGE),
-      4) Script retrieval (BGE)
+      3) Scene retrieval (BGE)
     점수를 융합하여 최종 결과를 생성합니다.
 
     (1) 이미지 파일명 예시: "video1_12.3.jpg"  -> video_id="video1", timestamp=12.3
     (2) scene_retriever.scene_index[video_id]에서 (start_time, end_time)에 걸쳐 있는 scene을 찾아 scene_score를 가져옵니다.
-    (3) script_retriever.script_index[video_id]에서 (start, end)에 걸쳐 있는 script를 찾아 script_score를 가져옵니다.
-    (4) 최종 score = weight_clip*clip_score + weight_blip*blip_score
-                    + weight_scene*scene_score + weight_script*script_score
+    (3) 최종 score = weight_clip*clip_score + weight_blip*blip_score + weight_scene*scene_score
     """
 
     def __init__(
         self,
         scene_retriever,
-        script_retriever,
         clip_retriever,
         blip_retriever,
         weight_clip: float = 0.25,
         weight_blip: float = 0.25,
         weight_scene: float = 0.25,
-        weight_script: float = 0.25,
     ):
         self.scene_retriever = scene_retriever
-        self.script_retriever = script_retriever
         self.clip_retriever = clip_retriever
         self.blip_retriever = blip_retriever
 
         self.weight_clip = weight_clip
         self.weight_blip = weight_blip
         self.weight_scene = weight_scene
-        self.weight_script = weight_script
 
         # CLIP 임베딩을 빠르게 참조하기 위해 미리 딕셔너리 형태로 캐싱
         self._clip_embedding_dict = None
@@ -692,23 +491,6 @@ class Rankfusion:
                 return scene
         return None
 
-    def _find_script_for_image(self, video_id: str, timestamp: float) -> dict:
-        """
-        주어진 video_id, timestamp로 script_index에서 해당 script 구간을 찾아 반환합니다.
-        (이진탐색 bisect 사용)
-        """
-        script_index = self.script_retriever.script_index
-        if video_id not in script_index:
-            return None
-        starts = script_index[video_id]["start"]
-        scripts = script_index[video_id]["scripts"]
-        idx = bisect.bisect_right(starts, timestamp) - 1
-        if idx >= 0:
-            s = scripts[idx]
-            if timestamp <= s["end"]:
-                return s
-        return None
-
     def _get_scene_scores(
         self, image_filenames: set, scene_score_mapping: dict
     ) -> dict:
@@ -737,35 +519,6 @@ class Rankfusion:
 
         return scores
 
-    def _get_script_scores(
-        self, image_filenames: set, script_score_mapping: dict
-    ) -> dict:
-        """
-        이미지 파일명 -> script score 매핑을 구해서 반환합니다.
-        (예: "video_name_74.36.jpg" -> script_index 통해 매칭되는 구간 -> script_score)
-        """
-        scores = {}
-        for img in image_filenames:
-            try:
-                basename = os.path.basename(img)
-                file_stem, _ = os.path.splitext(basename)
-                video_id, ts_str = file_stem.rsplit("_", 1)
-                timestamp = float(ts_str)
-            except Exception as e:
-                print(f"[Script] 파일명 파싱 오류 ({img}): {e}")
-                scores[img] = 0.0
-                continue
-
-            script = self._find_script_for_image(video_id, timestamp)
-            if script:
-                # 예: identifier = f"{video_name}_{start}"
-                identifier = script.get("identifier")
-                scores[img] = script_score_mapping.get(identifier, 0.0)
-            else:
-                scores[img] = 0.0
-
-        return scores
-
     def retrieve(self, query: str, top_k: int = 10, union_top_n: int = None) -> list:
         if union_top_n is None:
             union_top_n = max(
@@ -784,14 +537,9 @@ class Rankfusion:
         scene_results = self.scene_retriever.retrieve(query, top_k=len(self.scene_retriever.data_info))
         scene_score_mapping = {res["scene_id"]: res["score"] for res in scene_results}
 
-        # 4) Script retrieval
-        script_results = self.script_retriever.retrieve(query, top_k=len(self.script_retriever.data_info))
-        script_score_mapping = {res["script_id"]: res["score"] for res in script_results}
-
         # 이미지 전체 집합
         all_imgs = set(clip_dict.keys()).union(set(blip_dict.keys()))
         scene_dict = self._get_scene_scores(all_imgs, scene_score_mapping)
-        script_dict = self._get_script_scores(all_imgs, script_score_mapping)
 
         # 최종 Fusion 결과 생성 (여기서 각 이미지에 대해 scene 정보를 추가)
         fused = []
@@ -799,13 +547,11 @@ class Rankfusion:
             s_clip = clip_dict.get(img, 0.0)
             s_blip = blip_dict.get(img, 0.0)
             s_scene = scene_dict.get(img, 0.0)
-            s_script = script_dict.get(img, 0.0)
 
             fusion_score = (
                 self.weight_clip * s_clip
                 + self.weight_blip * s_blip
                 + self.weight_scene * s_scene
-                + self.weight_script * s_script
             )
             
             # 이미지 파일명에서 video_id와 timestamp 추출 (예: "video1_12.3.jpg")
@@ -829,7 +575,6 @@ class Rankfusion:
                     "clip_score": s_clip,
                     "blip_score": s_blip,
                     "scene_score": s_scene,
-                    "script_score": s_script,
                     "fusion_score": fusion_score,
                     "scene_info": scene_info  # scene_info에 scene 상세 정보를 포함
                 }
@@ -941,30 +686,19 @@ if __name__ == "__main__":
     text_query = "A woman grabs a man from behind and holds a knife to his throat, threatening him."
     config_path = "config/video_retrieval_config.yaml"  # video 및 image retrieval 설정 파일 (예: merged_config.yaml)
 
-    # # (1) 초기화: Scene, Script, CLIP, BLIP
+    # (1) 초기화: Scene, CLIP, BLIP
     scene_retriever = SCENERetrieval(config_path=config_path)
-    script_retriever = SCRIPTRetrieval(config_path=config_path)
     clip_retriever = CLIPRetrieval(config_path=config_path)
     blip_retriever = BLIPRetrieval(config_path=config_path)
 
-    # # top_k 개수만큼 검색 결과를 가져옴 (예제에서는 10개)
-    # clip_results = clip_retriever.retrieve(query=text_query, top_k=10000)
-    
-    # # 결과 출력: 각 결과에 대해 rank, image_filename, score 출력
-    # print("=== CLIP Retrieval Results ===")
-    # for res in clip_results:
-    #     print(f"Rank {res['rank']}: {res['image_filename']} - score: {res['score']:.4f}")
-
-    # (2) Rankfusion 초기화 (script_retriever 추가)
+    # (2) Rankfusion 초기화
     rankfusion = Rankfusion(
         scene_retriever=scene_retriever,
-        script_retriever=script_retriever,
         clip_retriever=clip_retriever,
         blip_retriever=blip_retriever,
         weight_clip=3,
         weight_blip=3,
         weight_scene=1,
-        weight_script=0,
     )
 
     # (3) Fusion 검색
@@ -976,8 +710,7 @@ if __name__ == "__main__":
         print(
             f"Rank {res['rank']}: {res['image_filename']} | "
             f"clip={res['clip_score']:.4f}, blip={res['blip_score']:.4f}, "
-            f"scene={res['scene_score']:.4f}, script={res['script_score']:.4f}, "
-            f"fusion={res['fusion_score']:.4f} | scene_id={scene_id}"
+            f"scene={res['scene_score']:.4f}, fusion={res['fusion_score']:.4f} | scene_id={scene_id}"
         )
 
     # (4) Diverse 결과 예시
@@ -986,11 +719,9 @@ if __name__ == "__main__":
     )
     print("\n=== 클러스터링 기반 Diversity 적용 후 최종 결과 ===")
     for res in diverse_results:
-        # scene_info가 결과에 포함되어 있다면 scene_id 추출, 없으면 None 처리
         scene_id = res.get("scene_info", {}).get("scene_id") if res.get("scene_info") else None
         print(
             f"Rank {res['rank']}: {res['image_filename']} | "
             f"clip={res['clip_score']:.4f}, blip={res['blip_score']:.4f}, "
-            f"scene={res['scene_score']:.4f}, script={res['script_score']:.4f}, "
-            f"fusion={res['fusion_score']:.4f} | scene_id={scene_id}"
+            f"scene={res['scene_score']:.4f}, fusion={res['fusion_score']:.4f} | scene_id={scene_id}"
         )

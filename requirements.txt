@@ -1,22 +1,44 @@
-torch
-scenedetect[opencv-headless]
-# transformers
+--index-url https://pypi.org/simple
+--extra-index-url https://download.pytorch.org/whl/cu121
+
+# PyTorch 및 관련 라이브러리 (버전 고정)
+torch==2.5.0
+torchaudio==2.5.0
+
+# 기본 라이브러리
 Pillow
-pandas
-matplotlib
 PyYAML
-salesforce-lavis
+
+# 컴퓨터 비전 관련
+scenedetect[opencv-headless]
 opencv-python-headless
-faiss-cpu
-scikit-learn
 opencv-python
-git+https://github.com/LLaVA-VL/LLaVA-NeXT.git
-git+https://github.com/openai/CLIP.git
+
+# 번역 및 NLP 관련
 deepl
 googletrans==4.0.0-rc1
-wordfreq
-qwen-vl-utils[decord]==0.0.8
 sentence_transformers
+
+# 기타 데이터/분석 라이브러리
+wordfreq
+scikit-learn
+
+# 추가 유틸리티 및 모델 관련
+tqdm
+decord
+streamlit
+
+# BLIP 임베딩을 위한 패키지
+salesforce-lavis==1.0.2
+
+# Git 저장소에서 설치하는 패키지들
+git+https://github.com/LLaVA-VL/LLaVA-NeXT.git
+git+https://github.com/openai/CLIP.git
 git+https://github.com/huggingface/transformers
+
+# (qwen-vl-utils 패키지의 [decord] extra 포함)
+qwen-vl-utils[decord]==0.0.8
 accelerate
+
+# 의존성 문제 해결을 위한 패키지
 timm==1.0.13

@@ -7,16 +7,15 @@ from tqdm import tqdm
 import clip  # OpenAI CLIP 패키지
 from lavis.models import load_model_and_preprocess  # BLIP2 관련
 
-import deepl
-from googletrans import Translator
-
 from utils.captioning import single_scene_caption_LlavaVideo
-from utils.extra_videos_preprocess_utils import (
+from utils.external_videos_preprocess_utils import (
     create_json,
     extract_frames_from_folder,
     save_timestamps_to_txt,
 )
 from utils.LlavaVideo_utils import load_llava_video_model
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 #########################################
 # ImageDataset: 이미지 로딩 및 전처리 클래스
@@ -37,17 +36,22 @@ class ImageDataset(Dataset):
             if self.convert_mode:
                 img = img.convert(self.convert_mode)
         except Exception as e:
-            print(f"이미지 로딩 오류 ({path}): {e}")
+            print(f"[ImageDataset] 이미지 로딩 오류 ({path}): {e}")
             img = Image.new("RGB", (224, 224))
         processed = self.preprocess(img)
         return processed, path
 
+
 #########################################
 # CLIP 임베딩 생성 함수
 #########################################
-def generate_clip_embeddings(frames_folder: str, embedding_folder: str,
-                             batch_size: int = 1024, num_workers: int = 4,
-                             model_name: str = "ViT-B/32"):
+def generate_clip_embeddings(
+    frames_folder: str,
+    embedding_folder: str,
+    batch_size: int = 512,
+    num_workers: int = 4,
+    model_name: str = "ViT-L/14@336px"
+):
     image_extensions = (".jpg", ".jpeg", ".png")
     image_filenames = [
         os.path.join(frames_folder, fname)
@@ -70,22 +74,29 @@ def generate_clip_embeddings(frames_folder: str, embedding_folder: str,
         for images, paths in tqdm(dataloader, desc="Extracting CLIP embeddings"):
             images = images.to(device)
             features = model.encode_image(images)
+            # L2 정규화
             features = features / features.norm(dim=-1, keepdim=True)
             embeds_list.append(features.cpu())
             files_list.extend(paths)
     clip_embeddings = torch.cat(embeds_list, dim=0)
 
     os.makedirs(embedding_folder, exist_ok=True)
-    embedding_path = os.path.join(embedding_folder, "clip_embeddings.pt")
-    torch.save({"filenames": files_list, "embeddings": clip_embeddings}, embedding_path)
+    embedding_path = os.path.join(embedding_folder, "external_clip_embeddings.pt")
+    # 저장 시 키를 "features"로 통일
+    torch.save({"filenames": files_list, "features": clip_embeddings}, embedding_path)
     print(f"[CLIP] 임베딩을 {embedding_path}에 저장했습니다.")
+
 
 #########################################
 # BLIP 임베딩 생성 함수
 #########################################
-def generate_blip_embeddings(frames_folder: str, embedding_folder: str,
-                             batch_size: int = 1024, num_workers: int = 4,
-                             model_type: str = "pretrain"):
+def generate_blip_embeddings(
+    frames_folder: str,
+    embedding_folder: str,
+    batch_size: int = 512,
+    num_workers: int = 4,
+    model_type: str = "pretrain"
+):
     image_extensions = (".jpg", ".jpeg", ".png")
     image_filenames = [
         os.path.join(frames_folder, fname)
@@ -113,6 +124,7 @@ def generate_blip_embeddings(frames_folder: str, embedding_folder: str,
         for images, paths in tqdm(dataloader, desc="Extracting BLIP embeddings"):
             images = images.to(device)
             features = model.extract_features({"image": images}, mode="image")
+            # 이미지 임베딩은 평균값을 사용하고 L2 정규화 적용
             image_embed = features.image_embeds_proj.mean(dim=1)
             image_embed = image_embed / image_embed.norm(dim=-1, keepdim=True)
             embeds_list.append(image_embed.cpu())
@@ -120,17 +132,22 @@ def generate_blip_embeddings(frames_folder: str, embedding_folder: str,
     blip_embeddings = torch.cat(embeds_list, dim=0)
 
     os.makedirs(embedding_folder, exist_ok=True)
-    embedding_path = os.path.join(embedding_folder, "blip_embeddings.pt")
-    torch.save({"filenames": files_list, "embeddings": blip_embeddings}, embedding_path)
+    embedding_path = os.path.join(embedding_folder, "external_blip_embeddings.pt")
+    # 저장 시 키를 "features"로 통일
+    torch.save({"filenames": files_list, "features": blip_embeddings}, embedding_path)
     print(f"[BLIP] 임베딩을 {embedding_path}에 저장했습니다.")
+
 
 #########################################
 # Scene 임베딩 생성 함수 (results_file 기반)
 #########################################
-def generate_scene_embeddings(results_file: str, embedding_folder: str,
-                              model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
-                              batch_size: int = 64):
-    # results_file에서 scene 정보 로드 (각 scene에 caption 필드가 존재해야 함)
+def generate_scene_embeddings(
+    results_file: str,
+    embedding_folder: str,
+    model_name: str = "BAAI/bge-large-en",
+    batch_size: int = 64
+):
+    # results_file에서 scene 정보 로드
     with open(results_file, "r", encoding="utf-8") as f:
         results = json.load(f)
     scenes = results.get("scenes", [])
@@ -138,8 +155,8 @@ def generate_scene_embeddings(results_file: str, embedding_folder: str,
         print(f"[Scene] {results_file}에 scene 정보가 없습니다.")
         return
 
-    # 각 scene의 caption (텍스트) 추출; 필요에 따라 caption_ko 등 다른 필드를 선택 가능
-    captions = [scene["caption"] for scene in scenes if "caption" in scene]
+    # 모든 scene에 대해 caption을 가져오는데, 없으면 빈 문자열로 처리하여 길이를 맞춥니다.
+    captions = [scene.get("caption", "") for scene in scenes]
 
     from transformers import AutoTokenizer, AutoModel
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -150,32 +167,39 @@ def generate_scene_embeddings(results_file: str, embedding_folder: str,
 
     all_embeds = []
     for i in tqdm(range(0, len(captions), batch_size), desc="Encoding scene captions"):
-        batch = captions[i:i + batch_size]
-        inputs = tokenizer(batch, padding=True, truncation=True, return_tensors="pt", max_length=512)
+        batch = captions[i : i + batch_size]
+        inputs = tokenizer(
+            batch,
+            padding=True,
+            truncation=True,
+            return_tensors="pt",
+            max_length=512,
+        )
         inputs = {k: v.to(device) for k, v in inputs.items()}
+
         with torch.no_grad():
             outputs = model(**inputs)
-            # 일반적으로 첫 토큰 (CLS)를 사용하여 문장 임베딩 생성
+            # 일반적으로 첫 토큰(CLS) 임베딩을 사용하고, L2 정규화를 적용합니다.
             embeds = outputs.last_hidden_state[:, 0, :]
             embeds = embeds / embeds.norm(dim=-1, keepdim=True)
         all_embeds.append(embeds.cpu())
     scene_embeddings = torch.cat(all_embeds, dim=0)
 
     os.makedirs(embedding_folder, exist_ok=True)
-    embedding_path = os.path.join(embedding_folder, "scene_embeddings.pt")
-    # scene id (존재한다면)와 함께 저장하거나 필요에 맞게 저장 구조를 조정하세요.
-    scene_ids = [scene.get("scene_id", None) for scene in scenes]
-    torch.save({"scene_ids": scene_ids, "embeddings": scene_embeddings}, embedding_path)
+    embedding_path = os.path.join(embedding_folder, "external_scene_embeddings.pt")
+    # 저장 시 key를 "data_info"로 설정하여 BGERetrieval과 동일한 구조로 만듭니다.
+    torch.save({"data_info": scenes, "features": scene_embeddings}, embedding_path)
     print(f"[Scene] 임베딩을 {embedding_path}에 저장했습니다.")
+
+
 
 #########################################
 # 전체 비디오 처리 파이프라인
 #########################################
-def process_extra_videos(
-    translator_name: str = "googletrans",
-    video_folder: str = "/data/ephemeral/home/extra_video_folder",
-    frames_output_folder: str = "./extra_frames_fps10",
-    embedding_folder: str = "./embedding",
+def process_external_videos(
+    video_folder: str = "/data/ephemeral/home/external_videos",
+    frames_output_folder: str = "./external_frames_fps10",
+    embedding_folder: str = "/data/ephemeral/home/ttv/embeddings",
     prompt: str = (
         "Analyze the provided video, and describe in detail the movements and actions of objects and backgrounds.\n\n"
         "** Instructions **  \n"
@@ -188,16 +212,13 @@ def process_extra_videos(
         "**Example:**\n"
         "A woman with white hair and a purple dress is talking to a snowman in front of a bonfire. She is looking at the snowman melting because of the fire. The snowman is trying to pull up his face, which is dripping down, so that it doesn't collapse.\n"
     ),
-    timestamps_file: str = "./extra_timestamps.txt",
-    results_file: str = "/data/ephemeral/home/ttv/description/extra_video_results.json",
+    timestamps_file: str = "./external_timestamps.txt",
+    results_file: str = "/data/ephemeral/home/ttv/description/external_video_results.json",
     frame_rate: int = 10,
     threshold: float = 30.0,
     min_scene_len: float = 2,
     max_new_tokens: int = 512,
     max_num_frames: int = 50,
-    enable_audio_text: bool = False,
-    whisper_model=None,
-    mono_audio_path=None,
 ):
     """
     전체 비디오 처리 파이프라인을 실행하는 함수입니다.
@@ -225,18 +246,9 @@ def process_extra_videos(
     # 3. LlavaVideo 모델 로드
     tokenizer, model, image_processor, max_length = load_llava_video_model()
 
-    # 4. 번역기 초기화
-    if translator_name == "googletrans":
-        translator = Translator()
-    elif translator_name == "deepl":
-        auth_key = os.environ.get("DEEPL_API_KEY")
-        translator = deepl.Translator(auth_key)
-    else:
-        raise ValueError(f"지원하지 않는 번역기: {translator_name}")
-
     caption_dict = {}
 
-    # 5. 각 비디오에 대해 캡션 생성 및 번역 수행
+    # 4. 각 비디오에 대해 캡션 생성 및 번역 수행
     video_list = os.listdir(video_folder)
     for video_name in tqdm(video_list, desc="비디오 처리중"):
         video_path = os.path.join(video_folder, video_name)
@@ -248,10 +260,6 @@ def process_extra_videos(
             prompt=prompt,
             max_new_tokens=max_new_tokens,
             max_num_frames=max_num_frames,
-            enable_audio_text=enable_audio_text,
-            whisper_model=whisper_model,
-            mono_audio_path=mono_audio_path,
-            translator=translator,
         )
         video_id = os.path.splitext(video_name)[0]  # 확장자 제거하여 video_id 생성
         caption_dict[video_id] = {
@@ -259,7 +267,7 @@ def process_extra_videos(
             "caption_ko": translated_description,
         }
 
-    # 6. scene 정보 불러오기 및 캡션 정보 업데이트 후 JSON 저장
+    # 5. scene 정보 불러오기 및 캡션 정보 업데이트 후 JSON 저장
     results = create_json(timestamps_file, results_file)
     for i, scene in enumerate(results.get("scenes", [])):
         video_id = scene.get("video_id")
@@ -273,14 +281,15 @@ def process_extra_videos(
         json.dump(results, f, indent=4, ensure_ascii=False)
     print("scene 정보 업데이트 및 JSON 저장 완료")
 
-    # 7. frames_output_folder 기반 CLIP, BLIP 임베딩 생성 및 저장
+    # 6. frames_output_folder 기반 CLIP, BLIP 임베딩 생성 및 저장
     generate_clip_embeddings(frames_output_folder, embedding_folder)
     generate_blip_embeddings(frames_output_folder, embedding_folder)
 
-    # 8. results_file 기반 scene 임베딩 생성 및 저장
+    # 7. results_file 기반 scene 임베딩 생성 및 저장
     generate_scene_embeddings(results_file, embedding_folder)
 
     return results
 
+
 if __name__ == "__main__":
-    process_extra_videos()
+    process_external_videos()

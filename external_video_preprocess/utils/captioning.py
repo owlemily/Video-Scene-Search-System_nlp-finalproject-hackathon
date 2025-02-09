@@ -1,18 +1,7 @@
-"""
-캡셔닝할 때 사용하는 함수들을 정의한 파일입니다.
-
-함수 목록:
-
-"""
-
-import whisper
-
 from .LlavaVideo_utils import (
     get_video_and_input_ids,
     load_llava_video_model,
 )
-from .vtt_service_utils import transcribe_audio, translate_caption
-
 
 def initialize_llava_video_model():
     """
@@ -25,10 +14,6 @@ def initialize_llava_video_model():
     return tokenizer, model, image_processor
 
 
-def initialize_whisper():
-    whisper_model = whisper.load_model("large-v3")
-    return whisper_model
-
 
 def single_scene_caption_LlavaVideo(
     model,
@@ -38,10 +23,6 @@ def single_scene_caption_LlavaVideo(
     prompt,
     max_new_tokens,
     max_num_frames,
-    enable_audio_text,
-    whisper_model,
-    mono_audio_path,
-    translator,
 ):
     """
     1개의 scene에 대한 캡션을 LlavaVideo 모델을 사용하여 생성하는 함수
@@ -55,7 +36,6 @@ def single_scene_caption_LlavaVideo(
         max_new_tokens (int): 최대 토큰 수
         max_num_frames (int): 최대 프레임 수
         enable_audio_text (bool): 오디오 텍스트 사용 여부
-        whisper_model (whisper.Whisper): STT 모델
         mono_audio_folder (str): 모노 오디오 폴더 경로
         translator (googletrans.Translator or deepl.Translator): 번역기 객체
 
@@ -64,15 +44,6 @@ def single_scene_caption_LlavaVideo(
     """
     # scene_name 추출 (audio_name이랑 같음)
     # audio_name = scene_name = os.path.basename(scene_path)[: -len(".mp4")]
-
-    if enable_audio_text:
-        # STT 모델인 Whisper을 사용하여 오디오 텍스트 추출
-        audio_text = transcribe_audio(mono_audio_path, whisper_model)
-
-        # 프롬프트에 오디오 텍스트를 넣어주어 오디오를 반영하여 캡션 생성
-        prompt += f"\n[SCRIPT]: {audio_text}[EOS]"
-
-        print(prompt)
 
     video, input_ids = get_video_and_input_ids(
         scene_path, tokenizer, model, image_processor, max_num_frames, prompt
@@ -91,6 +62,4 @@ def single_scene_caption_LlavaVideo(
     )
     response = tokenizer.batch_decode(cont, skip_special_tokens=True)[0].strip()
 
-    translated_description = translate_caption(response, translator, target_lang="ko")
-
-    return response, translated_description
+    return response, ""

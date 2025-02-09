@@ -6,7 +6,7 @@ import deepl
 from googletrans import Translator
 
 # retrieval 관련 객체들
-from code.video_retrieval import SCENERetrieval, SCRIPTRetrieval, BLIPRetrieval, CLIPRetrieval, Rankfusion
+from code.video_retrieval import SCENERetrieval, BLIPRetrieval, CLIPRetrieval, Rankfusion
 # Advanced re-ranking 함수 (Qwen‑VL 기반)
 from code.rerank import rerank_with_qwen, get_qwen_models, get_embedding_model
 
@@ -36,20 +36,17 @@ def load_retrievers(config_path):
     """
     # (1) 각 모달리티별 retrieval 객체 생성
     scene_retriever = SCENERetrieval(config_path=config_path)
-    script_retriever = SCRIPTRetrieval(config_path=config_path)
     clip_retriever = CLIPRetrieval(config_path=config_path)
     blip_retriever = BLIPRetrieval(config_path=config_path)
 
     # (2) Rankfusion 초기화 (script_retriever 포함)
     rankfusion = Rankfusion(
         scene_retriever=scene_retriever,
-        script_retriever=script_retriever,
         clip_retriever=clip_retriever,
         blip_retriever=blip_retriever,
-        weight_clip=1.5,      # (예: 0.35 + 0.77)
+        weight_clip=1.5, 
         weight_blip=0.21 + 0.77,
         weight_scene=0,
-        weight_script=0,
     )
     return {"rankfusion": rankfusion}
 
@@ -125,12 +122,12 @@ def trim_video_segment_and_save(video_path, start, end, output_scene_folder):
 # ----------------------------------
 # 3. 경로 설정 및 기본 폴더 생성
 # ----------------------------------
-video_folder = "../input_video_folder"        # 동영상 파일들이 저장된 폴더
-extra_video_folder = "../extra_video_folder"    # 추가 동영상 파일들이 저장된 폴더
-temp_save_folder = "temp_save_folder"           # 추출한 프레임 이미지 저장 폴더
+video_folder = "/data/ephemeral/home/original_videos"        # 동영상 파일들이 저장된 폴더
+extra_video_folder = "/data/ephemeral/home/external_videos"  # 추가 동영상 파일들이 저장된 폴더
+temp_frame_folder = "temp_frame_folder"         # 추출한 프레임 이미지 저장 폴더
 temp_scene_folder = "temp_scene_folder"         # 잘라낸 scene 영상 저장 폴더
 
-os.makedirs(temp_save_folder, exist_ok=True)
+os.makedirs(temp_frame_folder, exist_ok=True)
 os.makedirs(temp_scene_folder, exist_ok=True)
 
 # ----------------------------------
@@ -173,7 +170,7 @@ query = st.text_input("쿼리를 입력하세요:",
 if st.button("검색"):
     # 이전 검색 결과가 있으면, 이번 검색 시작 전에 임시 폴더 내 파일 삭제
     if st.session_state.prev_search_done:
-        for folder in [temp_save_folder, temp_scene_folder]:
+        for folder in [temp_frame_folder, temp_scene_folder]:
             for file_name in os.listdir(folder):
                 file_path = os.path.join(folder, file_name)
                 try:
@@ -248,7 +245,7 @@ if st.button("검색"):
                     st.warning("scene_id 형식이 올바르지 않습니다. Scene 추출을 건너뜁니다.")
 
                 # 프레임 이미지 추출 (항상 추출)
-                frame_output_path = os.path.join(temp_save_folder, f"{video_id}_{time_sec}.jpg")
+                frame_output_path = os.path.join(temp_frame_folder, f"{video_id}_{time_sec}.jpg")
                 try:
                     save_frame_at_time(video_path, time_sec, frame_output_path)
                 except Exception as e:
@@ -276,7 +273,7 @@ if st.button("검색"):
                     st.video(scene_bytes)
             else:
                 st.write(f"프레임 추출 시간: {time_sec}초")
-                frame_output_path = os.path.join(temp_save_folder, f"{video_id}_{time_sec}.jpg")
+                frame_output_path = os.path.join(temp_frame_folder, f"{video_id}_{time_sec}.jpg")
                 try:
                     save_frame_at_time(video_path, time_sec, frame_output_path)
                     with open(frame_output_path, "rb") as f:
@@ -305,7 +302,7 @@ if st.button("검색"):
                 except ValueError:
                     continue
                 video_path = os.path.join(video_folder, f"{video_id}.mp4")
-                frame_output_path = os.path.join(temp_save_folder, f"{video_id}_{time_sec}.jpg")
+                frame_output_path = os.path.join(temp_frame_folder, f"{video_id}_{time_sec}.jpg")
                 if not os.path.exists(frame_output_path):
                     if not save_frame_at_time(video_path, time_sec, frame_output_path):
                         continue
@@ -386,6 +383,6 @@ if st.button("검색"):
                 st.write(
                     f"Rank {res['rank']}: {res['image_filename']} | "
                     f"clip={res['clip_score']:.4f}, blip={res['blip_score']:.4f}, "
-                    f"scene={res['scene_score']:.4f}, script={res['script_score']:.4f}, "
-                    f"fusion={res['fusion_score']:.4f} | scene_id={scene_id}"
+                    f"scene={res['scene_score']:.4f}, fusion={res['fusion_score']:.4f} "
+                    f" | scene_id={scene_id}"
                 )
