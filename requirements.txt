@@ -1,4 +1,5 @@
 torch
+scenedetect[opencv-headless]
 # transformers
 Pillow
 pandas
@@ -8,7 +9,8 @@ salesforce-lavis
 opencv-python-headless
 faiss-cpu
 scikit-learn
-opencv-python 
+opencv-python
+git+https://github.com/LLaVA-VL/LLaVA-NeXT.git
 git+https://github.com/openai/CLIP.git
 deepl
 googletrans==4.0.0-rc1
