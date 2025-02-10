@@ -1,0 +1,19 @@
+PyYAML
+--index-url https://download.pytorch.org/whl/cu121
+torch==2.5.0
+torchvision==0.20.0
+torchaudio==2.5.0
+
+--index-url https://pypi.org/simple
+unsloth[cu121-torch250] @ git+https://github.com/unslothai/unsloth.git
+opencv-python-headless
+Pillow
+googletrans==3.1.0a0
+tqdm
+streamlit
+timm
+einops
+
+git+https://github.com/openai/CLIP.git
+
+deepl

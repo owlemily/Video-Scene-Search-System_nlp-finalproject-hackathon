@@ -51,6 +51,7 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+temp/
 
 # Translations
 *.mo
@@ -127,3 +128,8 @@ video_timestamps.txt
 *.json
 key_frames/
 *.txt
+# data
+datasets/
+embeddings/
+dev/
+description/
