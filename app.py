@@ -239,7 +239,7 @@ if st.button("검색"):
             # scene 정보가 있으면 scene 영상과 프레임 이미지를 같이 보여줌
             if res.get("scene_info") and res["scene_info"].get("scene_id"):
                 scene_id = res["scene_info"].get("scene_id")
-                st.write(f"Scene 정보: {scene_id}")
+                # st.write(f"Scene 정보: {scene_id}")
                 scene_output_path = None
                 scene_parts = scene_id.split("_")
                 if len(scene_parts) >= 3:
@@ -250,7 +250,7 @@ if st.button("검색"):
                     except ValueError:
                         st.error("scene_start 또는 scene_end 값 변환에 실패했습니다.")
                         continue
-                    st.write(f"Scene 구간: {scene_start}초 ~ {scene_end}초")
+                    # st.write(f"Scene 구간: {scene_start}초 ~ {scene_end}초")
                     try:
                         scene_output_path = trim_video_segment_and_save(
                             video_path, scene_start, scene_end, temp_scene_folder

@@ -61,7 +61,7 @@ class BGERetrieval:
                 f"'{config_section}' 설정이 {config_path}에 존재하지 않습니다."
             )
         self.config = full_config[config_section]
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cpu" # "cuda" if torch.cuda.is_available() else "cpu"
 
         # BGE 모델 및 토크나이저 로드
         self.model_name = self.config["model_name"]
