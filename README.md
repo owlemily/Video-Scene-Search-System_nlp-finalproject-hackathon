@@ -19,10 +19,13 @@
 총 1533개의 Youtube8M 동영상들과 추가로 넣어준 동영상들에 대하여 검색이 가능합니다.
 
 ![쿼리를 입력했을 때, 가장 유사한 Top-5의 프레임과 영상을 반환하여 보여줍니다.](attachment:ef1517b9-e31c-42b1-8a1a-5954c92d9078:image.png)
+![Image](https://github.com/user-attachments/assets/5fa4020e-7c2c-48f8-b785-c8c2a0702f40)
+
 
 쿼리를 입력했을 때, 가장 유사한 Top-5의 프레임과 영상을 반환하여 보여줍니다.
 
 ![Advanced Search with Rerank를 진행하여 추가 로직을 적용, Top-5 중에 가장 정확한 프레임과 영상구간을 찾아서 사용자에게 제공합니다.](attachment:5a860de8-3bd7-43e9-951a-478b4ceeee17:image.png)
+![Image](https://github.com/user-attachments/assets/1d045365-e751-4f16-b960-3060961d9635)
 
 Advanced Search with Rerank를 진행하여 추가 로직을 적용, Top-5 중에 가장 정확한 프레임과 영상구간을 찾아서 사용자에게 제공합니다.
 
