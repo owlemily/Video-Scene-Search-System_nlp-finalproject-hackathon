@@ -14,6 +14,7 @@
 
 Video_id와 Timestamp를 직접 입력하여 실시간으로 캡션 확인이 가능하고, Txt 파일을 넣어 배치 처리방식으로 한번에 결과를 확인할 수도 있습니다.
 
+<img width="1567" alt="Image" src="https://github.com/user-attachments/assets/de5ce3f1-e177-4915-ab67-cbed0751860b" />
 ![image.png](attachment:72cc5ae8-d265-4bd2-81c9-5e3886b8ec8b:image.png)
 
 ---
