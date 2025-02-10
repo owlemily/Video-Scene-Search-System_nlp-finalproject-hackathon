@@ -18,7 +18,9 @@ def translate_query(query: str, translator, target_lang="en") -> str:
         if isinstance(translator, Translator):  # googletrans 사용
             return translator.translate(query, dest=target_lang).text
         elif hasattr(translator, "translate_text"):  # DeepL 사용 (deepl.Translator)
-            return translator.translate_text(query, target_lang=target_lang).text
+            if target_lang == "en":
+                target_lang_for_deepl = "EN-US"
+            return translator.translate_text(query, target_lang=target_lang_for_deepl).text
         else:
             raise ValueError("지원되지 않는 번역기 객체입니다.")
     except Exception as e:
@@ -44,9 +46,9 @@ def load_retrievers(config_path):
         scene_retriever=scene_retriever,
         clip_retriever=clip_retriever,
         blip_retriever=blip_retriever,
-        weight_clip=2, 
-        weight_blip=1,
-        weight_scene=0,
+        weight_clip=0.65, 
+        weight_blip=0.34,
+        weight_scene=0.1,
     )
     return {"rankfusion": rankfusion}
 
@@ -147,7 +149,7 @@ def get_video_path(video_id):
 # ----------------------------------
 # 4. 번역기 설정
 # ----------------------------------
-translator_name = "googletrans"
+translator_name = "deepl"
 if translator_name == "googletrans":
     translator = Translator()
 elif translator_name == "deepl":

@@ -28,7 +28,6 @@ def get_embedding_model():
 def get_qwen_models():
     """Qwen-VL 모델, 토크나이저, 프로세서를 캐시하여 반환"""
     qwen_model, qwen_tokenizer, qwen_processor = load_qwen_model()
-    qwen_model.to(device)
     return qwen_model, qwen_tokenizer, qwen_processor
 
 ###########################################################
@@ -166,6 +165,7 @@ def rerank_with_qwen(query, candidate_image_paths, qwen_processor, qwen_model, e
     rank1_score = keyword_scores[0] if keyword_scores else 0
     best_match_idx = max(range(len(keyword_scores)), key=lambda i: keyword_scores[i]) if keyword_scores else 0
     score_difference = keyword_scores[best_match_idx] - rank1_score if keyword_scores else 0
+    print(f"score_difference: {score_difference:.4f}")
     threshold = 0.08  # 임계값
 
     if score_difference > threshold:

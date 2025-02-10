@@ -99,7 +99,7 @@ class BGERetrieval:
             return yaml.safe_load(f)
 
     def _encode_texts(
-        self, texts: list, batch_size: int = 1024, disable: bool = False
+        self, texts: list, batch_size: int = 512, disable: bool = False
     ) -> torch.Tensor:
         all_embeds = []
         for i in tqdm(
