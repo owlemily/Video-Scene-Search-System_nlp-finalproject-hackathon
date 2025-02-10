@@ -1,132 +1,141 @@
 # VTT_service 소개
 
-현재 폴더는 평가를 용이하게 하기위한 Streamlit 어플과 필요한 코드들로 구성되어있습니다.
+현재 폴더는 평가를 위한 Streamlit 앱과 필수 모듈로 구성되어 있습니다.
 
-기존에 config로 여러 모델, 프롬프트를 조정하여 실행할 수 있었던 것과 달리, 평가만을 위해 모델과 프롬프트, 기타 설정들을 모두 고정시켜두었습니다.
+기존에는 config를 통해 여러 모델과 프롬프트를 조정할 수 있었지만, 평가 목적에 맞춰 모델, 프롬프트, 기타 설정을 모두 고정했습니다.
 
-코드도 용이하게 확인할 수 있도록, 기존의 코드를 조정하고 단순화하여 vtt_service_utils.py와 captioning.py에 추가해두었습니다.
+코드는 확인하기 쉽도록 기존 코드를 조정하고 단순화하여 `vtt_service_utils.py`와 `captioning.py`에 추가했습니다.
 
-V100 환경(램 32GB)라는 제약조건을 지키기 위해, OOM 문제가 발생하지 않도록 max_new_tokens, num_frames, 입력 프롬프트 길이를 모두 적절히 조정하였습니다.
+또한, V100 (RAM 32GB) 환경을 고려해 OOM 문제가 발생하지 않도록 `max_new_tokens`, `num_frames`, 입력 프롬프트 길이를 적절히 조정했습니다.
 
-# 비디오 캡셔닝 애플리케이션
+# Streamlit 앱 소개
 
-이 프로젝트는 영상의 특정 씬(Scene) 또는 프레임(Frame)에 대해 캡션(자막)을 생성하는 Streamlit 기반 애플리케이션입니다. 사용자는 단일 입력 또는 텍스트 파일을 통한 배치 처리 방식으로 캡셔닝을 진행할 수 있습니다.
+이 프로젝트는 특정 영상 씬 또는 프레임에 캡션을 생성하는 Streamlit 기반 애플리케이션입니다.
+
+Video_id와 Timestamp를 직접 입력하여 실시간으로 캡션 확인이 가능하고, Txt 파일을 넣어 배치 처리방식으로 한번에 결과를 확인할 수도 있습니다.
+
+![image.png](attachment:72cc5ae8-d265-4bd2-81c9-5e3886b8ec8b:image.png)
 
 ---
 
-## 주요 기능
+# 주요 기능
 
 - **Scene Captioning (씬 캡셔닝)**
-    - 사용자가 입력한 비디오의 시작 시간과 종료 시간을 기준으로 해당 구간의 캡션을 생성합니다.
-    - 단일 입력과 배치 처리(txt 파일 업로드) 방식을 지원합니다.
+    - Video_ID(파일명)과 시작 시간(Start Time), 끝 시간(End Time)을 넣으면 해당 구간의 캡션을 보여줍니다.
+    - Single Scene Input 모드에서는 사용자가 하나씩 입력을 하여 캡션을 확인할 수 있습니다.
+    - Batch Input from TXT File 모드에서는 사용자가 Video_id, Start, End를 tab으로 구분하여 1줄씩 적은 txt를 첨부하면 전체에 대해 배치로 추론을 진행한 후, 전체 결과를 보여줍니다.
 - **Frame Captioning (프레임 캡셔닝)**
-    - 지정된 timestamp에서 프레임을 추출하여 해당 프레임의 캡션을 생성합니다.
-    - 단일 입력과 배치 처리(txt 파일 업로드) 방식을 지원합니다.
-- **모델 로드 및 GPU 메모리 관리**
-    - 필요한 모델만 로드하며, 페이지 전환 시 GPU 메모리 캐시를 해제하여 효율적인 자원 관리를 합니다.
-- **번역 기능**
-    - 캡션 결과를 다른 언어로 번역할 수 있으며, `googletrans` 또는 `deepl` 번역기를 선택하여 사용할 수 있습니다.
+    - Video_ID(파일명)과 Timestamp(초)를 넣으면 해당 시간의 프레임에 대한 캡션을 보여줍니다.
+    - Single Frame Input 모드에서는 사용자가 Video_id, Timestamp를 하나씩 입력하여 캡션을 확인할 수 있습니다.
+    - Batch Input from TXT File 모드에서는 사용자가 Video_id, Timestamp를 공백으로 구분하여 1줄씩 적은 txt를 첨부하면 전체에 대해 배치로 추론을 진행한 후, 전체 결과를 보여줍니다.
 
 ---
 
-## 파일 및 폴더 구조
+# 파일 및 폴더 구조
 
 ```
-├── external_videos          # 외부 동영상 파일을 추가하는 폴더
-├── temp_save_folder         # 임시 파일(동영상 구간, 프레임 이미지 등) 저장 폴더
-├── config
-│   └── base_config.yaml     # 캡셔닝, 번역, 모델 설정 파일
-├── utils
-│   ├── vtt_service_utils.py # 비디오 처리 및 오디오 변환 함수
-│   └── captioning.py        # 캡셔닝 모델 초기화 및 캡션 생성 함수
-└── app.py                   # Streamlit 메인 애플리케이션 스크립트
-
+├── external_videos               # 외부 동영상 파일을 추가하는 폴더 (외부 동영상을 이 폴더에 넣어주세요)
+├── original_videos               # youtube 8M 동영상이 저장된 폴더 (미리 1533개에 대해 저장해둔 폴더 - 건드리지 않으셔도 됩니다)
+└── vtt
+    ├── app.py                    # Streamlit 메인 애플리케이션 스크립트
+    ├── init.sh
+    ├── config
+    |   └── base_config.yaml      # 캡셔닝, 번역, 모델 설정 파일 
+    ├── requirements.txt
+    ├── temp_save_folder          # 임시 파일(동영상 구간, 프레임 이미지 등) 저장 폴더 - (처리 과정중에 잠시 파일이 저장되는 dummy 폴더입니다.)
+    └── utils
+		    ├── __init__.py
+        ├── LlavaVideo_utils.py
+        ├── captioning.py         # 캡셔닝 모델 초기화 및 캡션 생성 함수
+        └── vtt_service_utils.py  # 비디오 처리 및 오디오 변환 함수           
 ```
 
-> 주의: 외부 동영상을 사용할 경우, 반드시 `external_videos` 폴더에 비디오 파일을 추가해야 합니다.
+> 외부 동영상을 사용할 경우,  `external_videos` 폴더에 비디오들을 미리 넣어주어야 캡션 생성이 가능합니다.
 > 
 
 ---
 
-## 환경 설정
+# 환경 설치
 
-1. **Python 버전**: Python 3.8 이상을 권장합니다.
-2. **필수 패키지 설치**: 필요한 패키지는 `requirements.txt` 파일에 명시되어 있습니다. 아래 명령어를 통해 설치할 수 있습니다. (가상환경 사용을 권장합니다.)
+V100 서버 기준으로 작성하였습니다.
+
+평가 시에는 이미 V100 서버에 환경과 1533개 비디오들을 저장해두었으니, 별도의 환경 설치가 필요 없습니다.
+
+## 운영 환경
+
+Linux, cuda 12.2, V100 32GB
+
+## 초기 환경 세팅 (사전 제공한 환경에서는 초기 환경 세팅이 불필요합니다. 아래의 방식을 참고 바랍니다.)
+
+1. 아래 명령어를 실행하여 환경을 설치합니다.
     
     ```bash
-    pip install -r requirements.txt
+    conda remove ffmpeg
+    chmod +x init.sh
+    ./init.sh
     
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
     ```
     
-3. **DEEPL_API_KEY 설정**: DeepL 번역기를 사용하려면, API 키를 환경 변수로 등록해야 합니다.
-    - **Linux/Mac**:
-        
-        ```bash
-        export DEEPL_API_KEY=your_deepl_api_key_here
-        
-        ```
-        
-    - **Windows (CMD)**:
-        
-        ```
-        set DEEPL_API_KEY=your_deepl_api_key_here
-        
-        ```
-        
+2. **DEEPL_API_KEY 설정 (현재 제공된 V100 서버에는 이미 저희의 DEEPL API 키를 설정해두었습니다.)**
+    
+    DeepL API 키를 발급 받아 아래와 같이 환경 변수로 추가해줍니다.
+    
+    ```bash
+    export DEEPL_API_KEY="your_api_key_here"
+    ```
+    
+    영구적으로 설정하기 위해서는 '~/.bashrc'에 저장합니다.
+    
+    ```bash
+    echo 'export DEEPL_API_KEY="your_api_key_here"' >> ~/.bashrc
+    source ~/.bashrc
+    ```
+    
+3. 외부 동영상을 넣을 external_videos 폴더를 만들고, 그 안에 mp4 파일들을 넣어줍니다. (필수)
 
-vtt_service 폴더 내부의 init.sh와 requirements.txt를 이용하여 환경을 설치합니다.
+# 사전 제공 환경 (ssh -p 31347 [root@10.28.224.64](mailto:root@10.28.224.64)에서)
 
-```bash
-
-bash init.sh
-
-python -m venv .venv
-source .venv/bin/activate
-
-pip install -r requirements.txt
-
-```
-
-### 만약, conda를 사용할 경우에는 ffmpeg 경로를 확인해주세요!
-
-```bash
-which ffmpeg
-/opt/conda/bin/ffmpeg
-
-```
-
-위와 같이 ffmpeg 경로가 conda라면, conda에서 삭제해줍니다. (저희 V100 초기환경에서는 삭제가 필요합니다.)
-
-### Conda에서 지우기
-
-```bash
-conda remove ffmpeg
-
-```
+1. vtt 디렉토리로 이동하여 .venv를 실행합니다. 
+    
+    ```bash
+    cd vtt
+    source .venv/bin/activate
+    ```
+    
+2. 외부 동영상을 넣을 external_videos 폴더를 만들고, 그 안에 mp4 파일들을 넣어줍니다. (필수)
+3. 스트림릿을 실행합니다. 
+    
+    ```bash
+    streamlit run app.py
+    ```
+    
 
 ---
 
-## 실행 방법
+# 실행 방법
 
 1. 프로젝트 루트 디렉토리에서 터미널(또는 CMD)을 실행합니다.
 2. 아래 명령어를 입력하여 Streamlit 애플리케이션을 시작합니다:
     
     ```bash
     streamlit run app.py
-    
     ```
     
 3. 기본 웹 브라우저가 열리면서 캡셔닝 인터페이스에 접속할 수 있습니다.
 
 ---
 
-## 사용 방법
+# 사용 방법
 
 ### 1. Scene Captioning (씬 캡셔닝)
 
 - **단일 입력 모드**
-    - **입력 항목**: Video ID, 시작 시간(`start`), 종료 시간(`end`)
-    - **설명**: 사용자가 입력한 비디오 ID에 해당하는 동영상 파일이 `video_input_folder`에 존재해야 하며, 지정한 시간 구간의 영상이 캡션 생성 대상이 됩니다.
+    - **입력 항목**: Video ID(확장자를 제외한 동영상 파일명), 시작 시간(`start`), 종료 시간(`end`)
+    - **설명**: 사용자가 입력한 비디오 ID에 해당하는 동영상 파일이 `original_videos` 나 `external_videos`에 존재해야 하며, 지정한 시간 구간의 영상이 캡션 생성 대상이 됩니다.
     - **실행**: "Generate Caption for Single Scene" 버튼 클릭 시, 해당 구간의 캡션을 생성합니다.
 - **배치 처리 (TXT 파일 업로드)**
     - **파일 형식**: 각 줄에 `video_id start end` 형식으로 작성합니다.
@@ -168,27 +177,23 @@ conda remove ffmpeg
 > 
 > - 씬 캡셔닝의 경우, 텍스트 파일의 각 줄은 `video_id start end` 형식을 따라야 합니다.
 > - 프레임 캡셔닝의 경우, 텍스트 파일의 각 줄은 `video_id timestamp` 형식을 따라야 합니다.
-> - 입력 형식이 올바르지 않을 경우 오류 메시지가 출력되며 해당 항목은 건너뛰게 됩니다.
+> - 입력 형식이 올바르지 않을 경우 오류 메시지가 출력 되며 해당 항목은 건너뛰게 됩니다.
 
 ---
 
 ## 참고 사항
 
-- **외부 동영상 파일**: 캡셔닝에 사용할 모든 외부 동영상 파일은 반드시 `/data/ephemeral/home/external_videos` 폴더 내에 추가되어 있어야 합니다. (예: `video_id.mp4` 형태)
+- **외부 동영상 파일**: 외부 동영상을 사용할 경우,  `external_videos` 폴더에 비디오들을 미리 넣어주어야 합니다. (예: `video_id.mp4` 형태)
 - **임시 파일 관리**: 캡셔닝 작업 중 생성된 임시 동영상 구간, 오디오 파일, 프레임 이미지 등은 작업 완료 후 자동으로 삭제됩니다.
-- **모델 로딩 및 GPU 메모리**: 페이지 전환 시 사용하지 않는 모델 및 GPU 메모리 캐시가 자동으로 해제되므로, 제한된 메모리 환경에서 동작합니다.
-- **번역기 선택**: config 파일(`config/base_config.yaml`)에서 `translator_name` 값을 통해 사용할 번역기를 선택할 수 있으며, DeepL을 선택한 경우 반드시 `DEEPL_API_KEY`를 환경 변수로 입력해야 합니다.
+- **모델 로딩 및 GPU 메모리**: 페이지 전환 시 사용하지 않는 모델 및 GPU 메모리 캐시가 자동으로 삭제됩니다.
+- **번역기 선택**: config 파일(`config/base_config.yaml`)에서 `translator_name` 값을 통해 사용할 번역기를 선택할 수 있으며, DeepL을 선택한 경우 반드시 `DEEPL_API_KEY`를 환경 변수로 입력해야 합니다. (저희 v100 서버에서 번역은 deepl로 설정되어 있습니다.)
 
 ---
 
 ## 문제 해결 및 지원
 
-- **비디오 파일 미존재**: 입력한 Video ID에 해당하는 비디오 파일이 `video_input_folder` 내에 존재하는지 확인하세요.
+- **비디오 파일 미존재**: 입력한 Video ID에 해당하는 비디오 파일이 `external_videos` 나 `original_videos`내에 파일이 존재하는지 확인하세요.
 - **시간 형식 오류**: 시작 시간, 종료 시간 또는 timestamp가 숫자 형식인지 확인하세요.
 - **DEEPL_API_KEY 오류**: DeepL 번역기를 사용 중이라면 환경 변수에 올바른 API 키가 설정되었는지 확인하세요.
 
 ---
-
-## 라이선스
-
-이 프로젝트는 [LICENSE](https://www.notion.so/LICENSE) 파일의 조건에 따라 배포됩니다.
