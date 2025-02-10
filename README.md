@@ -113,7 +113,7 @@ Linux, cuda 12.2, V100 32GB
     streamlit run app.py
     ```
     
-### **또는 [video to text](http://10.28.224.64:30806/) 에서 확인할 수 있습니다.**
+### **또는 [video to text](http://10.28.224.64:30806/) 에서 확인할 수 있습니다.** (VPN 연결 필수)
 ---
 
 # 실행 방법
