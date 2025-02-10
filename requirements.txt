@@ -7,4 +7,5 @@ PyYAML
 salesforce-lavis
 opencv-python-headless
 faiss-cpu
+bayesian-optimization
 git+https://github.com/openai/CLIP.git
