@@ -1,12 +1,7 @@
-# 공통적으로 사용되는 설정
-# device: 사용할 디바이스 ("cuda" 또는 "cpu")
-# video_folder: 원본 비디오 파일 저장 경로 (예: "./video")
-# translator_name: 번역기 이름 ("deepl" 또는 "googletrans") - 번역기를 사용할 때 사용되는 번역기 이름입니다.
 general:
-  device: "cuda"
-  video_folder: "./video"
-  translator_name: "deepl"
+  translator_name: "googletrans"
 
+<<<<<<< HEAD:scene-description/config/base_config.yaml
 # Frame Captioning을 할 때 사용되는 설정
 frame_caption:
   # frames_folder: 프레임 이미지 저장 경로 (예: "./frames") - Video 폴더에서 프레임 이미지를 추출하여 저장하는 폴더이자, 이 폴더의 이미지를 이용하여 캡셔닝을 수행
@@ -43,41 +38,40 @@ frame_caption:
 
 
 # Scene Captioning을 할 때 사용되는 설정
+=======
+>>>>>>> feat-7/vtt:config/base_config.yaml
 scene_caption:
-  # fps_adjusted_video_folder: FPS 조정된 비디오 파일 저장 경로 (예: "./fps_adjusted_video") - Video 폴더에서 각 비디오의 FPS를 조정하여 저장하는 폴더
-  fps_adjusted_video_folder: "./fps_adjusted_video"
+  prompt: |
+    Analyze the provided video and write a detailed description based on the given [SCRIPT].
 
-  # timestamp_file: 씬 타임스탬프 파일 경로 (예: "./video_timestamps.txt") - 비디오 폴더에서 모든 비디오에 대해 PySceneDetect를 이용하여 추출한 씬들의 타임스탬프가 적힌 파일
-  PySceneDetect_threshold: 30.0
-  PySceneDetect_min_scene_len: 2
-  timestamp_file: "./timestamps.txt"
+    ** Instructions **
 
-  # scene_folder: 추출된 씬 이미지 저장 경로 (예: "./scenes") - Video 폴더에서 각 비디오의 Scene들을 timestamp_txt_file에 따라 쪼개서 저장하는 경로
-  # output_folder: 캡셔닝 진행 후 결과파일이 저장될 폴더경로 (예: "./scenes_output")
-  # scene_output_filename: 씬 캡셔닝 결과 파일명 (예: "scene_output_p1_v1.json")
-  scene_folder: "./scenes"
-  output_folder: "./scenes_output"
-  scene_output_filename: "scene_output_p1_v1.json"
+    1. Do not guess or speculate about anything not covered in the video (avoid hallucinations). Describe only facts.
+    2. When describing the movements and actions of all objects in the video, clearly distinguish who is doing what among the characters.
+    3. When describing the movement of objects (vehicles, animals, objects, etc.), make sure it matches the script, but do not guess what is not in the video.
+    4. When describing movement, **consider the camera angle**, and if emotions are expressed, describe facial expressions and gestures (e.g. ‘move to the left with a knife’).
+    5. If the subject is expressing an emotion (e.g., fear, excitement, aggression), describe it through facial expressions, gestures, and dialogue. If no emotion is detected, focus on the details of the movement.
+    6. If there is interaction between the characters (e.g., fighting, dialogue), clearly describe the characters' actions and situations(e.g. singing, shouting, snarling, cheering, swaring) with the script in mind.
 
-  # model: 사용할 씬 캡셔닝 모델 ("OpenGVLab/InternVideo2_5_Chat_8B" 또는 "lmms-lab/LLaVA-Video-7B-Qwen2" 또는 "OpenGVLab/InternVideo2-Chat-8B")
-  model: "OpenGVLab/InternVideo2_5_Chat_8B"
+    ** Example **
 
-  # prompt: 씬 캡셔닝 모델 프롬프트 (예: "Describe the video scene in detail.")
-  # max_new_tokens: 생성할 최대 토큰 수 (예: 256)
-  # max_num_frames: 씬 캡셔닝 시 사용할 최대 프레임 수 (예: 64)
-  prompt: "Describe the video scene in detail."
-  max_new_tokens: 256
-  max_num_frames: 64
-  
+    A woman with white hair and a purple dress is talking to a snowman in front of a bonfire. She is watching the snowman melt because of the fire. The snowman is trying to lift his face so that it doesn't collapse.
+
+  max_new_tokens: 512
+  max_num_frames: 50
   audio:
-    # use_audio: 오디오 사용 여부 (True 또는 False) - False일 시, 밑의 설정 모두 무시
-    # mono_audio_folder: 모노 오디오 파일 저장 경로 (예: "./mono_audio") - Scenes 폴더의 모든 Scene의 모노 오디오를 저장하는 폴더
-    # scene_info_with_audio_scripts_file: 오디오 스크립트가 포함된 Scene 정보 JSON 파일 경로 (예: "./scene_info_with_audio_scripts.json" 또는 null)
-    # scene_info_with_audio_scripts_file에 파일이 지정될 경우, 이미 번역된 대사들이 담긴 JSON 파일을 사용하여 캡셔닝을 수행합니다.
-    # scene_info_with_audio_scripts_file이 null일 경우, 즉석에서 저장된 mono 오디오를 사용하여 whisper 모델로 대사를 추출하고 캡셔닝을 수행합니다.
     use_audio: False
     mono_audio_folder: "./mono_audio"
-    scene_info_with_audio_scripts_file: "./scene_info_with_audio_scripts.json"
-  
 
+<<<<<<< HEAD:scene-description/config/base_config.yaml
 
+=======
+frame_caption:
+  prompt: "<image>\nDescribe the entire image in detail, including objects, background, layout, and interactions.
+    1. Identify all major objects without omission.
+    2. Describe only what is present (avoid hallucinations or false assumptions).
+    3. Avoid incorrect inferences that contradict the image.
+    4. Exclude unnecessary details such as watermarks.
+    example : The image shows two people engaged in a conversation. The person on the left is wearing a dark suit, while the person on the right is dressed in a black outfit with intricate gold embroidery. The background features a dark, ornate wall with a painting and a vase with orange flowers. The setting appears to be an elegant room, possibly a formal or historical location. The lighting is soft, creating a warm atmosphere."
+  max_new_tokens: 512
+>>>>>>> feat-7/vtt:config/base_config.yaml

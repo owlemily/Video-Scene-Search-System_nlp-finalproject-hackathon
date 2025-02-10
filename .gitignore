@@ -133,3 +133,6 @@ datasets/
 embeddings/
 dev/
 description/
+
+video_input_folder/
+myenv/
