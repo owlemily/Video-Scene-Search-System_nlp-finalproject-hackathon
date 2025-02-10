@@ -1,0 +1,20 @@
+paths:
+  result_csv: "output/opt_results.csv"
+  ground_truth_csv: "own_dataset_v2_only3.csv"
+  output_score_csv: "output/opt_scores.csv"
+  weights_output_csv: "output/opt_weights_results.csv"
+
+weights:
+  use_w_scene: True
+  use_w_script: True
+  use_w_clip: True
+  use_w_blip: True
+
+  initial_w_scene: 0.25
+  initial_w_script: 0.25
+  initial_w_clip: 0.25
+  initial_w_blip: 0.25
+
+bayesian_optimization:
+  init_points: 5 
+  n_iter: 20
