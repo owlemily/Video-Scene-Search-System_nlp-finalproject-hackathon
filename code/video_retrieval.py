@@ -136,7 +136,7 @@ class BGERetrieval:
     def _load_embeddings(self, file_path: str) -> None:
         data = torch.load(file_path, weights_only=True)
         self.data_info = data["data_info"]
-        self.embeddings = data["features"]
+        self.embeddings = data["features"].to(self.device)
         print(f"[BGE] 임베딩을 {file_path}에서 불러왔습니다.")
 
     def _compute_similarity(
