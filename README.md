@@ -9,12 +9,11 @@
 
 ```
 .
-|-- README.md                # 프로젝트 문서
-|-- code
-|   |-- __init__.py          # 코드 모듈 초기화 스크립트
-|   |-- __pycache__          # 파이썬 바이트코드 캐시
-|   |-- basic_retrieval.py   # BGERetrieval 구현 (프레임 및 씬 검색)
-|   -- image_retrieval.py    # CLIPRetrieval 구현 (이미지 검색)
+├── README.md                # 프로젝트 문서
+├── code
+│   ├── image_retrieval.py  # CLIP 및 BLIP 기반 이미지 검색 구현
+│   ├── text_retrieval.py  # BGE 기반 텍스트 검색 (Scene, Script)
+│   ├── video_retrieval.py  # RankFusion을 포함한 검색 시스템 구현
 |-- config
 |   |-- clip_config.yaml               # CLIP 검색 설정 파일
 |   |-- frame_description_config.yaml  # 프레임 검색 설정 파일
@@ -27,15 +26,20 @@
 |   |-- frame_output_test_dataset_79_v2.json  # 프레임 검색 출력 샘플 (v2)
 |   |-- frame_output_v3_unsloth_22.json       # 프레임 검색 출력 샘플 (v3)
 |   -- scene_output_v22.json                  # 씬 검색 출력 샘플
-|-- dev
-|   -- assign_scene_id.py   # 프레임에 씬 ID를 할당하는 스크립트
+├── dev
+│   ├── benchmark.py  # 벤치마크 및 성능 평가 스크립트
+│   ├── benchmark_en.csv  # 평가용 벤치마크 데이터
+│   ├── retrieval_results.csv  # 검색 결과 저장 파일
+│   ├── eval.csv  # 검색 성능 평가 결과
 |-- init_dataset
 |   |-- download_test_dataset_79.sh  # 테스트 데이터셋 다운로드 스크립트
 |   |-- download_video.sh            # 비디오 데이터 다운로드 스크립트
 |   |-- only_extract_frames.py       # 비디오에서 프레임을 추출하는 스크립트
 |   -- video                         # 원본 비디오 파일 디렉토리
-|-- rankfusion_retrieval_pipeline.py # RankFusion 검색 파이프라인 메인 스크립트
--- requirements.txt                  # 프로젝트 필수 라이브러리
+├── rankfusion.py  # RankFusion 실행 스크립트
+├── weight_optimization.py  # 가중치 최적화 스크립트
+├── requirements.txt  # 프로젝트 종속성 목록
+├── requirements.txt                  # 프로젝트 필수 라이브러리
 ```
 
 ---
