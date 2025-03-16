@@ -51,7 +51,7 @@ TVING 해커톤에서 영상 검색 시스템을 구축하는 과제를 수행�
 | 이름 | 역할 |
 |------|------|
 | **육지훈** | 비디오 데이터 전처리 & 장면 탐지 분할, 프레임 추출 및 이미지 임베딩 생성, Streamlit 기반 장면 검색 시스템 개발, Reranking 기반 검색 성능 개선 |
-| **전진** | 테스트 데이터셋 및 벤치마크 구축, 계층적 리트리버 구조 설계, Rank Fusion Retrieval |
+| **전 진** | 테스트 데이터셋 및 벤치마크 구축, 계층적 리트리버 구조 설계, Rank Fusion Retrieval |
 | **허윤서** | VTT & TTV app.py 제작, 멀티모달 임베딩, Rank Fusion Retrieval 구축 |
 | **정준한** | VLM & VideoLM 추론 코드 모듈화, Streamlit 기반 평가도구 & 데모 구현 |
 | **이수진** | Video Captioning 모델 실험, VideoLM 모듈화, 테스트 데이터셋 및 벤치마크 구축 |
